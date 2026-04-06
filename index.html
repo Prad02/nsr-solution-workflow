@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSR AP Automation — Solution Workflow</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #131829;
+    --surface2: #1a2035;
+    --border: #2a3050;
+    --accent: #4f8cff;
+    --accent2: #7c5cfc;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ---- NAV ---- */
+  .side-nav {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 280px; background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0; z-index: 100;
+    overflow-y: auto;
+    transition: transform .3s;
+  }
+  .side-nav.collapsed { transform: translateX(-280px); }
+  .nav-logo { padding: 0 24px 24px; border-bottom: 1px solid var(--border); }
+  .nav-logo h2 { font-size: 16px; font-weight: 700; color: var(--accent); letter-spacing: .5px; }
+  .nav-logo p { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .nav-section { padding: 16px 24px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); font-weight: 600; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 24px; cursor: pointer; font-size: 13px;
+    color: var(--text2); transition: all .2s; text-decoration: none;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(79,140,255,.08); }
+  .nav-item .num { font-size: 10px; font-weight: 700; color: var(--text3); min-width: 20px; }
+  .nav-toggle {
+    display: none; position: fixed; top: 16px; left: 16px;
+    z-index: 200; background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); width: 40px; height: 40px; border-radius: 8px;
+    cursor: pointer; font-size: 18px;
+  }
+
+  /* ---- MAIN ---- */
+  .main { margin-left: 280px; padding: 40px 48px 120px; max-width: 1200px; }
+
+  /* ---- HERO ---- */
+  .hero {
+    background: linear-gradient(135deg, rgba(79,140,255,.12), rgba(124,92,252,.12));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 48px; margin-bottom: 48px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; right: -20%; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(79,140,255,.15), transparent 70%);
+  }
+  .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; position: relative; }
+  .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 16px; color: var(--text2); max-width: 700px; position: relative; }
+  .hero-badges { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; position: relative; }
+  .hero-badge {
+    font-size: 11px; padding: 6px 14px; border-radius: 20px;
+    background: rgba(79,140,255,.15); border: 1px solid rgba(79,140,255,.3);
+    color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+  }
+
+  /* ---- SECTIONS ---- */
+  .section { margin-bottom: 56px; scroll-margin-top: 24px; }
+  .section-header { margin-bottom: 24px; }
+  .section-header h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+  .section-header h2 .icon { font-size: 24px; }
+  .section-header p { font-size: 14px; color: var(--text2); margin-top: 6px; max-width: 700px; }
+  .section-num { font-size: 12px; font-weight: 700; color: var(--accent); background: rgba(79,140,255,.15); padding: 3px 10px; border-radius: 10px; }
+
+  /* ---- ARCHITECTURE DIAGRAM ---- */
+  .arch-diagram {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 32px; position: relative; overflow: hidden;
+  }
+  .arch-row { display: flex; gap: 16px; justify-content: center; align-items: stretch; flex-wrap: wrap; margin-bottom: 16px; }
+  .arch-box {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 20px; text-align: center; min-width: 140px; flex: 1; max-width: 220px;
+    transition: all .3s; cursor: default; position: relative;
+  }
+  .arch-box:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(79,140,255,.15); }
+  .arch-box .label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .arch-box .sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .arch-box.primary { border-color: var(--accent); background: rgba(79,140,255,.08); }
+  .arch-box.primary .label { color: var(--accent); }
+  .arch-box.green { border-color: var(--green); }
+  .arch-box.green .label { color: var(--green); }
+  .arch-box.amber { border-color: var(--amber); }
+  .arch-box.amber .label { color: var(--amber); }
+  .arch-box.pink { border-color: var(--pink); }
+  .arch-box.pink .label { color: var(--pink); }
+  .arch-box.cyan { border-color: var(--cyan); }
+  .arch-box.cyan .label { color: var(--cyan); }
+
+  .arch-arrow { text-align: center; color: var(--text3); font-size: 20px; margin: 8px 0; }
+  .arch-label { text-align: center; font-size: 11px; color: var(--text3); margin: -4px 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ---- FLOW ---- */
+  .flow { display: flex; flex-direction: column; gap: 0; align-items: center; }
+  .flow-step {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 24px; width: 100%; max-width: 600px;
+    transition: all .3s; position: relative;
+  }
+  .flow-step:hover { border-color: var(--accent); }
+  .flow-step .step-num {
+    position: absolute; left: -14px; top: 50%; transform: translateY(-50%);
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+    color: #fff; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .flow-step .step-title { font-size: 14px; font-weight: 600; margin-left: 20px; }
+  .flow-step .step-desc { font-size: 12px; color: var(--text2); margin-left: 20px; margin-top: 4px; }
+  .flow-connector { width: 2px; height: 24px; background: var(--border); }
+  .flow-branch {
+    display: flex; gap: 16px; width: 100%; max-width: 700px; justify-content: center;
+  }
+  .flow-branch-item {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; text-align: center;
+    font-size: 12px; transition: all .3s;
+  }
+  .flow-branch-item:hover { border-color: var(--accent); }
+  .flow-branch-item .b-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .flow-branch-item .b-desc { color: var(--text2); font-size: 11px; }
+  .flow-branch-item.success { border-color: var(--green); }
+  .flow-branch-item.success .b-title { color: var(--green); }
+  .flow-branch-item.warning { border-color: var(--amber); }
+  .flow-branch-item.warning .b-title { color: var(--amber); }
+  .flow-branch-item.error { border-color: var(--red); }
+  .flow-branch-item.error .b-title { color: var(--red); }
+
+  /* ---- GRID CARDS ---- */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px; transition: all .3s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card .card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .card .card-desc { font-size: 12px; color: var(--text2); }
+  .card .card-list { list-style: none; margin-top: 10px; }
+  .card .card-list li { font-size: 11px; color: var(--text2); padding: 3px 0; padding-left: 16px; position: relative; }
+  .card .card-list li::before { content: ''; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ---- MATCHING TABLE ---- */
+  .match-table { width: 100%; border-collapse: collapse; }
+  .match-table th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+    color: var(--text3); padding: 10px 16px; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .match-table td {
+    padding: 12px 16px; border-bottom: 1px solid rgba(42,48,80,.5);
+    font-size: 13px; vertical-align: top;
+  }
+  .match-table tr:hover td { background: rgba(79,140,255,.04); }
+  .match-table .step-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; font-size: 11px; font-weight: 700;
+    background: rgba(79,140,255,.15); color: var(--accent); margin-right: 8px;
+  }
+  .match-table .fallback { color: var(--text3); font-style: italic; font-size: 11px; }
+
+  /* ---- EXCEPTION GRID ---- */
+  .exc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .exc-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+    transition: all .2s;
+  }
+  .exc-item:hover { border-color: var(--accent); }
+  .exc-item .exc-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .exc-item .exc-title { font-size: 12px; font-weight: 600; }
+  .exc-item .exc-assign { font-size: 10px; color: var(--text3); margin-top: 2px; }
+  .exc-item .exc-type { font-size: 10px; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; font-weight: 600; }
+  .exc-item .exc-type.hard { background: rgba(248,113,113,.15); color: var(--red); }
+  .exc-item .exc-type.warn { background: rgba(251,191,36,.15); color: var(--amber); }
+  .exc-item .exc-type.auto { background: rgba(52,211,153,.15); color: var(--green); }
+
+  /* ---- STATUS PIPELINE ---- */
+  .pipeline { display: flex; gap: 0; overflow-x: auto; padding: 8px 0; }
+  .pipe-step {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    min-width: 100px; position: relative; flex-shrink: 0;
+  }
+  .pipe-step::after {
+    content: ''; position: absolute; top: 16px; left: calc(50% + 18px); right: calc(-50% + 18px);
+    height: 2px; background: var(--border);
+  }
+  .pipe-step:last-child::after { display: none; }
+  .pipe-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    background: var(--surface); position: relative; z-index: 1;
+  }
+  .pipe-label { font-size: 10px; color: var(--text3); text-align: center; max-width: 90px; }
+  .pipe-step.active .pipe-dot { border-color: var(--accent); background: rgba(79,140,255,.15); }
+  .pipe-step.done .pipe-dot { border-color: var(--green); background: rgba(52,211,153,.15); }
+  .pipe-step.done::after { background: var(--green); }
+  .pipe-step.error .pipe-dot { border-color: var(--red); background: rgba(248,113,113,.15); }
+
+  /* ---- ROLE MATRIX ---- */
+  .role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .role-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; text-align: center;
+  }
+  .role-card .role-icon { font-size: 32px; margin-bottom: 8px; }
+  .role-card .role-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .role-card .role-perms { font-size: 11px; color: var(--text2); text-align: left; }
+  .role-card .role-perms li { padding: 2px 0; list-style: none; }
+
+  /* ---- INTEGRATION FLOW ---- */
+  .integ-flow {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px;
+  }
+  .integ-system { text-align: center; }
+  .integ-system .sys-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .integ-system .sys-desc { font-size: 11px; color: var(--text3); }
+  .integ-arrows { display: flex; flex-direction: column; gap: 8px; padding: 0 16px; min-width: 200px; }
+  .integ-arrow {
+    display: flex; align-items: center; gap: 8px; font-size: 11px;
+    padding: 6px 12px; border-radius: 6px; background: var(--surface2);
+  }
+  .integ-arrow .arr-dir { font-size: 14px; flex-shrink: 0; }
+  .integ-arrow .arr-label { color: var(--text2); }
+  .integ-arrow .arr-freq {
+    margin-left: auto; font-size: 9px; padding: 2px 6px; border-radius: 4px;
+    background: rgba(79,140,255,.15); color: var(--accent); font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ---- REPORT LIST ---- */
+  .report-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .report-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .report-item .rp-pri {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .report-item .rp-pri.p1 { background: rgba(248,113,113,.15); color: var(--red); }
+  .report-item .rp-pri.p2 { background: rgba(251,191,36,.15); color: var(--amber); }
+  .report-item .rp-pri.p3 { background: rgba(79,140,255,.15); color: var(--accent); }
+  .report-item .rp-name { font-size: 12px; font-weight: 600; }
+  .report-item .rp-desc { font-size: 10px; color: var(--text3); }
+
+  /* ---- TABS ---- */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--surface); border-radius: 8px; padding: 4px; border: 1px solid var(--border); overflow-x: auto; }
+  .tab-btn {
+    padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    color: var(--text3); cursor: pointer; border: none; background: transparent;
+    transition: all .2s; white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { background: var(--accent); color: #fff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ---- SPECIAL ---- */
+  .divider { height: 1px; background: var(--border); margin: 40px 0; }
+  .tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; display: inline-block; }
+  .tag-blue { background: rgba(79,140,255,.15); color: var(--accent); }
+  .tag-green { background: rgba(52,211,153,.15); color: var(--green); }
+  .tag-amber { background: rgba(251,191,36,.15); color: var(--amber); }
+  .tag-red { background: rgba(248,113,113,.15); color: var(--red); }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; text-align: center;
+  }
+  .kpi-card .kpi-value { font-size: 28px; font-weight: 800; }
+  .kpi-card .kpi-label { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 900px) {
+    .side-nav { transform: translateX(-280px); }
+    .side-nav.open { transform: translateX(0); }
+    .nav-toggle { display: flex; align-items: center; justify-content: center; }
+    .main { margin-left: 0; padding: 24px 16px 80px; }
+    .exc-grid, .report-list { grid-template-columns: 1fr; }
+    .integ-flow { grid-template-columns: 1fr; gap: 16px; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .flow-branch { flex-direction: column; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.side-nav').classList.toggle('open')">&#9776;</button>
+
+<nav class="side-nav">
+  <div class="nav-logo">
+    <h2>NORTHSTAR RECYCLING</h2>
+    <p>AP Automation Solution</p>
+  </div>
+  <div class="nav-section">Overview</div>
+  <a class="nav-item active" href="#hero"><span class="num">00</span> Solution Overview</a>
+  <a class="nav-item" href="#architecture"><span class="num">01</span> System Architecture</a>
+  <div class="nav-section">Core Modules</div>
+  <a class="nav-item" href="#ingestion"><span class="num">02</span> Invoice Ingestion</a>
+  <a class="nav-item" href="#extraction"><span class="num">03</span> AI Data Extraction</a>
+  <a class="nav-item" href="#vendor-match"><span class="num">04</span> Vendor Identification</a>
+  <a class="nav-item" href="#bs-match"><span class="num">05</span> Buy/Sell Matching</a>
+  <a class="nav-item" href="#line-match"><span class="num">06</span> Line-Level Matching</a>
+  <a class="nav-item" href="#workflow"><span class="num">07</span> Invoice Workflow</a>
+  <div class="nav-section">Specialized</div>
+  <a class="nav-item" href="#exceptions"><span class="num">08</span> Exception Management</a>
+  <a class="nav-item" href="#special"><span class="num">09</span> Special Workflows</a>
+  <a class="nav-item" href="#integration"><span class="num">10</span> CieTrade Integration</a>
+  <div class="nav-section">Operations</div>
+  <a class="nav-item" href="#roles"><span class="num">11</span> User Roles</a>
+  <a class="nav-item" href="#reports"><span class="num">12</span> Reports & Dashboards</a>
+  <a class="nav-item" href="#success"><span class="num">13</span> Success Criteria</a>
+</nav>
+
+<main class="main">
+
+  <!-- HERO -->
+  <section id="hero" class="hero section">
+    <h1>NSR <span>Accounts Payable</span> Automation</h1>
+    <p>A comprehensive, AI-first platform to replace manual invoice processing with automated ingestion, intelligent Buy/Sell matching, structured exception management, and seamless CieTrade/Sage posting.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">Phase 1 — AP Priority</span>
+      <span class="hero-badge">AI-Powered OCR</span>
+      <span class="hero-badge">8-Step B/S Matching</span>
+      <span class="hero-badge">SFTP + SAML SSO</span>
+      <span class="hero-badge">USD & CAD</span>
+    </div>
+  </section>
+
+  <!-- 01. ARCHITECTURE -->
+  <section id="architecture" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">01</span> System Architecture</h2>
+      <p>End-to-end view of how the NSR AP platform connects to existing systems</p>
+    </div>
+
+    <div class="arch-diagram">
+      <!-- Sources -->
+      <div class="arch-label">Invoice Sources</div>
+      <div class="arch-row">
+        <div class="arch-box amber">
+          <div class="label">M365 Email</div>
+          <div class="sub">AP + Confidential Mailboxes</div>
+        </div>
+        <div class="arch-box amber">
+          <div class="label">Vendor Portals</div>
+          <div class="sub">WM / Waste Connections / GFL</div>
+        </div>
+        <div class="arch-box amber">
+          <div class="label">Manual Upload</div>
+          <div class="sub">UI-based document upload</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">&#8595; &#8595; &#8595;</div>
+
+      <!-- Platform -->
+      <div class="arch-row">
+        <div class="arch-box primary" style="max-width:100%;flex:1;">
+          <div class="label" style="font-size:16px;">NSR AP Automation Platform</div>
+          <div class="sub" style="margin-top:8px;">
+            <span class="tag tag-blue" style="margin:2px;">OCR / AI Extraction</span>
+            <span class="tag tag-blue" style="margin:2px;">Vendor Matching</span>
+            <span class="tag tag-blue" style="margin:2px;">B/S Matching Engine</span>
+            <span class="tag tag-blue" style="margin:2px;">Exception Manager</span>
+            <span class="tag tag-blue" style="margin:2px;">Workflow Engine</span>
+            <span class="tag tag-blue" style="margin:2px;">Audit Trail</span>
+            <span class="tag tag-blue" style="margin:2px;">Reporting</span>
+            <span class="tag tag-blue" style="margin:2px;">Collaboration</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">&#8595; &#8593; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8595; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#8595;</div>
+
+      <!-- External Systems -->
+      <div class="arch-label">External Systems</div>
+      <div class="arch-row">
+        <div class="arch-box green">
+          <div class="label">CieTrade</div>
+          <div class="sub">ERP / Trade Platform<br>SFTP bi-directional</div>
+        </div>
+        <div class="arch-box cyan">
+          <div class="label">Sage MAS 500</div>
+          <div class="sub">Accounting / ERP<br>(via CieTrade)</div>
+        </div>
+        <div class="arch-box pink">
+          <div class="label">Azure AD</div>
+          <div class="sub">SAML SSO<br>M365 Authentication</div>
+        </div>
+        <div class="arch-box">
+          <div class="label">JPMC</div>
+          <div class="sub">Banking (AR Phase 2)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02. INGESTION -->
+  <section id="ingestion" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">02</span> Invoice Ingestion</h2>
+      <p>Three pathways funnel into a unified processing queue. Every invoice follows the same workflow regardless of source.</p>
+    </div>
+
+    <div class="card-grid" style="margin-bottom:24px;">
+      <div class="card" style="border-left: 3px solid var(--amber);">
+        <div class="card-icon">&#9993;</div>
+        <div class="card-title">Email Ingestion</div>
+        <div class="card-desc">Monitor configured M365 mailboxes via Microsoft Graph API</div>
+        <ul class="card-list">
+          <li>Standard AP mailbox + Confidential mailbox</li>
+          <li>Emails remain <strong>Unread</strong> after processing</li>
+          <li>Each attachment = separate tracked document</li>
+          <li>Auto-associate supporting docs (CODs, BOLs, weight tickets)</li>
+          <li>PDF, JPG, BMP, TIF, PNG, XLS, DOCX, EML</li>
+          <li>Handwritten/illegible &#8594; Manual Review Queue</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--green);">
+        <div class="card-icon">&#127760;</div>
+        <div class="card-title">Web Portal Pull</div>
+        <div class="card-desc">Automated daily login and invoice retrieval from 3 vendor portals</div>
+        <ul class="card-list">
+          <li>Waste Management (wm.com)</li>
+          <li>Waste Connections (myaccount.wcicustomer.com)</li>
+          <li>GFL (myaccount.gflenv.com)</li>
+          <li>Multiple accounts/logins per portal</li>
+          <li>Credential updates without downtime</li>
+          <li>Injected into standard AP queue</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left: 3px solid var(--accent);">
+        <div class="card-icon">&#128228;</div>
+        <div class="card-title">Manual Upload</div>
+        <div class="card-desc">AP users upload invoice documents directly through the UI</div>
+        <ul class="card-list">
+          <li>Drag & drop or file picker</li>
+          <li>Same workflow as email-ingested invoices</li>
+          <li>Source tracked: email | portal | manual</li>
+          <li>Supports create pay uploads during close</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step" style="background: rgba(251,191,36,.08); border-color: var(--amber);">
+        <div class="step-title" style="margin-left:0; text-align:center; color: var(--amber);">All Sources &#8594; Unified AP Processing Queue</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-branch">
+        <div class="flow-branch-item">
+          <div class="b-title">Standard Invoice Queue</div>
+          <div class="b-desc">Full B/S matching workflow</div>
+        </div>
+        <div class="flow-branch-item">
+          <div class="b-title">Confidential Queue</div>
+          <div class="b-desc">Tiered access, no B/S matching</div>
+        </div>
+        <div class="flow-branch-item">
+          <div class="b-title">Credit Memo Queue</div>
+          <div class="b-desc">Manual posting, archive only</div>
+        </div>
+        <div class="flow-branch-item">
+          <div class="b-title">Statement Queue</div>
+          <div class="b-desc">Reconciliation workflow</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03. EXTRACTION -->
+  <section id="extraction" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">03</span> AI Data Extraction</h2>
+      <p>Hybrid OCR + AI approach: extract text from documents, then use an LLM with structured output to map fields intelligently across diverse invoice formats.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-header')">Header Fields</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-line')">Line Fields</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-classify')">Classification</button>
+    </div>
+
+    <div id="tab-header" class="tab-content active">
+      <div class="arch-diagram" style="overflow-x:auto;">
+        <table class="match-table">
+          <thead><tr><th>Field</th><th>Level</th><th>Required</th><th>Extraction Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Invoice Number</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>Max 20 chars; strip leading zeros & apostrophes</td></tr>
+            <tr><td><strong>Invoice Date</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td></td></tr>
+            <tr><td><strong>Due Date</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>From B/S payment terms; fallback to vendor master</td></tr>
+            <tr><td><strong>Currency</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>USD or CAD</td></tr>
+            <tr><td><strong>Vendor / Counterparty</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>Fuzzy match to CieTrade CPID</td></tr>
+            <tr><td><strong>Vendor ID (CPID)</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>Auto-lookup from name/address match</td></tr>
+            <tr><td><strong>Payment Method</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>From vendor master</td></tr>
+            <tr><td><strong>Bill To Name / Address</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>Warning if not fuzzy-matching NSR</td></tr>
+            <tr><td><strong>Invoice Total (Gross)</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td></td></tr>
+            <tr><td><strong>Payment Terms</strong></td><td>Header</td><td><span class="tag tag-red">Yes</span></td><td>From B/S > vendor master; editable by AP</td></tr>
+            <tr><td><strong>Ship Date</strong></td><td>Hdr / Line</td><td><span class="tag tag-red">Yes</span></td><td>Aliases: Service Date, Pickup Date, Load Date</td></tr>
+            <tr><td><strong>Buy/Sell Number</strong></td><td>Hdr / Line</td><td><span class="tag tag-red">Yes</span></td><td>Aliases: BOL, NorthStar #, PO Number</td></tr>
+            <tr><td><strong>Freight / Surcharges / Tax</strong></td><td>Header</td><td><span class="tag tag-amber">No</span></td><td>Converted to expense invoice lines for B/S matching</td></tr>
+            <tr><td><strong>GST / HST / QST</strong></td><td>Header</td><td><span class="tag tag-amber">No</span></td><td>Header only; NOT a B/S line; passed on posting</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-line" class="tab-content">
+      <div class="arch-diagram" style="overflow-x:auto;">
+        <table class="match-table">
+          <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Item Description</strong></td><td><span class="tag tag-red">Yes</span></td><td></td></tr>
+            <tr><td><strong>Unit Price</strong></td><td><span class="tag tag-red">Yes</span></td><td></td></tr>
+            <tr><td><strong>Quantity / Weight</strong></td><td><span class="tag tag-red">Yes</span></td><td>UOM conversion (lbs, short tons, etc.)</td></tr>
+            <tr><td><strong>Line Amount</strong></td><td><span class="tag tag-red">Yes</span></td><td></td></tr>
+            <tr><td><strong>Account Manager</strong></td><td><span class="tag tag-red">Yes</span></td><td>Read-only; from matched B/S record</td></tr>
+            <tr><td><strong>Buy/Sell Status</strong></td><td><span class="tag tag-red">Yes</span></td><td>Display only; from CieTrade</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-classify" class="tab-content">
+      <div class="card-grid">
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-title">Invoice</div>
+          <div class="card-desc">Standard vendor invoice &#8594; full B/S matching workflow</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--pink);">
+          <div class="card-title">Credit Memo</div>
+          <div class="card-desc">Negative gross OR "Credit Memo" text &#8594; Credit Memo Queue</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--cyan);">
+          <div class="card-title">Statement</div>
+          <div class="card-desc">Vendor statement &#8594; Statement Reconciliation workflow</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--red);">
+          <div class="card-title">Unreadable</div>
+          <div class="card-desc">Handwritten or illegible &#8594; Manual Review Queue (never discarded)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04. VENDOR MATCH -->
+  <section id="vendor-match" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">04</span> Vendor Identification</h2>
+      <p>Fuzzy/AI matching against the CieTrade counterparty master (daily SFTP sync). Target: >95% accuracy with no material false positives.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-title">Extract vendor name & address from invoice</div>
+        <div class="step-desc">AI extraction handles abbreviations, aliases, formatting differences</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-title">Fuzzy match against CieTrade Counterparty Master</div>
+        <div class="step-desc">Compare vendor name, address, aliases against synced CPID database</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-branch">
+        <div class="flow-branch-item success">
+          <div class="b-title">&#10003; High Confidence Match</div>
+          <div class="b-desc">Auto-populate: CPID, Payment Method, Payment Terms, Remit-To, Tax Code, Sage Vendor #</div>
+        </div>
+        <div class="flow-branch-item error">
+          <div class="b-title">&#10007; Low / No Confidence</div>
+          <div class="b-desc">Exception: "Vendor Not Found" &#8594; Assign to AP for manual selection or void</div>
+        </div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-title">Duplicate Check</div>
+        <div class="step-desc">Same vendor + invoice number = potential duplicate. AP must confirm or override. Invoice # must be changed if confirmed not duplicate.</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="background: rgba(79,140,255,.08); border-color: var(--accent);">
+        <div class="step-num" style="background: var(--green);">&#10003;</div>
+        <div class="step-title">Proceed to Buy/Sell Matching</div>
+        <div class="step-desc">Vendor identified, fields populated, no duplicate detected</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05. B/S MATCH -->
+  <section id="bs-match" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">05</span> Buy/Sell Matching Engine</h2>
+      <p>The most critical module. An 8-step fallback hierarchy to identify the correct Buy/Sell for each invoice line. Match rationale is always visible to users.</p>
+    </div>
+
+    <div class="arch-diagram" style="overflow-x:auto;">
+      <table class="match-table">
+        <thead><tr><th style="width:60px;">Step</th><th>Matching Criteria</th><th>Ship Date Rule</th><th style="width:120px;">On Failure</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(52,211,153,.06);"><td><span class="step-badge">0</span></td><td><strong>Direct B/S Number on Invoice</strong> &mdash; If captured, assign directly</td><td>N/A</td><td>Fall to Step 1</td></tr>
+          <tr><td><span class="step-badge">1</span></td><td><strong>Release/Reference Number + Vendor</strong></td><td>&plusmn;1 day</td><td>Fall to Step 2</td></tr>
+          <tr><td><span class="step-badge">2</span></td><td><strong>Invoice Number vs B/S Release Number + Vendor</strong></td><td>&plusmn;1 day</td><td>Fall to Step 3</td></tr>
+          <tr><td><span class="step-badge">3</span></td><td><strong>Vendor + Site Location + Ship Date + Line Amount</strong></td><td>&plusmn;1 day</td><td>Fall to Step 4</td></tr>
+          <tr><td><span class="step-badge">4</span></td><td><strong>Vendor + Site Location + Ship Date</strong></td><td>&plusmn;1 day</td><td>Fall to Step 5</td></tr>
+          <tr><td><span class="step-badge">5</span></td><td><strong>Vendor + Line Amount + Ship Date</strong></td><td>&plusmn;1 day</td><td>Fall to Step 6</td></tr>
+          <tr><td><span class="step-badge">6</span></td><td><strong>Vendor + Site Location + Line Amount</strong> <span class="tag tag-amber" style="font-size:9px;margin-left:4px;">Ship Date Exception</span></td><td>Ignored</td><td>Fall to Step 7</td></tr>
+          <tr><td><span class="step-badge">7</span></td><td><strong>Vendor + Ship Date</strong> (broadest match)</td><td>&plusmn;1 day</td><td>Fall to Step 8</td></tr>
+          <tr style="background:rgba(248,113,113,.06);"><td><span class="step-badge" style="background:rgba(248,113,113,.2);color:var(--red);">8</span></td><td><strong>No B/S Found</strong> &mdash; Apply No-Match Routing Logic</td><td>N/A</td><td><span class="tag tag-red">Exception</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="section-header"><h2 style="font-size:16px;">No-Match Routing Logic (Step 8)</h2></div>
+      <div class="flow">
+        <div class="flow-step" style="border-color:var(--red);">
+          <div class="step-title" style="margin-left:0;text-align:center;color:var(--red);">No B/S Found for Invoice</div>
+        </div>
+        <div class="flow-connector"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-item error">
+            <div class="b-title">No History for Vendor</div>
+            <div class="b-desc">&#8594; "No B/S Found" queue<br>Assign to AP (no AM possible)</div>
+          </div>
+          <div class="flow-branch-item warning">
+            <div class="b-title">Recurring B/S Exists</div>
+            <div class="b-desc">&#8594; Daily retry for 15 days<br>After 15 days &#8594; assign to AM</div>
+          </div>
+          <div class="flow-branch-item" style="border-color:var(--orange);">
+            <div class="b-title" style="color:var(--orange);">Non-Recurring B/S Exists</div>
+            <div class="b-desc">&#8594; Assign immediately to AM<br>on historical B/S for review</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06. LINE MATCH -->
+  <section id="line-match" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">06</span> Line-Level Matching</h2>
+      <p>Once a B/S is identified, each invoice line is matched to a specific B/S line using a 5-priority hierarchy.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step" style="border-left: 3px solid var(--green);">
+        <div class="step-num">1</div>
+        <div class="step-title">Total Line Amount Match</div>
+        <div class="step-desc">Positive invoice amount matches negative B/S commodity amount, and vice versa. Tolerance: &le;$0.10 configurable.</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-left: 3px solid var(--accent);">
+        <div class="step-num">2</div>
+        <div class="step-title">Unit Price Match</div>
+        <div class="step-desc">Compare unit price on invoice line to B/S line unit price</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-left: 3px solid var(--cyan);">
+        <div class="step-num">3</div>
+        <div class="step-title">Quantity / Weight Match</div>
+        <div class="step-desc">With UOM conversion as needed (lbs &#8596; short tons, etc.)</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-left: 3px solid var(--amber);">
+        <div class="step-num">4</div>
+        <div class="step-title">Expense Line Match</div>
+        <div class="step-desc">Cost column = positive, Chargeback = negative. Match freight, surcharges, US sales tax, PST as individual expense lines.</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-left: 3px solid var(--pink);">
+        <div class="step-num">5</div>
+        <div class="step-title">Combined Surcharge Match</div>
+        <div class="step-desc">Sum of surcharge/freight/tax lines compared to a single combined B/S expense line</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-color:var(--red);">
+        <div class="step-num" style="background:var(--red);">!</div>
+        <div class="step-title">Unable to Link Line &#8594; Exception</div>
+        <div class="step-desc">Assign to AP first pass, then AM if unresolved</div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="section-header"><h2 style="font-size:16px;">Key Matching Rules</h2></div>
+      <div class="card-grid">
+        <div class="card"><div class="card-title">Multi-B/S Support</div><div class="card-desc">Invoice lines may belong to different B/S records. One invoice can span 20+ buy-sells.</div></div>
+        <div class="card"><div class="card-title">Contra (Flip-to-AR)</div><div class="card-desc">B/S line type = WksDetail-SALES with non-zero total &#8594; auto-detect Contra. No tolerances allowed; must match exactly.</div></div>
+        <div class="card"><div class="card-title">Zero Amount Rules</div><div class="card-desc">B/S line with $0.00 is ignored unless invoice line is also $0.00. Unit price $0.00 = non-commodity &#8594; match to expense lines.</div></div>
+        <div class="card"><div class="card-title">Posted Line Exclusion</div><div class="card-desc">B/S lines with posting flag = 1 or AR balance = $0.00 are excluded from matching entirely.</div></div>
+        <div class="card"><div class="card-title">Adjustments</div><div class="card-desc">Line Amount = B/S Amount &plusmn; Adjustment. Adjustments on B/S must be factored into comparisons.</div></div>
+        <div class="card"><div class="card-title">GST/HST/QST</div><div class="card-desc">Header-level only. Never matched as lines. Passed to CieTrade on posting. Tax code mismatch = hard stop.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07. WORKFLOW -->
+  <section id="workflow" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">07</span> Invoice Workflow & Status Machine</h2>
+      <p>Every invoice progresses through clearly defined statuses. All transitions are logged in the immutable audit trail.</p>
+    </div>
+
+    <div class="pipeline" style="margin-bottom:32px;">
+      <div class="pipe-step done"><div class="pipe-dot">&#128229;</div><div class="pipe-label">Received</div></div>
+      <div class="pipe-step done"><div class="pipe-dot">&#9881;</div><div class="pipe-label">In Processing</div></div>
+      <div class="pipe-step done"><div class="pipe-dot">&#128101;</div><div class="pipe-label">Vendor Matched</div></div>
+      <div class="pipe-step done"><div class="pipe-dot">&#128279;</div><div class="pipe-label">In Matching</div></div>
+      <div class="pipe-step active"><div class="pipe-dot">&#9888;</div><div class="pipe-label">In Exception</div></div>
+      <div class="pipe-step"><div class="pipe-dot">&#10003;</div><div class="pipe-label">Ready for Submission</div></div>
+      <div class="pipe-step"><div class="pipe-dot">&#128640;</div><div class="pipe-label">Auto-Post Eligible</div></div>
+      <div class="pipe-step"><div class="pipe-dot">&#128230;</div><div class="pipe-label">Posted</div></div>
+      <div class="pipe-step"><div class="pipe-dot">&#128176;</div><div class="pipe-label">Paid</div></div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step" style="border-color:var(--amber);">
+        <div class="step-num" style="background:var(--amber);">1</div>
+        <div class="step-title">Ingestion &#8594; Capture & Classification</div>
+        <div class="step-desc">OCR/AI extraction + document type classification (Invoice | Credit Memo | Statement)</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-title">Vendor Match &#8594; Duplicate Check</div>
+        <div class="step-desc">Fuzzy match to CPID, auto-populate vendor fields, check for duplicate (vendor + invoice #)</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-title">Buy/Sell Matching</div>
+        <div class="step-desc">8-step B/S identification + 5-priority line matching + Contra detection</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-title">Pre-Posting Validation (15 Checks)</div>
+        <div class="step-desc">Vendor valid, all fields populated, all lines matched, no price/weight variance, B/S status = Invoiced, ship date &plusmn;1 day, tax code match, bill-to match</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-branch">
+        <div class="flow-branch-item success">
+          <div class="b-title">All Validations Pass</div>
+          <div class="b-desc"><strong>First 3 months:</strong> Ready for Submission (AP review)<br><strong>After stabilization:</strong> Auto-Post Eligible</div>
+        </div>
+        <div class="flow-branch-item error">
+          <div class="b-title">Validation Failure</div>
+          <div class="b-desc">&#8594; Exception Queue(s)<br>Multiple exceptions displayed simultaneously</div>
+        </div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-color:var(--green);">
+        <div class="step-num" style="background:var(--green);">5</div>
+        <div class="step-title">Posting to CieTrade</div>
+        <div class="step-desc">Pipe-delimited .txt file via SFTP, twice daily. Posting confirmation received for each invoice (success or failure).</div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step" style="border-color:var(--green);">
+        <div class="step-num" style="background:var(--green);">6</div>
+        <div class="step-title">Payment Status</div>
+        <div class="step-desc">Daily feed from CieTrade/Sage: Paid, Partially Paid. Payment reference number, date, batch number visible in system.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08. EXCEPTIONS -->
+  <section id="exceptions" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">08</span> Exception Management</h2>
+      <p>Structured, transparent exception framework. All exceptions are visible, assigned, tracked, and resolvable within the application.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-hard')">Hard-Stop Exceptions</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-warn')">Warning Exceptions</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-auto')">Auto-Retry Exceptions</button>
+    </div>
+
+    <div id="tab-hard" class="tab-content active">
+      <div class="exc-grid">
+        <div class="exc-item"><div class="exc-icon">&#128196;</div><div><div class="exc-title">Missing Mandatory Information</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128101;</div><div><div class="exc-title">Vendor Not Found / Unconfirmed</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128260;</div><div><div class="exc-title">Duplicate Invoice</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#9888;</div><div><div class="exc-title">Invoice Not in Balance</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128197;</div><div><div class="exc-title">Ship Date Mismatch > 1 Day</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128176;</div><div><div class="exc-title">Price Variance</div><div class="exc-assign">Assigned to: AM (B/S owner)</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#9878;</div><div><div class="exc-title">Weight / Quantity Variance</div><div class="exc-assign">Assigned to: AM (B/S owner)</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128279;</div><div><div class="exc-title">Unable to Link Line to B/S</div><div class="exc-assign">Assigned to: AP &#8594; then AM</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128683;</div><div><div class="exc-title">No B/S Found (No History)</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128270;</div><div><div class="exc-title">No B/S Found (Non-Recurring)</div><div class="exc-assign">Assigned to: AM immediately</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128178;</div><div><div class="exc-title">Tax Code Mismatch (GST/HST/QST)</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#8644;</div><div><div class="exc-title">Flip-to-AR Balance Failure</div><div class="exc-assign">Assigned to: AP</div><div class="exc-type hard">Hard Stop</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128065;</div><div><div class="exc-title">Unreadable / Poor Quality</div><div class="exc-assign">Assigned to: AP (notify vendor)</div><div class="exc-type hard">Hard Stop</div></div></div>
+      </div>
+    </div>
+
+    <div id="tab-warn" class="tab-content">
+      <div class="exc-grid">
+        <div class="exc-item"><div class="exc-icon">&#9888;</div><div><div class="exc-title">Bill To Name Mismatch</div><div class="exc-assign">Assigned to: AP (warning only)</div><div class="exc-type warn">Warning</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#9888;</div><div><div class="exc-title">Bill To Address Mismatch</div><div class="exc-assign">Assigned to: AP (warning only)</div><div class="exc-type warn">Warning</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#9888;</div><div><div class="exc-title">B/S Line Not on Invoice</div><div class="exc-assign">Assigned to: AP (does not block posting)</div><div class="exc-type warn">Warning</div></div></div>
+      </div>
+    </div>
+
+    <div id="tab-auto" class="tab-content">
+      <div class="exc-grid">
+        <div class="exc-item"><div class="exc-icon">&#128259;</div><div><div class="exc-title">No B/S Found (Recurring)</div><div class="exc-assign">Daily auto-retry for 15 days &#8594; then AM</div><div class="exc-type auto">Auto-Retry</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128259;</div><div><div class="exc-title">B/S Status = Work (Not Invoiced)</div><div class="exc-assign">Auto-retry when B/S updates to Invoiced</div><div class="exc-type auto">Auto-Retry</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128259;</div><div><div class="exc-title">B/S Status = Approved</div><div class="exc-assign">No action; self-resolves within 24 hours</div><div class="exc-type auto">Auto-Retry</div></div></div>
+        <div class="exc-item"><div class="exc-icon">&#128259;</div><div><div class="exc-title">B/S Status = Completed</div><div class="exc-assign">Route to Client Services to update in CieTrade</div><div class="exc-type auto">Escalation</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09. SPECIAL WORKFLOWS -->
+  <section id="special" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">09</span> Special Workflows</h2>
+      <p>Dedicated handling for credit memos, confidential invoices, statement reconciliation, and end-of-month create pays.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-credit')">Credit Memo</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-conf')">Confidential Invoice</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-stmt')">Statement Reconciliation</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-cp')">Create Pays</button>
+    </div>
+
+    <div id="tab-credit" class="tab-content active">
+      <div class="flow">
+        <div class="flow-step" style="border-color:var(--pink);"><div class="step-title" style="margin-left:0;">Credit Memo Detected <span class="tag tag-red" style="margin-left:8px;">Negative Gross or "Credit Memo" Text</span></div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="step-title" style="margin-left:0;">Routed to Dedicated Credit Memo Queue</div><div class="step-desc" style="margin-left:0;">Intake and archiving only. No automated matching or posting. Can assign, comment, show posting/paid details.</div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-item success"><div class="b-title">Manually Posted</div><div class="b-desc">AP marks when posted externally in CieTrade/Sage</div></div>
+          <div class="flow-branch-item error"><div class="b-title">Void</div><div class="b-desc">AP cancels the credit memo</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-conf" class="tab-content">
+      <div class="flow">
+        <div class="flow-step" style="border-color:var(--accent2);"><div class="step-title" style="margin-left:0;">Confidential Mailbox &#8594; Sensitivity Classification</div><div class="step-desc" style="margin-left:0;">Subject line contains "High" = High sensitivity; all others = Low sensitivity</div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-item" style="border-color:var(--red);"><div class="b-title" style="color:var(--red);">HIGH Sensitivity</div><div class="b-desc">Visible to Group A only</div></div>
+          <div class="flow-branch-item" style="border-color:var(--amber);"><div class="b-title" style="color:var(--amber);">LOW Sensitivity</div><div class="b-desc">Visible to Group A & Group B</div></div>
+        </div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="step-title" style="margin-left:0;">Confidential Queue</div><div class="step-desc" style="margin-left:0;">No B/S matching, no validations, no CieTrade posting. Comments & attachments supported. Retained indefinitely for audit.</div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-item success"><div class="b-title">Mark as Complete (Posted)</div></div>
+          <div class="flow-branch-item error"><div class="b-title">Void</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-stmt" class="tab-content">
+      <div class="flow">
+        <div class="flow-step" style="border-color:var(--cyan);"><div class="step-title" style="margin-left:0;">Vendor Statement Received via Email (auto-detected)</div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="step-title" style="margin-left:0;">Reconciliation Match: Vendor + Invoice # + Invoice Date</div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-item success"><div class="b-title">Match &#8594; Closed</div><div class="b-desc">Invoices on statement matched to system records</div></div>
+          <div class="flow-branch-item warning"><div class="b-title">Exception</div><div class="b-desc">Status mismatch or amount discrepancy &#8594; AP manual review</div></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--text3);">
+        <strong>Workflow States:</strong> Open &#8594; In Progress &#8594; On Hold &#8594; Closed &#8594; Void &#8594; System Processing
+      </div>
+    </div>
+
+    <div id="tab-cp" class="tab-content">
+      <div class="flow">
+        <div class="flow-step" style="border-color:var(--green);"><div class="step-title" style="margin-left:0;">End-of-Month Create Pays</div><div class="step-desc" style="margin-left:0;">Invoices created by Northstar at month end. Quick bulk upload capability during close.</div></div>
+        <div class="flow-connector"></div>
+        <div class="flow-branch">
+          <div class="flow-branch-item"><div class="b-title">Net Positive</div><div class="b-desc">AP &#8594; NSR submits payment to vendor (vendor won't send invoice)</div></div>
+          <div class="flow-branch-item"><div class="b-title">Net Negative</div><div class="b-desc">AR &#8594; Vendor pays NSR</div></div>
+        </div>
+        <div class="flow-connector"></div>
+        <div class="flow-step"><div class="step-title" style="margin-left:0;">Follows Standard AP Workflow Once Uploaded</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. INTEGRATION -->
+  <section id="integration" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">10</span> CieTrade Integration</h2>
+      <p>Bi-directional SFTP data flows. Pipe-delimited .txt format. All integrations must be monitorable and recoverable.</p>
+    </div>
+
+    <div class="integ-flow" style="margin-bottom:24px;">
+      <div class="integ-system">
+        <div class="sys-name" style="color:var(--green);">CieTrade</div>
+        <div class="sys-desc">ERP / Trade Platform</div>
+      </div>
+      <div class="integ-arrows">
+        <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Counterparty Master</span><span class="arr-freq">Daily</span></div>
+        <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Buy/Sell Header & Lines</span><span class="arr-freq">Daily</span></div>
+        <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Tax Code Master</span><span class="arr-freq">Daily</span></div>
+        <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Payment Terms Master</span><span class="arr-freq">One-time</span></div>
+        <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Payment Information</span><span class="arr-freq">Daily</span></div>
+        <div class="integ-arrow" style="background:rgba(79,140,255,.1);"><span class="arr-dir">&#8592;</span><span class="arr-label"><strong>Invoice Posting File</strong></span><span class="arr-freq">2x Daily</span></div>
+        <div class="integ-arrow" style="background:rgba(52,211,153,.1);"><span class="arr-dir">&#8594;</span><span class="arr-label">Posting Confirmation</span><span class="arr-freq">2x Daily</span></div>
+      </div>
+      <div class="integ-system">
+        <div class="sys-name" style="color:var(--accent);">NSR AP Platform</div>
+        <div class="sys-desc">New Automation Solution</div>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card" style="border-left:3px solid var(--pink);">
+        <div class="card-title">SSO / Authentication</div>
+        <div class="card-desc">SAML 2.0 with Microsoft 365 / Azure AD. All authentication flows through SSO. No separate credentials.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--amber);">
+        <div class="card-title">M365 Email</div>
+        <div class="card-desc">Microsoft Graph API for mailbox monitoring. Emails remain Unread. Multiple mailboxes (AP + Confidential).</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--green);">
+        <div class="card-title">ERP Abstraction Layer</div>
+        <div class="card-desc">ERP-agnostic posting interface. Works with Sage MAS 500 now, swappable to NetSuite or Sage Intacct without rework.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--cyan);">
+        <div class="card-title">Integration Monitor</div>
+        <div class="card-desc">Real-time health dashboard. Automated alerts on failure. Failed files recoverable without data loss. Re-trigger capability.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. ROLES -->
+  <section id="roles" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">11</span> User Roles & Permissions</h2>
+      <p>Role-based access control enforced at document, queue, and field level. Collaboration framework with in-app comments.</p>
+    </div>
+
+    <div class="role-grid">
+      <div class="role-card" style="border-top:3px solid var(--accent);">
+        <div class="role-icon">&#128187;</div>
+        <div class="role-name">AP Processor</div>
+        <div class="role-perms">
+          <li>Full: view, edit header & line</li>
+          <li>Attachments, manual match</li>
+          <li>Reassign, validate, void</li>
+          <li>Create invoices manually</li>
+          <li>All standard + AP exception queues</li>
+          <li>Monitor visibility to AM/CS queues</li>
+        </div>
+      </div>
+      <div class="role-card" style="border-top:3px solid var(--green);">
+        <div class="role-icon">&#128100;</div>
+        <div class="role-name">Account Manager</div>
+        <div class="role-perms">
+          <li>View invoice detail + B/S lines</li>
+          <li>Update B/S # on line</li>
+          <li>Manual B/S line match</li>
+          <li>Add comments</li>
+          <li>Assign to AM or back to AP</li>
+          <li>Cannot edit header or line fields</li>
+        </div>
+      </div>
+      <div class="role-card" style="border-top:3px solid var(--accent2);">
+        <div class="role-icon">&#128081;</div>
+        <div class="role-name">AP / AM Manager</div>
+        <div class="role-perms">
+          <li>All AP Processor capabilities</li>
+          <li>Reassign between AP and AM</li>
+          <li>Access to all queues</li>
+          <li>Full reporting & dashboards</li>
+        </div>
+      </div>
+      <div class="role-card" style="border-top:3px solid var(--red);">
+        <div class="role-icon">&#128274;</div>
+        <div class="role-name">Confidential Group A</div>
+        <div class="role-perms">
+          <li>All confidential invoices</li>
+          <li>Including High-sensitivity</li>
+          <li>No access to standard B/S queue</li>
+        </div>
+      </div>
+      <div class="role-card" style="border-top:3px solid var(--amber);">
+        <div class="role-icon">&#128275;</div>
+        <div class="role-name">Confidential Group B</div>
+        <div class="role-perms">
+          <li>Confidential invoices</li>
+          <li>Excluding High-sensitivity</li>
+          <li>No access to standard B/S queue</li>
+        </div>
+      </div>
+      <div class="role-card" style="border-top:3px solid var(--cyan);">
+        <div class="role-icon">&#128272;</div>
+        <div class="role-name">All-Access Admin</div>
+        <div class="role-perms">
+          <li>Full visibility: all docs & queues</li>
+          <li>Finance management</li>
+          <li>System administrators</li>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="section-header"><h2 style="font-size:16px;">Collaboration Features</h2></div>
+      <div class="card-grid">
+        <div class="card"><div class="card-title">In-App Comments</div><div class="card-desc">Any user can comment on invoice header or individual lines, tagging other users</div></div>
+        <div class="card"><div class="card-title">Email Notifications</div><div class="card-desc">Configurable: real-time or daily digest. Tagged users notified on assignments and collaborations.</div></div>
+        <div class="card"><div class="card-title">On Hold Status</div><div class="card-desc">Invoices can be placed On Hold during collaboration to prevent concurrent actions</div></div>
+        <div class="card"><div class="card-title">Searchable Comments</div><div class="card-desc">All comments searchable via global search. Stored in audit trail.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. REPORTS -->
+  <section id="reports" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">12</span> Reports & Dashboards</h2>
+      <p>Comprehensive reporting suite with priority-tiered delivery. All reports sortable and exportable.</p>
+    </div>
+
+    <div class="report-list">
+      <div class="report-item"><span class="rp-pri p1">P1</span><div><div class="rp-name">Over-10-Day Report</div><div class="rp-desc">Invoices >10 days without reaching Posted status</div></div></div>
+      <div class="report-item"><span class="rp-pri p1">P1</span><div><div class="rp-name">Invoice Status Summary</div><div class="rp-desc">Count + value by workflow stage (real-time)</div></div></div>
+      <div class="report-item"><span class="rp-pri p1">P1</span><div><div class="rp-name">Exception / Error Report</div><div class="rp-desc">All current exceptions by type, vendor, AM, age</div></div></div>
+      <div class="report-item"><span class="rp-pri p1">P1</span><div><div class="rp-name">Aging Report (AP)</div><div class="rp-desc">Outstanding by due date: 0-30, 31-60, 61-90, 90+</div></div></div>
+      <div class="report-item"><span class="rp-pri p1">P1</span><div><div class="rp-name">Missing Invoice Report</div><div class="rp-desc">Expected but not received, sorted by age & dollar</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">Cycle Time Analysis</div><div class="rp-desc">Avg receipt-to-posting by vendor, exception, user</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">Vendor Exception Trends</div><div class="rp-desc">Which vendors generate exceptions and what type</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">Vendor Summary</div><div class="rp-desc">Total spend, invoice count, avg time, exception rate</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">Cash Forecast</div><div class="rp-desc">AP due in 7/14/30/60 days by vendor</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">AP KPI Dashboard</div><div class="rp-desc">Touchless %, approval time, on-time %, exceptions</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">Duplicate Payment Alert</div><div class="rp-desc">Real-time or daily alert for potential duplicates</div></div></div>
+      <div class="report-item"><span class="rp-pri p2">P2</span><div><div class="rp-name">User Activity / Audit</div><div class="rp-desc">Time per user per invoice, actions, productivity</div></div></div>
+      <div class="report-item"><span class="rp-pri p3">P3</span><div><div class="rp-name">Service-to-Receipt Lag</div><div class="rp-desc">Avg time between ship date and invoice receipt</div></div></div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="card-grid">
+        <div class="card" style="border-left:3px solid var(--accent2);">
+          <div class="card-title">Audit Trail</div>
+          <div class="card-desc">Every action on every document logged: user, action, timestamp, before/after values. Immutable, retained 7+ years. Queryable by document, user, date range. Time-on-task tracking per user per document.</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent);">
+          <div class="card-title">Queue Management</div>
+          <div class="card-desc">Dedicated queue per exception type. Ad-hoc queues by managers. Queue counts + aging on dashboard. Invoices can appear in multiple queues simultaneously.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. SUCCESS -->
+  <section id="success" class="section">
+    <div class="section-header">
+      <h2><span class="section-num">13</span> Success Criteria & KPIs</h2>
+      <p>Measurable outcomes that define project success within 12 months of go-live.</p>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-value" style="color:var(--green);">>95%</div><div class="kpi-label">Vendor Match Accuracy</div></div>
+      <div class="kpi-card"><div class="kpi-value" style="color:var(--accent);">0</div><div class="kpi-label">False Positive Posts</div></div>
+      <div class="kpi-card"><div class="kpi-value" style="color:var(--amber);">7yr</div><div class="kpi-label">Audit Retention</div></div>
+      <div class="kpi-card"><div class="kpi-value" style="color:var(--cyan);">99.5%</div><div class="kpi-label">Uptime Target</div></div>
+    </div>
+
+    <div class="arch-diagram" style="overflow-x:auto;">
+      <table class="match-table">
+        <thead><tr><th>Outcome Area</th><th>Definition of Success</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Touchless Invoice Rate</strong></td><td>Significant majority processed end-to-end without manual intervention within 12 months</td></tr>
+          <tr><td><strong>Exception Cycle Time</strong></td><td>Measurably reduced vs. current manual baseline</td></tr>
+          <tr><td><strong>Over-10-Day Elimination</strong></td><td>Material reduction in invoices >10 days without reaching Posted status</td></tr>
+          <tr><td><strong>B/S Match Accuracy</strong></td><td>High precision; false matches result in exceptions, never incorrect posts</td></tr>
+          <tr><td><strong>AP Staff Productivity</strong></td><td>Substantial reduction in manual data entry and routing time</td></tr>
+          <tr><td><strong>Audit & Compliance</strong></td><td>Full, immutable audit trail available for any invoice with no gaps</td></tr>
+          <tr><td><strong>Stack Simplification</strong></td><td>Replaces Docstar + eliminates spreadsheet-based matching workflow</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:32px;">
+      <div class="section-header"><h2 style="font-size:16px;">Non-Functional Requirements</h2></div>
+      <div class="card-grid">
+        <div class="card"><div class="card-title">Security</div><div class="card-desc">TLS 1.2+ in transit, encrypted at rest, RBAC at document/queue/field level, SOC 2 Type II, pen testing before go-live</div></div>
+        <div class="card"><div class="card-title">Compliance</div><div class="card-desc">GDPR, CCPA, PIPEDA as applicable. Tamper-evident audit logs. Data exportable on contract termination.</div></div>
+        <div class="card"><div class="card-title">Scalability</div><div class="card-desc">Handle full invoice volume. Scale to 2x growth without architectural changes.</div></div>
+        <div class="card"><div class="card-title">Reliability</div><div class="card-desc">99.5%+ uptime. Integration failure alerts. Failed files recoverable. No data loss.</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;">
+      <div class="section-header"><h2 style="font-size:16px;">Implementation Phasing</h2></div>
+      <div class="pipeline">
+        <div class="pipe-step done"><div class="pipe-dot">&#128203;</div><div class="pipe-label">Discovery & Design</div></div>
+        <div class="pipe-step done"><div class="pipe-dot">&#9881;</div><div class="pipe-label">Build Phase 1 (AP)</div></div>
+        <div class="pipe-step active"><div class="pipe-dot">&#128270;</div><div class="pipe-label">UAT (NSR staff)</div></div>
+        <div class="pipe-step"><div class="pipe-dot">&#128640;</div><div class="pipe-label">Go-Live (AP)</div></div>
+        <div class="pipe-step"><div class="pipe-dot">&#128170;</div><div class="pipe-label">Hypercare (3 mo)</div></div>
+        <div class="pipe-step"><div class="pipe-dot">&#128161;</div><div class="pipe-label">Stabilization</div></div>
+        <div class="pipe-step"><div class="pipe-dot">&#128230;</div><div class="pipe-label">Phase 2 (AR)</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-top:12px;">
+        <strong>First 3 months post go-live:</strong> All invoices stop at "Ready for Submission" for AP review before enabling full auto-post.
+      </div>
+    </div>
+  </section>
+
+  <div style="text-align:center;padding:48px 0;color:var(--text3);font-size:12px;">
+    NorthStar Recycling &mdash; AP Automation Solution Workflow &mdash; Prepared by TechJays &mdash; April 2026<br>
+    <span style="color:var(--text3);font-size:10px;">Confidential & Proprietary</span>
+  </div>
+
+</main>
+
+<script>
+  // Tab switching
+  function switchTab(e, tabId) {
+    const container = e.target.closest('.section') || e.target.closest('.tab-content')?.parentElement;
+    const section = e.target.closest('.section');
+    section.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    section.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+    section.querySelector('#' + tabId).classList.add('active');
+  }
+
+  // Active nav on scroll
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navItems.forEach(n => {
+      n.classList.remove('active');
+      if (n.getAttribute('href') === '#' + current) n.classList.add('active');
+    });
+  });
+
+  // Smooth scroll
+  navItems.forEach(n => {
+    n.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(n.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelector('.side-nav').classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>
