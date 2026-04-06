@@ -448,116 +448,87 @@
 
   <!-- CURRENT WORKFLOW -->
   <section id="current-workflow" class="section visible">
-    <div class="section-header">
+    <div class="section-header" style="margin-bottom:16px;">
       <h2><span class="icon" style="color:var(--red);">&#9888;</span> Current Workflow <span class="tag tag-red" style="font-size:11px;vertical-align:middle;margin-left:8px;">As-Is State</span></h2>
       <p>The existing AP invoice processing flow — tool by tool, from invoice arrival to payment.</p>
     </div>
 
-    <div class="arch-diagram" style="padding:32px 24px;">
-      <div class="tf-container">
+    <div class="arch-diagram" style="padding:20px;">
 
-        <!-- 1. Microsoft 365 -->
-        <div class="tf-row">
-          <div class="tf-card blue" style="max-width:420px;">
-            <div class="tf-icon">&#9993;</div>
-            <div class="tf-name">Microsoft 365 (Outlook)</div>
-            <div class="tf-tool">Email Platform</div>
-            <div class="tf-desc">Invoices arrive as email attachments to configured AP and Confidential mailboxes. AP staff manually monitor, open, and download each PDF attachment.</div>
-          </div>
+      <!-- ROW 1: M365 → HighRadius → Docstar/Eclipse -->
+      <div style="display:flex;align-items:stretch;gap:0;justify-content:center;margin-bottom:12px;">
+        <div style="flex:1;max-width:260px;background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:2px;">&#9993; Microsoft 365</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);background:rgba(37,99,235,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Email Platform</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">Invoices arrive as email attachments to AP and Confidential mailboxes. AP staff manually download each PDF.</div>
         </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 2. HighRadius -->
-        <div class="tf-row">
-          <div class="tf-card purple" style="max-width:420px;">
-            <div class="tf-icon">&#128279;</div>
-            <div class="tf-name">HighRadius</div>
-            <div class="tf-tool">Invoice Processing Platform</div>
-            <div class="tf-desc">Connected to CieTrade and M365 email. Handles mass email ingestion and forwards invoices for processing. Currently the primary AP/AR automation tool being replaced.</div>
-          </div>
+        <div style="display:flex;align-items:center;padding:0 8px;color:var(--text3);font-size:18px;">&#8594;</div>
+        <div style="flex:1;max-width:260px;background:var(--surface);border:2px solid var(--accent2);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--accent2);margin-bottom:2px;">&#128279; HighRadius</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--accent2);background:rgba(124,58,237,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Invoice Processing</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">Connected to CieTrade &amp; M365. Handles mass email ingestion and forwards invoices for processing.</div>
         </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 3. Docstar / Eclipse -->
-        <div class="tf-row">
-          <div class="tf-card cyan" style="max-width:420px;">
-            <div class="tf-icon">&#128451;</div>
-            <div class="tf-name">Docstar / Eclipse</div>
-            <div class="tf-tool">Document Management System</div>
-            <div class="tf-desc">Invoices and supporting documents (CODs, BOLs, weight tickets) are manually uploaded and stored here. AP coordinator assigns each invoice for review.</div>
-          </div>
+        <div style="display:flex;align-items:center;padding:0 8px;color:var(--text3);font-size:18px;">&#8594;</div>
+        <div style="flex:1;max-width:260px;background:var(--surface);border:2px solid var(--cyan);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:2px;">&#128451; Docstar / Eclipse</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--cyan);background:rgba(8,145,178,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Document Management</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">Invoices &amp; supporting docs (CODs, BOLs, weight tickets) manually uploaded and stored. Assigned to AP coordinator.</div>
         </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 4. Excel Spreadsheets (Vendor Match) -->
-        <div class="tf-row" style="align-items:flex-start;">
-          <div class="tf-card red" style="max-width:420px;">
-            <div class="tf-icon">&#128202;</div>
-            <div class="tf-name">Excel Spreadsheets</div>
-            <div class="tf-tool">Manual Matching &amp; Exception Tracking</div>
-            <div class="tf-desc">AP staff manually extract invoice data and match vendor names to CieTrade counterparty records. Buy/Sell matching is done by searching through hundreds of B/S records in spreadsheets using vendor, date, amount, and weight. Exceptions tracked in ad-hoc notes.</div>
-          </div>
-          <div style="display:flex;align-items:center;font-size:20px;color:var(--text3);padding-top:40px;">&#8592;</div>
-          <div class="tf-card green" style="max-width:320px;">
-            <div class="tf-icon">&#127793;</div>
-            <div class="tf-name">CieTrade</div>
-            <div class="tf-tool">ERP / Trade Platform</div>
-            <div class="tf-desc">Central source of truth for vendor master (CPID), Buy/Sell records, payment terms, and tax codes. AP staff manually look up B/S data here. Account Managers create and manage buy-sells in this system.</div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 5. Back to CieTrade for posting -->
-        <div class="tf-row">
-          <div class="tf-card green" style="max-width:420px;">
-            <div class="tf-icon">&#127793;</div>
-            <div class="tf-name">CieTrade</div>
-            <div class="tf-tool">Invoice Posting</div>
-            <div class="tf-desc">Once invoice is matched and validated, AP manually posts the approved invoice back into CieTrade against the linked Buy/Sell records. Each invoice submitted individually — no auto-posting.</div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 6. Sage MAS 500 -->
-        <div class="tf-row">
-          <div class="tf-card green" style="max-width:420px;">
-            <div class="tf-icon">&#128210;</div>
-            <div class="tf-name">Sage MAS 500</div>
-            <div class="tf-tool">Accounting / ERP</div>
-            <div class="tf-desc">Receives posted invoice data from CieTrade. Creates voucher numbers for each posted invoice. Generates payment batches and sends them to the bank for execution.</div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 7. JPMC -->
-        <div class="tf-row">
-          <div class="tf-card pink" style="max-width:420px;">
-            <div class="tf-icon">&#127974;</div>
-            <div class="tf-name">JPMorgan Chase (JPMC)</div>
-            <div class="tf-tool">Banking / Payment Execution</div>
-            <div class="tf-desc">Executes payments via checks, ACH, or wire transfer. Payment confirmation with batch numbers and dates flows back to Sage, which updates CieTrade. Invoice is marked as Paid.</div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <!-- 8. Back to Sage/CieTrade -->
-        <div class="tf-row">
-          <div class="tf-card green" style="max-width:420px; border-style:dashed;">
-            <div class="tf-icon">&#128176;</div>
-            <div class="tf-name">Sage MAS 500 &rarr; CieTrade</div>
-            <div class="tf-tool">Payment Confirmation Loop</div>
-            <div class="tf-desc">JPMC payment info (batch number, date, reference) flows back to Sage, then updates CieTrade. The invoice lifecycle is closed — status changes to Paid or Partially Paid.</div>
-          </div>
-        </div>
-
       </div>
+
+      <!-- Arrow down -->
+      <div style="text-align:center;color:var(--text3);font-size:18px;margin:4px 0;">&#8595;</div>
+
+      <!-- ROW 2: Excel ← CieTrade (side by side, matching step) -->
+      <div style="display:flex;align-items:stretch;gap:0;justify-content:center;margin-bottom:12px;">
+        <div style="flex:1;max-width:400px;background:var(--surface);border:2px solid var(--red);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:2px;">&#128202; Excel Spreadsheets</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--red);background:rgba(220,38,38,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Manual Matching &amp; Exceptions</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">AP staff manually extract invoice data, match vendor names, and search through hundreds of B/S records by vendor, date, amount, and weight. Exceptions tracked in ad-hoc notes.</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;color:var(--text3);font-size:14px;">&#8592; B/S data</div>
+        <div style="flex:1;max-width:400px;background:var(--surface);border:2px solid var(--green);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:2px;">&#127793; CieTrade</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);background:rgba(5,150,105,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">ERP / Trade Platform</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">Source of truth for vendor master (CPID), Buy/Sell records, payment terms, and tax codes. AMs create and manage buy-sells here. AP looks up B/S data manually.</div>
+        </div>
+      </div>
+
+      <!-- Arrow down -->
+      <div style="text-align:center;color:var(--text3);font-size:18px;margin:4px 0;">&#8595; <span style="font-size:10px;vertical-align:middle;">matched &amp; validated</span></div>
+
+      <!-- ROW 3: CieTrade (posting) → Sage → JPMC -->
+      <div style="display:flex;align-items:stretch;gap:0;justify-content:center;margin-bottom:12px;">
+        <div style="flex:1;max-width:260px;background:var(--surface);border:2px solid var(--green);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:2px;">&#127793; CieTrade</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);background:rgba(5,150,105,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Invoice Posting</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">AP manually posts approved invoices back into CieTrade against linked B/S records. Each invoice submitted individually.</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;color:var(--text3);font-size:18px;">&#8594;</div>
+        <div style="flex:1;max-width:260px;background:var(--surface);border:2px solid var(--green);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:2px;">&#128210; Sage MAS 500</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);background:rgba(5,150,105,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Accounting / ERP</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">Receives posted data from CieTrade. Creates voucher numbers. Generates payment batches for the bank.</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;color:var(--text3);font-size:18px;">&#8594;</div>
+        <div style="flex:1;max-width:260px;background:var(--surface);border:2px solid var(--pink);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:14px;font-weight:700;color:var(--pink);margin-bottom:2px;">&#127974; JPMC Banking</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--pink);background:rgba(219,39,119,.08);padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px;">Payment Execution</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.4;">Executes payments (checks, ACH, wire). Payment confirmation with batch numbers flows back to Sage.</div>
+        </div>
+      </div>
+
+      <!-- Arrow down with loop back -->
+      <div style="text-align:center;color:var(--text3);font-size:18px;margin:4px 0;">&#8595;</div>
+
+      <!-- ROW 4: Payment confirmation loop -->
+      <div style="display:flex;justify-content:center;">
+        <div style="max-width:500px;background:var(--surface);border:2px dashed var(--green);border-radius:10px;padding:10px 16px;text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:2px;">&#128176; Payment Confirmation &mdash; JPMC &#8594; Sage &#8594; CieTrade</div>
+          <div style="font-size:11px;color:var(--text2);">Batch number, date, and reference flow back through the chain. Invoice lifecycle closed &mdash; status: Paid or Partially Paid.</div>
+        </div>
+      </div>
+
     </div>
   </section>
 
