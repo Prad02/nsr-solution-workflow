@@ -449,289 +449,110 @@
   <section id="current-workflow" class="section">
     <div class="section-header">
       <h2><span class="icon" style="color:var(--red);">&#9888;</span> Current Workflow <span class="tag tag-red" style="font-size:11px;vertical-align:middle;margin-left:8px;">As-Is State</span></h2>
-      <p>How NorthStar Recycling's AP invoice processing works today — a largely manual, spreadsheet-driven process spanning 8 disconnected systems.</p>
-    </div>
-
-    <!-- Current Systems Overview -->
-    <div style="margin-bottom:24px;">
-      <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Systems Currently In Use</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        <span class="sys-badge" style="background:rgba(37,99,235,.06);color:var(--accent);border-color:rgba(37,99,235,.2);">Microsoft 365 / Outlook</span>
-        <span class="sys-badge" style="background:rgba(217,119,6,.06);color:var(--amber);border-color:rgba(217,119,6,.2);">Vendor Portals (WM, WC, GFL)</span>
-        <span class="sys-badge" style="background:rgba(124,58,237,.06);color:var(--accent2);border-color:rgba(124,58,237,.2);">HighRadius</span>
-        <span class="sys-badge" style="background:rgba(8,145,178,.06);color:var(--cyan);border-color:rgba(8,145,178,.2);">Docstar / Eclipse</span>
-        <span class="sys-badge" style="background:rgba(220,38,38,.06);color:var(--red);border-color:rgba(220,38,38,.2);">Excel Spreadsheets</span>
-        <span class="sys-badge" style="background:rgba(5,150,105,.06);color:var(--green);border-color:rgba(5,150,105,.2);">CieTrade (ERP)</span>
-        <span class="sys-badge" style="background:rgba(5,150,105,.06);color:var(--green);border-color:rgba(5,150,105,.2);">Sage MAS 500</span>
-        <span class="sys-badge" style="background:rgba(219,39,119,.06);color:var(--pink);border-color:rgba(219,39,119,.2);">JPMC Banking</span>
-      </div>
+      <p>The existing AP invoice processing flow — tool by tool, from invoice arrival to payment.</p>
     </div>
 
     <div class="arch-diagram" style="padding:32px 24px;">
       <div class="tf-container">
 
-        <!-- PHASE 1: INVOICE ARRIVAL -->
-        <div class="tf-phase-label" style="border-top:none;">Phase 1 &mdash; Invoice Arrival</div>
-
+        <!-- 1. Microsoft 365 -->
         <div class="tf-row">
-          <div class="tf-card amber">
+          <div class="tf-card blue" style="max-width:420px;">
             <div class="tf-icon">&#9993;</div>
-            <div class="tf-name">Email Inbox</div>
-            <div class="tf-tool">Microsoft 365 / Outlook</div>
-            <div class="tf-desc">~80% of invoices arrive via email. AP staff manually monitor inbox, open emails, download PDF attachments one by one.</div>
-          </div>
-          <div class="tf-card amber">
-            <div class="tf-icon">&#127760;</div>
-            <div class="tf-name">Vendor Portal Login</div>
-            <div class="tf-tool">WM / Waste Connections / GFL</div>
-            <div class="tf-desc">~20% of invoices. AP staff manually log into 3 portals with multiple accounts, search for new invoices, download PDFs.</div>
-            <div class="pain-point">Weekly/monthly manual login per portal</div>
-          </div>
-          <div class="tf-card" style="border-color:var(--text3);">
-            <div class="tf-icon">&#128236;</div>
-            <div class="tf-name">Physical Mail</div>
-            <div class="tf-tool">Paper Invoices</div>
-            <div class="tf-desc">Small volume of paper invoices arrive by mail. Must be scanned and uploaded manually.</div>
-          </div>
-        </div>
-
-        <!-- PHASE 2: DOCUMENT INTAKE -->
-        <div class="tf-phase-label">Phase 2 &mdash; Manual Document Intake</div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <div class="tf-row">
-          <div class="tf-card blue">
-            <div class="tf-icon">&#128100;</div>
-            <div class="tf-name">AP Staff Manual Download</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span></div>
-            <div class="tf-desc">AP staff extract attachments from emails, download from portals, sort invoices by vendor. Each attachment handled individually.</div>
-            <div class="pain-point">Tedious, error-prone, time-consuming</div>
+            <div class="tf-name">Microsoft 365 (Outlook)</div>
+            <div class="tf-tool">Email Platform</div>
+            <div class="tf-desc">Invoices arrive as email attachments to configured AP and Confidential mailboxes. AP staff manually monitor, open, and download each PDF attachment.</div>
           </div>
         </div>
 
         <div class="tf-arrow">&#8595;</div>
 
+        <!-- 2. HighRadius -->
         <div class="tf-row">
-          <div class="tf-card cyan">
-            <div class="tf-icon">&#128451;</div>
-            <div class="tf-name">Upload to Docstar / Eclipse</div>
-            <div class="tf-tool">Document Management System</div>
-            <div class="tf-desc">Invoices manually uploaded to virtual document storage. Supporting docs (CODs, BOLs, weight tickets) attached manually if provided. Assigned to AP coordinator.</div>
-          </div>
-          <div style="display:flex;align-items:center;color:var(--text3);font-size:11px;padding-top:20px;">also connected to</div>
-          <div class="tf-card purple">
+          <div class="tf-card purple" style="max-width:420px;">
             <div class="tf-icon">&#128279;</div>
             <div class="tf-name">HighRadius</div>
-            <div class="tf-tool">Invoice Processing (via CieTrade)</div>
-            <div class="tf-desc">Currently integrated with CieTrade. Acts as connection between mass email ingestion and invoice processing. Being replaced by new system.</div>
+            <div class="tf-tool">Invoice Processing Platform</div>
+            <div class="tf-desc">Connected to CieTrade and M365 email. Handles mass email ingestion and forwards invoices for processing. Currently the primary AP/AR automation tool being replaced.</div>
           </div>
         </div>
 
-        <!-- PHASE 3: DATA EXTRACTION -->
-        <div class="tf-phase-label">Phase 3 &mdash; Manual Data Extraction</div>
-
         <div class="tf-arrow">&#8595;</div>
 
+        <!-- 3. Docstar / Eclipse -->
         <div class="tf-row">
-          <div class="tf-card red" style="max-width:400px;">
-            <div class="tf-icon">&#9997;</div>
-            <div class="tf-name">Manual Data Entry / OCR Review</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> AP Coordinator</div>
-            <div class="tf-desc">AP coordinator manually reads invoice and extracts fields: invoice number, date, vendor name, line items, quantities, unit prices, totals, freight, surcharges, tax. Limited OCR exists but requires heavy manual review.</div>
-            <div class="pain-point">No AI extraction; manual data entry for every invoice</div>
+          <div class="tf-card cyan" style="max-width:420px;">
+            <div class="tf-icon">&#128451;</div>
+            <div class="tf-name">Docstar / Eclipse</div>
+            <div class="tf-tool">Document Management System</div>
+            <div class="tf-desc">Invoices and supporting documents (CODs, BOLs, weight tickets) are manually uploaded and stored here. AP coordinator assigns each invoice for review.</div>
           </div>
         </div>
 
-        <!-- PHASE 4: VENDOR ID -->
-        <div class="tf-phase-label">Phase 4 &mdash; Vendor Identification</div>
-
         <div class="tf-arrow">&#8595;</div>
 
+        <!-- 4. Excel Spreadsheets (Vendor Match) -->
         <div class="tf-row" style="align-items:flex-start;">
-          <div class="tf-card red" style="max-width:320px;">
-            <div class="tf-icon">&#128101;</div>
-            <div class="tf-name">Manual Vendor Matching</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> Institutional Knowledge</div>
-            <div class="tf-desc">AP staff manually match vendor name on invoice to CieTrade counterparty master. Vendors use different names, abbreviations, and aliases. Requires institutional knowledge to map correctly.</div>
-            <div class="pain-point">No fuzzy matching; relies on AP staff memory</div>
-          </div>
-          <div style="display:flex;align-items:center;font-size:20px;color:var(--text3);padding-top:40px;">&#8592;</div>
-          <div class="tf-card green" style="max-width:260px;">
-            <div class="tf-icon">&#127793;</div>
-            <div class="tf-name">CieTrade Vendor Master</div>
-            <div class="tf-tool">CPID Lookup</div>
-            <div class="tf-desc">Counterparty master with CPID, payment method, terms, remit-to. Looked up manually — no automated sync or fuzzy match.</div>
-          </div>
-        </div>
-
-        <!-- PHASE 5: BUY/SELL MATCHING -->
-        <div class="tf-phase-label">Phase 5 &mdash; Buy/Sell Matching <span style="color:var(--red);">(Critical Bottleneck)</span></div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <div class="tf-row" style="align-items:flex-start;">
-          <div class="tf-card red" style="max-width:360px; border-width:3px;">
-            <div class="tf-icon">&#128270;</div>
-            <div class="tf-name">Manual B/S Lookup in Spreadsheets</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> Excel + Institutional Knowledge</div>
-            <div class="tf-desc">AP staff search through hundreds of buy-sell records in Excel spreadsheets. Try to match by vendor, date, amount, weight, reference number. No unique identifier linking invoice to buy-sell. One invoice can reference 20+ different buy-sells.</div>
-            <div class="pain-point">50% of invoices arrive BEFORE buy-sell exists</div>
-            <div class="pain-point">No unique B/S identifier on invoices</div>
-            <div class="pain-point">Manual search through hundreds of records</div>
-          </div>
-          <div style="display:flex;align-items:center;font-size:20px;color:var(--text3);padding-top:40px;">&#8592;</div>
-          <div class="tf-card green" style="max-width:260px;">
+          <div class="tf-card red" style="max-width:420px;">
             <div class="tf-icon">&#128202;</div>
-            <div class="tf-name">CieTrade B/S Records</div>
-            <div class="tf-tool">Buy/Sell Data</div>
-            <div class="tf-desc">Buy-sell header and lines looked up manually. Data is not live-synced — stale snapshots used. B/S created by AMs on different schedules.</div>
+            <div class="tf-name">Excel Spreadsheets</div>
+            <div class="tf-tool">Manual Matching &amp; Exception Tracking</div>
+            <div class="tf-desc">AP staff manually extract invoice data and match vendor names to CieTrade counterparty records. Buy/Sell matching is done by searching through hundreds of B/S records in spreadsheets using vendor, date, amount, and weight. Exceptions tracked in ad-hoc notes.</div>
           </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-        <div class="tf-arrow-label">Match found or not?</div>
-
-        <div class="tf-branch">
-          <div class="tf-branch-arrow">
-            <div style="color:var(--green);font-size:13px;font-weight:700;">&#10003; MATCH FOUND</div>
-            <div style="font-size:18px;color:var(--green);">&#8595;</div>
-            <div class="tf-card blue" style="min-width:220px;">
-              <div class="tf-icon">&#128295;</div>
-              <div class="tf-name">Manual Line Matching</div>
-              <div class="tf-tool"><span class="manual-tag">Manual</span></div>
-              <div class="tf-desc">AP manually matches each invoice line to a B/S line — comparing prices, weights, amounts. UOM conversions done by hand.</div>
-            </div>
-          </div>
-          <div class="tf-branch-arrow">
-            <div style="color:var(--red);font-size:13px;font-weight:700;">&#10007; NO MATCH</div>
-            <div style="font-size:18px;color:var(--red);">&#8595;</div>
-            <div class="tf-card amber" style="min-width:220px;">
-              <div class="tf-icon">&#128100;</div>
-              <div class="tf-name">Reassign to Account Manager</div>
-              <div class="tf-tool"><span class="manual-tag">Manual</span> Email Back-and-Forth</div>
-              <div class="tf-desc">AP emails AM asking them to create missing buy-sell or identify the correct one in CieTrade. AM responds via email. Multiple rounds of back-and-forth common.</div>
-              <div class="pain-point">Days-long email chains for resolution</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-        <div style="text-align:center;"><span class="tf-merge-label">AM resolves &#8594; sends back to AP &#8594; AP re-matches</span></div>
-
-        <!-- PHASE 6: VALIDATION -->
-        <div class="tf-phase-label">Phase 6 &mdash; Manual Validation &amp; Exceptions</div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <div class="tf-row">
-          <div class="tf-card blue" style="max-width:340px;">
-            <div class="tf-icon">&#9989;</div>
-            <div class="tf-name">Manual Validation Check</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> AP Review</div>
-            <div class="tf-desc">AP manually checks: all lines matched? Totals balanced? Ship dates correct? Prices match? Weight/quantity reasonable? Any duplicate invoice?</div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <div class="tf-row">
-          <div class="tf-card red" style="max-width:340px;">
-            <div class="tf-icon">&#9888;</div>
-            <div class="tf-name">Exception Handling</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> Spreadsheets / Notes</div>
-            <div class="tf-desc">Price variance, weight mismatch, missing B/S, vendor name issues — all tracked in ad-hoc spreadsheets or personal notes. No systematic queue, no aging reports, no assignment tracking.</div>
-            <div class="pain-point">No systematic exception tracking or reporting</div>
-            <div class="pain-point">No audit trail — who touched what, when</div>
-          </div>
-        </div>
-
-        <!-- PHASE 7: POSTING & PAYMENT -->
-        <div class="tf-phase-label">Phase 7 &mdash; Posting &amp; Payment</div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <div class="tf-row">
-          <div class="tf-card blue" style="max-width:300px;">
-            <div class="tf-icon">&#128196;</div>
-            <div class="tf-name">Manual Post to CieTrade</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> CieTrade</div>
-            <div class="tf-desc">AP manually posts approved invoice to CieTrade. No auto-posting exists. Each invoice individually submitted.</div>
-          </div>
-        </div>
-
-        <div class="tf-arrow">&#8595;</div>
-
-        <div class="tf-row" style="align-items:flex-start;">
-          <div class="tf-card green" style="max-width:220px;">
+          <div style="display:flex;align-items:center;font-size:20px;color:var(--text3);padding-top:40px;">&#8592;</div>
+          <div class="tf-card green" style="max-width:320px;">
             <div class="tf-icon">&#127793;</div>
             <div class="tf-name">CieTrade</div>
             <div class="tf-tool">ERP / Trade Platform</div>
-            <div class="tf-desc">Receives posted invoice. Processes against B/S records. Sends data downstream to Sage.</div>
+            <div class="tf-desc">Central source of truth for vendor master (CPID), Buy/Sell records, payment terms, and tax codes. AP staff manually look up B/S data here. Account Managers create and manage buy-sells in this system.</div>
           </div>
-          <div style="display:flex;align-items:center;font-size:20px;color:var(--text3);padding-top:30px;">&#8594;</div>
-          <div class="tf-card green" style="max-width:220px;">
+        </div>
+
+        <div class="tf-arrow">&#8595;</div>
+
+        <!-- 5. Back to CieTrade for posting -->
+        <div class="tf-row">
+          <div class="tf-card green" style="max-width:420px;">
+            <div class="tf-icon">&#127793;</div>
+            <div class="tf-name">CieTrade</div>
+            <div class="tf-tool">Invoice Posting</div>
+            <div class="tf-desc">Once invoice is matched and validated, AP manually posts the approved invoice back into CieTrade against the linked Buy/Sell records. Each invoice submitted individually — no auto-posting.</div>
+          </div>
+        </div>
+
+        <div class="tf-arrow">&#8595;</div>
+
+        <!-- 6. Sage MAS 500 -->
+        <div class="tf-row">
+          <div class="tf-card green" style="max-width:420px;">
             <div class="tf-icon">&#128210;</div>
             <div class="tf-name">Sage MAS 500</div>
             <div class="tf-tool">Accounting / ERP</div>
-            <div class="tf-desc">Receives posted data from CieTrade. Creates voucher numbers. Generates payment batches.</div>
-          </div>
-          <div style="display:flex;align-items:center;font-size:20px;color:var(--text3);padding-top:30px;">&#8594;</div>
-          <div class="tf-card pink" style="max-width:220px;">
-            <div class="tf-icon">&#127974;</div>
-            <div class="tf-name">JPMC Banking</div>
-            <div class="tf-tool">Payment Execution</div>
-            <div class="tf-desc">Executes payments (checks, ACH, wire). Payment info flows back to Sage with batch numbers. Invoice marked as Paid.</div>
+            <div class="tf-desc">Receives posted invoice data from CieTrade. Creates voucher numbers for each posted invoice. Generates payment batches and sends them to the bank for execution.</div>
           </div>
         </div>
 
-        <!-- SIDE FLOWS -->
-        <div class="tf-phase-label">Side Flows &mdash; Special Processes (All Manual)</div>
+        <div class="tf-arrow">&#8595;</div>
 
-        <div style="margin-top:12px;"></div>
-
+        <!-- 7. JPMC -->
         <div class="tf-row">
-          <div class="tf-card purple" style="max-width:200px;">
-            <div class="tf-icon">&#128274;</div>
-            <div class="tf-name">Confidential Invoices</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span></div>
-            <div class="tf-desc">Separate mailbox. No access controls. No sensitivity tagging. Manually segregated by AP staff.</div>
-            <div class="pain-point">No role-based access</div>
-          </div>
-          <div class="tf-card pink" style="max-width:200px;">
-            <div class="tf-icon">&#128195;</div>
-            <div class="tf-name">Credit Memos</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span></div>
-            <div class="tf-desc">Manually detected from invoice. Manually posted in CieTrade/Sage. No dedicated queue or workflow.</div>
-          </div>
-          <div class="tf-card cyan" style="max-width:200px;">
-            <div class="tf-icon">&#128203;</div>
-            <div class="tf-name">Statement Reconciliation</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> Spreadsheet</div>
-            <div class="tf-desc">Vendor statements compared manually against system records. Reconciliation done in spreadsheets. Very error-prone.</div>
-          </div>
-          <div class="tf-card amber" style="max-width:200px;">
-            <div class="tf-icon">&#128197;</div>
-            <div class="tf-name">Create Pays (Month-End)</div>
-            <div class="tf-tool"><span class="manual-tag">Manual</span> Excel</div>
-            <div class="tf-desc">NSR-created invoices at month-end. Shipping statement exported from CieTrade as PDF, manually uploaded. Manual Excel sheet for buy-sell aggregation.</div>
+          <div class="tf-card pink" style="max-width:420px;">
+            <div class="tf-icon">&#127974;</div>
+            <div class="tf-name">JPMorgan Chase (JPMC)</div>
+            <div class="tf-tool">Banking / Payment Execution</div>
+            <div class="tf-desc">Executes payments via checks, ACH, or wire transfer. Payment confirmation with batch numbers and dates flows back to Sage, which updates CieTrade. Invoice is marked as Paid.</div>
           </div>
         </div>
 
-        <!-- SUMMARY -->
-        <div style="margin-top:24px; padding:16px 20px; background:rgba(220,38,38,.04); border:1px solid rgba(220,38,38,.15); border-radius:10px;">
-          <div style="font-size:13px; font-weight:700; color:var(--red); margin-bottom:8px;">&#9888; Key Pain Points Summary</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; font-size:11px; color:var(--text2);">
-            <div>&#8226; 50% of invoices arrive before buy-sell exists in system</div>
-            <div>&#8226; No unique identifier linking invoices to buy-sells</div>
-            <div>&#8226; Manual search through hundreds of B/S records per invoice</div>
-            <div>&#8226; No systematic exception tracking or aging reports</div>
-            <div>&#8226; No audit trail — cannot trace who did what, when</div>
-            <div>&#8226; Days-long email back-and-forth between AP and AM</div>
-            <div>&#8226; 3 vendor portals require separate manual login/download</div>
-            <div>&#8226; No role-based access controls for confidential invoices</div>
-            <div>&#8226; Statement reconciliation entirely manual in spreadsheets</div>
-            <div>&#8226; Month-end close bottleneck with create pay process</div>
+        <div class="tf-arrow">&#8595;</div>
+
+        <!-- 8. Back to Sage/CieTrade -->
+        <div class="tf-row">
+          <div class="tf-card green" style="max-width:420px; border-style:dashed;">
+            <div class="tf-icon">&#128176;</div>
+            <div class="tf-name">Sage MAS 500 &rarr; CieTrade</div>
+            <div class="tf-tool">Payment Confirmation Loop</div>
+            <div class="tf-desc">JPMC payment info (batch number, date, reference) flows back to Sage, then updates CieTrade. The invoice lifecycle is closed — status changes to Paid or Partially Paid.</div>
           </div>
         </div>
 
