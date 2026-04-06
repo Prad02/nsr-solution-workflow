@@ -88,7 +88,8 @@
   }
 
   /* ---- SECTIONS ---- */
-  .section { margin-bottom: 56px; scroll-margin-top: 24px; }
+  .section { margin-bottom: 56px; scroll-margin-top: 24px; display: none; }
+  .section.visible { display: block; }
   .section-header { margin-bottom: 24px; }
   .section-header h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
   .section-header h2 .icon { font-size: 24px; }
@@ -422,8 +423,8 @@
     <p>AP Automation Solution</p>
   </div>
   <div class="nav-section">Overview</div>
-  <a class="nav-item" href="#current-workflow"><span class="num">&#9888;</span> Current Workflow</a>
-  <a class="nav-item active" href="#hero"><span class="num">00</span> Solution Overview</a>
+  <a class="nav-item active" href="#current-workflow"><span class="num">&#9888;</span> Current Workflow</a>
+  <a class="nav-item" href="#hero"><span class="num">00</span> Solution Overview</a>
   <a class="nav-item" href="#toolflow"><span class="num">--</span> End-to-End Tool Flow</a>
   <a class="nav-item" href="#architecture"><span class="num">01</span> System Architecture</a>
   <div class="nav-section">Core Modules</div>
@@ -446,7 +447,7 @@
 <main class="main">
 
   <!-- CURRENT WORKFLOW -->
-  <section id="current-workflow" class="section">
+  <section id="current-workflow" class="section visible">
     <div class="section-header">
       <h2><span class="icon" style="color:var(--red);">&#9888;</span> Current Workflow <span class="tag tag-red" style="font-size:11px;vertical-align:middle;margin-left:8px;">As-Is State</span></h2>
       <p>The existing AP invoice processing flow — tool by tool, from invoice arrival to payment.</p>
@@ -1688,29 +1689,35 @@
     section.querySelector('#' + tabId).classList.add('active');
   }
 
-  // Active nav on scroll
+  // Tab-based nav — show one section at a time
   const sections = document.querySelectorAll('.section');
   const navItems = document.querySelectorAll('.nav-item');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
-    navItems.forEach(n => {
-      n.classList.remove('active');
-      if (n.getAttribute('href') === '#' + current) n.classList.add('active');
-    });
-  });
 
-  // Smooth scroll
+  function showSection(id) {
+    sections.forEach(s => s.classList.remove('visible'));
+    navItems.forEach(n => n.classList.remove('active'));
+    const target = document.querySelector(id);
+    if (target) {
+      target.classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    navItems.forEach(n => {
+      if (n.getAttribute('href') === id) n.classList.add('active');
+    });
+  }
+
   navItems.forEach(n => {
     n.addEventListener('click', e => {
       e.preventDefault();
-      const target = document.querySelector(n.getAttribute('href'));
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showSection(n.getAttribute('href'));
       document.querySelector('.side-nav').classList.remove('open');
     });
   });
+
+  // Handle direct URL hash on load
+  if (window.location.hash) {
+    showSection(window.location.hash);
+  }
 </script>
 
 </body>
