@@ -6,21 +6,21 @@
 <title>NSR AP Automation — Solution Workflow</title>
 <style>
   :root {
-    --bg: #0a0e1a;
-    --surface: #131829;
-    --surface2: #1a2035;
-    --border: #2a3050;
-    --accent: #4f8cff;
-    --accent2: #7c5cfc;
-    --green: #34d399;
-    --amber: #fbbf24;
-    --red: #f87171;
-    --orange: #fb923c;
-    --cyan: #22d3ee;
-    --pink: #f472b6;
-    --text: #e2e8f0;
-    --text2: #94a3b8;
-    --text3: #64748b;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: #e2e8f0;
+    --accent: #2563eb;
+    --accent2: #7c3aed;
+    --green: #059669;
+    --amber: #d97706;
+    --red: #dc2626;
+    --orange: #ea580c;
+    --cyan: #0891b2;
+    --pink: #db2777;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,6 +41,7 @@
     padding: 24px 0; z-index: 100;
     overflow-y: auto;
     transition: transform .3s;
+    box-shadow: 2px 0 8px rgba(0,0,0,.04);
   }
   .side-nav.collapsed { transform: translateX(-280px); }
   .nav-logo { padding: 0 24px 24px; border-bottom: 1px solid var(--border); }
@@ -54,13 +55,13 @@
     border-left: 3px solid transparent;
   }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(79,140,255,.08); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(37,99,235,.06); }
   .nav-item .num { font-size: 10px; font-weight: 700; color: var(--text3); min-width: 20px; }
   .nav-toggle {
     display: none; position: fixed; top: 16px; left: 16px;
     z-index: 200; background: var(--surface); border: 1px solid var(--border);
     color: var(--text); width: 40px; height: 40px; border-radius: 8px;
-    cursor: pointer; font-size: 18px;
+    cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.08);
   }
 
   /* ---- MAIN ---- */
@@ -68,13 +69,13 @@
 
   /* ---- HERO ---- */
   .hero {
-    background: linear-gradient(135deg, rgba(79,140,255,.12), rgba(124,92,252,.12));
+    background: linear-gradient(135deg, rgba(37,99,235,.08), rgba(124,58,237,.08));
     border: 1px solid var(--border); border-radius: 16px;
     padding: 48px; margin-bottom: 48px; position: relative; overflow: hidden;
   }
   .hero::before {
     content: ''; position: absolute; top: -50%; right: -20%; width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(79,140,255,.15), transparent 70%);
+    background: radial-gradient(circle, rgba(37,99,235,.08), transparent 70%);
   }
   .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; position: relative; }
   .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -82,7 +83,7 @@
   .hero-badges { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; position: relative; }
   .hero-badge {
     font-size: 11px; padding: 6px 14px; border-radius: 20px;
-    background: rgba(79,140,255,.15); border: 1px solid rgba(79,140,255,.3);
+    background: rgba(37,99,235,.1); border: 1px solid rgba(37,99,235,.25);
     color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
   }
 
@@ -92,7 +93,7 @@
   .section-header h2 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
   .section-header h2 .icon { font-size: 24px; }
   .section-header p { font-size: 14px; color: var(--text2); margin-top: 6px; max-width: 700px; }
-  .section-num { font-size: 12px; font-weight: 700; color: var(--accent); background: rgba(79,140,255,.15); padding: 3px 10px; border-radius: 10px; }
+  .section-num { font-size: 12px; font-weight: 700; color: var(--accent); background: rgba(37,99,235,.15); padding: 3px 10px; border-radius: 10px; }
 
   /* ---- ARCHITECTURE DIAGRAM ---- */
   .arch-diagram {
@@ -105,10 +106,10 @@
     padding: 16px 20px; text-align: center; min-width: 140px; flex: 1; max-width: 220px;
     transition: all .3s; cursor: default; position: relative;
   }
-  .arch-box:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(79,140,255,.15); }
+  .arch-box:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(37,99,235,.1); }
   .arch-box .label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
   .arch-box .sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
-  .arch-box.primary { border-color: var(--accent); background: rgba(79,140,255,.08); }
+  .arch-box.primary { border-color: var(--accent); background: rgba(37,99,235,.05); }
   .arch-box.primary .label { color: var(--accent); }
   .arch-box.green { border-color: var(--green); }
   .arch-box.green .label { color: var(--green); }
@@ -163,7 +164,7 @@
     background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     padding: 20px; transition: all .3s;
   }
-  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
   .card .card-icon { font-size: 28px; margin-bottom: 10px; }
   .card .card-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
   .card .card-desc { font-size: 12px; color: var(--text2); }
@@ -179,14 +180,14 @@
     background: var(--surface);
   }
   .match-table td {
-    padding: 12px 16px; border-bottom: 1px solid rgba(42,48,80,.5);
+    padding: 12px 16px; border-bottom: 1px solid rgba(226,232,240,.8);
     font-size: 13px; vertical-align: top;
   }
-  .match-table tr:hover td { background: rgba(79,140,255,.04); }
+  .match-table tr:hover td { background: rgba(37,99,235,.04); }
   .match-table .step-badge {
     display: inline-flex; align-items: center; justify-content: center;
     width: 26px; height: 26px; border-radius: 50%; font-size: 11px; font-weight: 700;
-    background: rgba(79,140,255,.15); color: var(--accent); margin-right: 8px;
+    background: rgba(37,99,235,.15); color: var(--accent); margin-right: 8px;
   }
   .match-table .fallback { color: var(--text3); font-style: italic; font-size: 11px; }
 
@@ -202,9 +203,9 @@
   .exc-item .exc-title { font-size: 12px; font-weight: 600; }
   .exc-item .exc-assign { font-size: 10px; color: var(--text3); margin-top: 2px; }
   .exc-item .exc-type { font-size: 10px; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; font-weight: 600; }
-  .exc-item .exc-type.hard { background: rgba(248,113,113,.15); color: var(--red); }
-  .exc-item .exc-type.warn { background: rgba(251,191,36,.15); color: var(--amber); }
-  .exc-item .exc-type.auto { background: rgba(52,211,153,.15); color: var(--green); }
+  .exc-item .exc-type.hard { background: rgba(220,38,38,.15); color: var(--red); }
+  .exc-item .exc-type.warn { background: rgba(217,119,6,.15); color: var(--amber); }
+  .exc-item .exc-type.auto { background: rgba(5,150,105,.15); color: var(--green); }
 
   /* ---- STATUS PIPELINE ---- */
   .pipeline { display: flex; gap: 0; overflow-x: auto; padding: 8px 0; }
@@ -223,10 +224,10 @@
     background: var(--surface); position: relative; z-index: 1;
   }
   .pipe-label { font-size: 10px; color: var(--text3); text-align: center; max-width: 90px; }
-  .pipe-step.active .pipe-dot { border-color: var(--accent); background: rgba(79,140,255,.15); }
-  .pipe-step.done .pipe-dot { border-color: var(--green); background: rgba(52,211,153,.15); }
+  .pipe-step.active .pipe-dot { border-color: var(--accent); background: rgba(37,99,235,.15); }
+  .pipe-step.done .pipe-dot { border-color: var(--green); background: rgba(5,150,105,.15); }
   .pipe-step.done::after { background: var(--green); }
-  .pipe-step.error .pipe-dot { border-color: var(--red); background: rgba(248,113,113,.15); }
+  .pipe-step.error .pipe-dot { border-color: var(--red); background: rgba(220,38,38,.15); }
 
   /* ---- ROLE MATRIX ---- */
   .role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
@@ -257,7 +258,7 @@
   .integ-arrow .arr-label { color: var(--text2); }
   .integ-arrow .arr-freq {
     margin-left: auto; font-size: 9px; padding: 2px 6px; border-radius: 4px;
-    background: rgba(79,140,255,.15); color: var(--accent); font-weight: 600;
+    background: rgba(37,99,235,.15); color: var(--accent); font-weight: 600;
     white-space: nowrap;
   }
 
@@ -271,9 +272,9 @@
     font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
     flex-shrink: 0;
   }
-  .report-item .rp-pri.p1 { background: rgba(248,113,113,.15); color: var(--red); }
-  .report-item .rp-pri.p2 { background: rgba(251,191,36,.15); color: var(--amber); }
-  .report-item .rp-pri.p3 { background: rgba(79,140,255,.15); color: var(--accent); }
+  .report-item .rp-pri.p1 { background: rgba(220,38,38,.15); color: var(--red); }
+  .report-item .rp-pri.p2 { background: rgba(217,119,6,.15); color: var(--amber); }
+  .report-item .rp-pri.p3 { background: rgba(37,99,235,.15); color: var(--accent); }
   .report-item .rp-name { font-size: 12px; font-weight: 600; }
   .report-item .rp-desc { font-size: 10px; color: var(--text3); }
 
@@ -292,10 +293,10 @@
   /* ---- SPECIAL ---- */
   .divider { height: 1px; background: var(--border); margin: 40px 0; }
   .tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: 600; display: inline-block; }
-  .tag-blue { background: rgba(79,140,255,.15); color: var(--accent); }
-  .tag-green { background: rgba(52,211,153,.15); color: var(--green); }
-  .tag-amber { background: rgba(251,191,36,.15); color: var(--amber); }
-  .tag-red { background: rgba(248,113,113,.15); color: var(--red); }
+  .tag-blue { background: rgba(37,99,235,.15); color: var(--accent); }
+  .tag-green { background: rgba(5,150,105,.15); color: var(--green); }
+  .tag-amber { background: rgba(217,119,6,.15); color: var(--amber); }
+  .tag-red { background: rgba(220,38,38,.15); color: var(--red); }
 
   .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
   .kpi-card {
@@ -480,7 +481,7 @@
     </div>
 
     <div class="flow">
-      <div class="flow-step" style="background: rgba(251,191,36,.08); border-color: var(--amber);">
+      <div class="flow-step" style="background: rgba(217,119,6,.08); border-color: var(--amber);">
         <div class="step-title" style="margin-left:0; text-align:center; color: var(--amber);">All Sources &#8594; Unified AP Processing Queue</div>
       </div>
       <div class="flow-connector"></div>
@@ -617,7 +618,7 @@
         <div class="step-desc">Same vendor + invoice number = potential duplicate. AP must confirm or override. Invoice # must be changed if confirmed not duplicate.</div>
       </div>
       <div class="flow-connector"></div>
-      <div class="flow-step" style="background: rgba(79,140,255,.08); border-color: var(--accent);">
+      <div class="flow-step" style="background: rgba(37,99,235,.08); border-color: var(--accent);">
         <div class="step-num" style="background: var(--green);">&#10003;</div>
         <div class="step-title">Proceed to Buy/Sell Matching</div>
         <div class="step-desc">Vendor identified, fields populated, no duplicate detected</div>
@@ -636,7 +637,7 @@
       <table class="match-table">
         <thead><tr><th style="width:60px;">Step</th><th>Matching Criteria</th><th>Ship Date Rule</th><th style="width:120px;">On Failure</th></tr></thead>
         <tbody>
-          <tr style="background:rgba(52,211,153,.06);"><td><span class="step-badge">0</span></td><td><strong>Direct B/S Number on Invoice</strong> &mdash; If captured, assign directly</td><td>N/A</td><td>Fall to Step 1</td></tr>
+          <tr style="background:rgba(5,150,105,.06);"><td><span class="step-badge">0</span></td><td><strong>Direct B/S Number on Invoice</strong> &mdash; If captured, assign directly</td><td>N/A</td><td>Fall to Step 1</td></tr>
           <tr><td><span class="step-badge">1</span></td><td><strong>Release/Reference Number + Vendor</strong></td><td>&plusmn;1 day</td><td>Fall to Step 2</td></tr>
           <tr><td><span class="step-badge">2</span></td><td><strong>Invoice Number vs B/S Release Number + Vendor</strong></td><td>&plusmn;1 day</td><td>Fall to Step 3</td></tr>
           <tr><td><span class="step-badge">3</span></td><td><strong>Vendor + Site Location + Ship Date + Line Amount</strong></td><td>&plusmn;1 day</td><td>Fall to Step 4</td></tr>
@@ -644,7 +645,7 @@
           <tr><td><span class="step-badge">5</span></td><td><strong>Vendor + Line Amount + Ship Date</strong></td><td>&plusmn;1 day</td><td>Fall to Step 6</td></tr>
           <tr><td><span class="step-badge">6</span></td><td><strong>Vendor + Site Location + Line Amount</strong> <span class="tag tag-amber" style="font-size:9px;margin-left:4px;">Ship Date Exception</span></td><td>Ignored</td><td>Fall to Step 7</td></tr>
           <tr><td><span class="step-badge">7</span></td><td><strong>Vendor + Ship Date</strong> (broadest match)</td><td>&plusmn;1 day</td><td>Fall to Step 8</td></tr>
-          <tr style="background:rgba(248,113,113,.06);"><td><span class="step-badge" style="background:rgba(248,113,113,.2);color:var(--red);">8</span></td><td><strong>No B/S Found</strong> &mdash; Apply No-Match Routing Logic</td><td>N/A</td><td><span class="tag tag-red">Exception</span></td></tr>
+          <tr style="background:rgba(220,38,38,.06);"><td><span class="step-badge" style="background:rgba(220,38,38,.2);color:var(--red);">8</span></td><td><strong>No B/S Found</strong> &mdash; Apply No-Match Routing Logic</td><td>N/A</td><td><span class="tag tag-red">Exception</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -943,8 +944,8 @@
         <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Tax Code Master</span><span class="arr-freq">Daily</span></div>
         <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Payment Terms Master</span><span class="arr-freq">One-time</span></div>
         <div class="integ-arrow"><span class="arr-dir">&#8594;</span><span class="arr-label">Payment Information</span><span class="arr-freq">Daily</span></div>
-        <div class="integ-arrow" style="background:rgba(79,140,255,.1);"><span class="arr-dir">&#8592;</span><span class="arr-label"><strong>Invoice Posting File</strong></span><span class="arr-freq">2x Daily</span></div>
-        <div class="integ-arrow" style="background:rgba(52,211,153,.1);"><span class="arr-dir">&#8594;</span><span class="arr-label">Posting Confirmation</span><span class="arr-freq">2x Daily</span></div>
+        <div class="integ-arrow" style="background:rgba(37,99,235,.1);"><span class="arr-dir">&#8592;</span><span class="arr-label"><strong>Invoice Posting File</strong></span><span class="arr-freq">2x Daily</span></div>
+        <div class="integ-arrow" style="background:rgba(5,150,105,.1);"><span class="arr-dir">&#8594;</span><span class="arr-label">Posting Confirmation</span><span class="arr-freq">2x Daily</span></div>
       </div>
       <div class="integ-system">
         <div class="sys-name" style="color:var(--accent);">NSR AP Platform</div>
