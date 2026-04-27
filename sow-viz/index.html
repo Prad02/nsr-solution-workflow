@@ -1,0 +1,3835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NSR AP Automation — Invoice-to-Post Pipeline · SOW v1.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #07090f;
+    --bg-2: #0d111c;
+    --surface: #131827;
+    --surface-2: #1b2137;
+    --border: #242b42;
+    --border-strong: #323b5c;
+    --text: #e8ecf7;
+    --text-dim: #9aa2b9;
+    --text-muted: #656d86;
+
+    --teal: #5eead4;
+    --teal-dim: #0d9488;
+    --purple: #a78bfa;
+    --blue: #60a5fa;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --pink: #f472b6;
+
+    --tag-new: #60a5fa;
+    --tag-extended: #fbbf24;
+    --tag-leveraged: #34d399;
+
+    --radius: 12px;
+    --radius-lg: 18px;
+    --shadow-soft: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-glow: 0 0 32px rgba(94, 234, 212, 0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    overflow-x: hidden;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1200px circle at 15% 10%, rgba(94,234,212,0.08), transparent 40%),
+      radial-gradient(1000px circle at 85% 80%, rgba(167,139,250,0.07), transparent 45%),
+      radial-gradient(800px circle at 50% 50%, rgba(96,165,250,0.04), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main { position: relative; z-index: 1; }
+
+  /* ---------- NAV ---------- */
+  nav {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: rgba(7,9,15,0.75);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+  }
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--teal), var(--purple));
+    border-radius: 8px;
+    position: relative;
+    display: grid; place-items: center;
+    font-size: 14px; font-weight: 800; color: #0a0e1a;
+  }
+  .brand-text .t1 { font-size: 13px; color: var(--text); }
+  .brand-text .t2 { font-size: 11px; color: var(--text-dim); font-weight: 500; letter-spacing: 0.02em; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+    font-weight: 500;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+  .nav-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    padding: 4px 10px;
+    border: 1px solid rgba(94,234,212,0.3);
+    border-radius: 999px;
+    background: rgba(94,234,212,0.08);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 32px 40px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h1.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    background: linear-gradient(180deg, var(--text) 0%, #a8afc5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-lead {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 720px;
+    margin-bottom: 40px;
+  }
+  .hero-lead .hl { color: var(--teal); font-weight: 500; }
+  .hero-lead .pl { color: var(--purple); font-weight: 500; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .stat:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .stat::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    opacity: 0.5;
+  }
+  .stat .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .stat .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tag-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 12px;
+  }
+  .tag-legend .item { display: flex; align-items: center; gap: 8px; color: var(--text-dim); }
+  .tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ---------- SECTION ---------- */
+  section { max-width: 1400px; margin: 0 auto; padding: 60px 32px; }
+  .section-head { margin-bottom: 40px; }
+  .section-head .eyebrow { margin-bottom: 12px; }
+  .section-head h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .section-head p {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 680px;
+  }
+
+  /* ---------- PIPELINE ---------- */
+  .pipeline-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pipeline-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(600px circle at 0% 50%, rgba(94,234,212,0.06), transparent 50%),
+      radial-gradient(600px circle at 100% 50%, rgba(167,139,250,0.05), transparent 50%);
+    pointer-events: none;
+  }
+  #pipeline-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  .node-rect {
+    fill: var(--surface-2);
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+    rx: 10;
+    transition: fill 0.2s, stroke 0.2s;
+    cursor: pointer;
+  }
+  .node-rect:hover { fill: #242b42; stroke: var(--teal); }
+  .node-rect.source { stroke: var(--blue); }
+  .node-rect.main { stroke: var(--teal); }
+  .node-rect.terminal { stroke: var(--green); }
+  .node-rect.exception { stroke: var(--red); }
+  .node-rect.special { stroke: var(--purple); }
+
+  .node-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--text);
+    pointer-events: none;
+  }
+  .node-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    fill: var(--text-dim);
+    pointer-events: none;
+  }
+  .flow-path {
+    fill: none;
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+  }
+  .flow-path.active { stroke: var(--teal); stroke-width: 2; }
+  .flow-path.branch { stroke-dasharray: 4 4; stroke: #475072; }
+
+  .pulse-dot {
+    fill: var(--teal);
+    filter: drop-shadow(0 0 6px var(--teal));
+  }
+  .pulse-dot.purple { fill: var(--purple); filter: drop-shadow(0 0 6px var(--purple)); }
+
+  .pipeline-legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 1;
+  }
+  .pipeline-legend .lg-item { display: flex; align-items: center; gap: 8px; }
+  .lg-swatch {
+    width: 14px; height: 14px; border-radius: 3px;
+    border: 1.5px solid;
+    background: var(--surface-2);
+  }
+
+  /* ---------- MODULE GRID ---------- */
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+    background: var(--accent, var(--teal));
+    opacity: 0.6;
+    transition: opacity 0.25s;
+  }
+  .module-card:hover {
+    border-color: var(--accent, var(--teal));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .module-card:hover::before { opacity: 1; }
+  .module-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent, var(--teal));
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+  .module-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 6px 0 10px;
+    letter-spacing: -0.01em;
+  }
+  .module-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.55;
+    min-height: 42px;
+  }
+  .module-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .module-tags { display: flex; gap: 6px; }
+  .mini-tag {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .mini-tag.new { background: rgba(96,165,250,0.12); color: var(--tag-new); border: 1px solid rgba(96,165,250,0.3); }
+  .mini-tag.extended { background: rgba(251,191,36,0.12); color: var(--tag-extended); border: 1px solid rgba(251,191,36,0.3); }
+  .mini-tag.leveraged { background: rgba(52,211,153,0.12); color: var(--tag-leveraged); border: 1px solid rgba(52,211,153,0.3); }
+
+  /* ---------- DRAWER ---------- */
+  .drawer-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 100;
+  }
+  .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0;
+    width: min(620px, 100vw);
+    height: 100vh;
+    background: var(--bg-2);
+    border-left: 1px solid var(--border-strong);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 101;
+    overflow-y: auto;
+    box-shadow: -24px 0 64px rgba(0,0,0,0.5);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head {
+    position: sticky; top: 0;
+    background: var(--bg-2);
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .drawer-head .title { flex: 1; }
+  .drawer-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent, var(--teal));
+    letter-spacing: 0.1em;
+  }
+  .drawer-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 4px 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .drawer-purpose {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+  .drawer-close {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .drawer-close:hover { color: var(--text); border-color: var(--text-dim); }
+  .drawer-body { padding: 20px 32px 60px; }
+  .subsection {
+    margin-bottom: 28px;
+  }
+  .subsection-head {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--teal);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .subsection-head .id {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .feature-list { list-style: none; }
+  .feature-item {
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .feature-item .f-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 42px;
+  }
+  .feature-item .f-text { color: var(--text); line-height: 1.5; flex: 1; }
+  .feature-item .f-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* ---------- 3-STAGE LOOP ---------- */
+  .loop-wrap {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .loop-stages {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    position: relative;
+    margin-top: 40px;
+  }
+  .stage {
+    padding: 28px 24px;
+    position: relative;
+    border-radius: 12px;
+    background: rgba(7,9,15,0.4);
+    border: 1px solid var(--border);
+    margin: 0 8px;
+  }
+  .stage-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .stage-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .stage-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .stage-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .stage-state {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .stage-1 .stage-num { color: var(--amber); }
+  .stage-1 { border-color: rgba(251,191,36,0.3); }
+  .stage-1 .stage-state { background: rgba(251,191,36,0.15); color: var(--amber); }
+  .stage-2 .stage-num { color: var(--teal); }
+  .stage-2 { border-color: rgba(94,234,212,0.3); }
+  .stage-2 .stage-state { background: rgba(94,234,212,0.15); color: var(--teal); }
+  .stage-3 .stage-num { color: var(--purple); }
+  .stage-3 { border-color: rgba(167,139,250,0.3); }
+  .stage-3 .stage-state { background: rgba(167,139,250,0.15); color: var(--purple); }
+
+  .stage-arrow {
+    position: absolute;
+    top: 50%;
+    right: -16px;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--border-strong);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ---------- REUSE MAP ---------- */
+  .reuse-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .reuse-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .reuse-col h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .reuse-col h3 .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .reuse-col .col-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em; text-transform: uppercase; }
+  .reuse-col.leveraged { border-color: rgba(52,211,153,0.3); }
+  .reuse-col.extended { border-color: rgba(251,191,36,0.3); }
+  .reuse-col.newcol { border-color: rgba(96,165,250,0.3); }
+  .reuse-col.leveraged h3 .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .reuse-col.extended h3 .dot { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .reuse-col.newcol h3 .dot { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+  .reuse-list { list-style: none; font-size: 13px; }
+  .reuse-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .reuse-list li:last-child { border-bottom: none; }
+  .reuse-list li .extension {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+    max-width: 50%;
+  }
+
+  /* ---------- EXCEPTIONS GRID ---------- */
+  .ex-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+  }
+  .ex-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    position: relative;
+    border-left: 3px solid var(--severity, var(--text-muted));
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .ex-card:hover { transform: translateX(2px); }
+  .ex-title { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .ex-meta { display: flex; justify-content: space-between; font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .ex-assigned { color: var(--text-dim); }
+  .sev-hard { --severity: var(--red); }
+  .sev-high { --severity: var(--amber); }
+  .sev-medium { --severity: var(--teal); }
+  .sev-warning { --severity: var(--blue); }
+  .sev-low { --severity: var(--text-muted); }
+  .sev-badge {
+    padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 600; letter-spacing: 0.03em;
+  }
+  .sev-hard .sev-badge { background: rgba(248,113,113,0.15); color: var(--red); }
+  .sev-high .sev-badge { background: rgba(251,191,36,0.15); color: var(--amber); }
+  .sev-medium .sev-badge { background: rgba(94,234,212,0.15); color: var(--teal); }
+  .sev-warning .sev-badge { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .sev-low .sev-badge { background: rgba(101,109,134,0.2); color: var(--text-dim); }
+
+  /* ---------- SPECIAL WORKFLOWS ---------- */
+  .sw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .sw-card {
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sw-card::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, var(--accent, var(--purple)) 0%, transparent 70%);
+    opacity: 0.08;
+    pointer-events: none;
+  }
+  .sw-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent, var(--purple));
+    margin-bottom: 12px;
+    letter-spacing: -0.05em;
+  }
+  .sw-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .sw-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ---------- ACTUAL UNDERSTANDING ---------- */
+  .au-block {
+    margin-bottom: 56px;
+  }
+  .au-block-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .au-block-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 0.15em;
+    padding: 4px 10px;
+    background: rgba(94,234,212,0.08);
+    border: 1px solid rgba(94,234,212,0.25);
+    border-radius: 4px;
+  }
+  .au-block h3 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .au-block-lead {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 24px;
+    max-width: 760px;
+  }
+  .au-block-lead strong { color: var(--text); font-weight: 500; }
+  .au-block-lead code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 1px 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    color: var(--teal);
+  }
+
+  /* Buy/Sell actor flow */
+  .bs-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 12px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bs-flow::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(800px circle at 50% 50%, rgba(94,234,212,0.04), transparent 60%);
+    pointer-events: none;
+  }
+  @media (max-width: 900px) {
+    .bs-flow { grid-template-columns: 1fr; }
+    .bs-flow .bs-arrow { transform: rotate(90deg); padding: 8px 0; }
+  }
+  .bs-actor {
+    text-align: center;
+    padding: 28px 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    border-top: 3px solid var(--actor-color, var(--teal));
+    position: relative;
+    z-index: 1;
+  }
+  .bs-actor.supplier { --actor-color: var(--blue); }
+  .bs-actor.hauler { --actor-color: var(--amber); }
+  .bs-actor.outlet { --actor-color: var(--green); }
+  .bs-actor-icon {
+    font-size: 28px;
+    color: var(--actor-color);
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .bs-actor-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .bs-actor-role {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .bs-actor-money {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--actor-color);
+    letter-spacing: 0.05em;
+  }
+  .bs-arrow {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 1;
+  }
+  .bs-arrow-line {
+    width: 100%;
+    min-width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--teal), var(--green));
+    position: relative;
+  }
+  .bs-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -4px; top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-left-color: var(--green);
+  }
+  .bs-arrow-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Three Systems */
+  .systems-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 900px) { .systems-grid { grid-template-columns: 1fr; } }
+  .system-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    border-top: 4px solid var(--system-color, var(--teal));
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .system-card.ctrade { --system-color: var(--teal); }
+  .system-card.sage { --system-color: var(--amber); }
+  .system-card.iradius { --system-color: var(--purple); }
+  .system-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--system-color), transparent 60%);
+    opacity: 0.06;
+    pointer-events: none;
+  }
+  .system-emoji {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--system-color);
+    margin-bottom: 12px;
+  }
+  .system-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .system-tag {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .system-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 18px;
+    flex: 1;
+  }
+  .system-role {
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--system-color);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.03em;
+    border-left: 2px solid var(--system-color);
+  }
+  .system-list {
+    list-style: none;
+    margin-top: 14px;
+    padding: 0;
+  }
+  .system-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .system-list li:last-child { border-bottom: none; }
+  .system-list li::before {
+    content: '▸';
+    color: var(--system-color);
+    flex-shrink: 0;
+  }
+
+  /* Architecture diagram */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    overflow-x: auto;
+  }
+  .arch-diagram svg {
+    width: 100%;
+    height: auto;
+    min-width: 800px;
+  }
+
+  /* Hierarchy tree */
+  .hierarchy-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .hier-level {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 8px;
+    width: 100%;
+    max-width: 700px;
+  }
+  .hier-node {
+    background: var(--surface-2);
+    border: 1px solid var(--hier-color, var(--border-strong));
+    border-radius: var(--radius);
+    padding: 14px 24px;
+    min-width: 200px;
+    text-align: center;
+    flex: 1;
+    position: relative;
+    border-left: 3px solid var(--hier-color, var(--teal));
+  }
+  .hier-node-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+  }
+  .hier-node-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .hier-node-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hier-arrow {
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 10px 0;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+  .hier-arrow::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    bottom: -2px;
+    width: 1px;
+    background: var(--border-strong);
+    transform: translateX(-50%);
+  }
+  .hier-arrow span {
+    position: relative;
+    background: var(--surface);
+    padding: 4px 12px;
+  }
+
+  /* Hierarchy node colors per level */
+  .hier-master .hier-node { --hier-color: var(--blue); }
+  .hier-transaction .hier-node { --hier-color: var(--teal); }
+  .hier-ledger .hier-node { --hier-color: var(--amber); }
+  .hier-invoice .hier-node { --hier-color: var(--purple); }
+  .hier-posting .hier-node { --hier-color: var(--green); }
+
+  /* Complexity grid */
+  .complexity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) { .complexity-grid { grid-template-columns: 1fr; } }
+  .complexity-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border-top: 3px solid var(--cplx-color, var(--teal));
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .complexity-card.l1 { --cplx-color: var(--green); }
+  .complexity-card.l2 { --cplx-color: var(--amber); }
+  .complexity-card.l3 { --cplx-color: var(--red); }
+  .complexity-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--cplx-color);
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .complexity-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .complexity-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+  .complexity-visual {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .complexity-visual .map-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .complexity-visual .map-token {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    color: var(--text);
+    font-size: 10px;
+    border: 1px solid var(--border-strong);
+  }
+  .complexity-visual .map-token.bs { color: var(--teal); border-color: rgba(94,234,212,0.3); }
+  .complexity-visual .map-token.inv { color: var(--purple); border-color: rgba(167,139,250,0.3); }
+  .complexity-visual .map-token.line { color: var(--amber); border-color: rgba(251,191,36,0.3); }
+  .complexity-difficulty {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    align-self: flex-start;
+  }
+  .complexity-card.l1 .complexity-difficulty { background: rgba(52,211,153,0.15); color: var(--green); }
+  .complexity-card.l2 .complexity-difficulty { background: rgba(251,191,36,0.15); color: var(--amber); }
+  .complexity-card.l3 .complexity-difficulty { background: rgba(248,113,113,0.15); color: var(--red); }
+
+  /* SFTP folders */
+  .sftp-folders {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 900px) { .sftp-folders { grid-template-columns: 1fr; } }
+  .sftp-folder {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    position: relative;
+    border-left: 3px solid var(--folder-color, var(--teal));
+  }
+  .sftp-folder.outbound { --folder-color: var(--blue); }
+  .sftp-folder.inbound { --folder-color: var(--green); }
+  .sftp-folder.lockbox { --folder-color: var(--amber); }
+  .sftp-folder-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--folder-color);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .sftp-folder-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .sftp-folder-from {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .sftp-folder-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  /* CSV schema */
+  .csv-schema {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .csv-schema-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .csv-schema-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .csv-schema-direction {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    background: rgba(94,234,212,0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(94,234,212,0.3);
+  }
+  .csv-fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 700px) { .csv-fields { grid-template-columns: 1fr; } }
+  .csv-field {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .csv-field-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+  .csv-field-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* AP/AR/CP grid */
+  .apar-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) { .apar-grid { grid-template-columns: 1fr; } }
+  .apar-card {
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    border-top: 3px solid var(--apar-color, var(--teal));
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .apar-card.ap { --apar-color: var(--blue); }
+  .apar-card.ar { --apar-color: var(--green); }
+  .apar-card.cp { --apar-color: var(--purple); }
+  .apar-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--apar-color);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .apar-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .apar-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+  .apar-card ul {
+    list-style: none;
+    margin: 0; padding: 0;
+    flex: 1;
+  }
+  .apar-card ul li {
+    font-size: 12px;
+    color: var(--text);
+    padding: 8px 0;
+    padding-left: 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    line-height: 1.5;
+  }
+  .apar-card ul li:last-child { border-bottom: none; }
+  .apar-card ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--apar-color);
+    font-weight: 600;
+  }
+  .apar-card .direction {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--bg-2);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--apar-color);
+    text-align: center;
+    letter-spacing: 0.05em;
+    border: 1px dashed var(--apar-color);
+  }
+
+  /* Status taxonomy */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .status-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    border-left: 3px solid var(--status-color, var(--text-muted));
+  }
+  .status-card.fully { --status-color: var(--green); }
+  .status-card.partial { --status-color: var(--amber); }
+  .status-card.unpaid { --status-color: var(--red); }
+  .status-card.unapplied { --status-color: var(--purple); }
+  .status-card.applied { --status-color: var(--blue); }
+  .status-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .status-side {
+    font-size: 10px;
+    color: var(--status-color);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .status-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Posting timeline */
+  .posting-timeline {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-top: 24px;
+  }
+  .posting-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 1fr;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .posting-row { grid-template-columns: 1fr; }
+  }
+  .posting-row:last-child { border-bottom: none; }
+  .posting-row.header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+  }
+  .posting-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    font-weight: 600;
+  }
+  .posting-actor {
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .posting-action {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .posting-output {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Glossary */
+  .glossary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 24px;
+  }
+  .glossary-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 24px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  @media (max-width: 700px) {
+    .glossary-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+  .glossary-row:last-child { border-bottom: none; }
+  .glossary-term {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .glossary-term .alias {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-left: 6px;
+  }
+  .glossary-def {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+  .glossary-def code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 1px 5px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    color: var(--teal);
+  }
+
+  /* Quote callout */
+  .quote-callout {
+    background: linear-gradient(135deg, rgba(94,234,212,0.05), rgba(167,139,250,0.05));
+    border-left: 3px solid var(--teal);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 18px 24px;
+    margin: 16px 0 24px;
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .quote-callout::before {
+    content: '"';
+    color: var(--teal);
+    font-size: 28px;
+    line-height: 1;
+    margin-right: 4px;
+    vertical-align: -8px;
+    font-style: normal;
+    font-family: serif;
+  }
+  .quote-callout .attribution {
+    display: block;
+    font-style: normal;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---------- SAMPLE FLOW GALLERY ---------- */
+  .flow-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .flow-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+  }
+  .flow-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent, var(--teal));
+    transition: width 0.25s, opacity 0.25s;
+    opacity: 0.7;
+  }
+  .flow-card:hover:not(.disabled) {
+    border-color: var(--accent, var(--teal));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  }
+  .flow-card:hover:not(.disabled)::before { width: 5px; opacity: 1; }
+  .flow-card.active {
+    border-color: var(--accent, var(--teal));
+    background: linear-gradient(135deg, var(--surface), rgba(94,234,212,0.04));
+    box-shadow: 0 0 0 1px var(--accent, var(--teal)), 0 0 32px rgba(94,234,212,0.1);
+  }
+  .flow-card.active::before { width: 5px; opacity: 1; }
+  .flow-card.disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+  .flow-card.disabled::before { opacity: 0.3; }
+
+  .flow-card-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    color: var(--accent, var(--teal));
+    padding: 3px 9px;
+    background: var(--tag-bg, rgba(94,234,212,0.1));
+    border: 1px solid var(--tag-border, rgba(94,234,212,0.25));
+    border-radius: 4px;
+    align-self: flex-start;
+    margin-bottom: 14px;
+  }
+  .flow-card-title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .flow-card-desc {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.55;
+    flex: 1;
+    margin-bottom: 16px;
+  }
+  .flow-card-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .flow-card-cta {
+    color: var(--accent, var(--teal));
+    font-weight: 500;
+  }
+  .flow-card.active .flow-card-cta::before { content: '● '; }
+  .soon-badge {
+    font-size: 9px;
+    padding: 2px 7px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+
+  .flow-detail-wrap { position: relative; }
+  .flow-detail {
+    display: none;
+    animation: flowIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .flow-detail.show { display: block; }
+  @keyframes flowIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .flow-detail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--accent, var(--teal));
+    border-radius: var(--radius);
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .flow-detail-head .fdh-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flow-detail-head .fdh-title::before {
+    content: '';
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent, var(--teal));
+    box-shadow: 0 0 8px var(--accent, var(--teal));
+  }
+  .flow-detail-head .fdh-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    padding-left: 18px;
+  }
+  .flow-detail-close {
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .flow-detail-close:hover {
+    color: var(--text);
+    border-color: var(--text-dim);
+  }
+
+  .flow-empty {
+    text-align: center;
+    padding: 60px 32px;
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .flow-empty .big {
+    display: block;
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  /* ---------- SAMPLE FLOW TIMELINE ---------- */
+  .flow-intro {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 900px) { .flow-intro { grid-template-columns: 1fr; } }
+  .flow-intro-copy {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+  }
+  .flow-intro-copy h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .flow-intro-copy p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+  .flow-intro-copy .kbd {
+    display: inline-block;
+    padding: 1px 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+  }
+
+  .invoice-preview {
+    background:
+      linear-gradient(135deg, rgba(94,234,212,0.04), rgba(167,139,250,0.06)),
+      var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .invoice-preview::before {
+    content: 'INVOICE';
+    position: absolute;
+    top: 16px; right: 20px;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+  }
+  .invoice-preview .ip-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(36,43,66,0.7);
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+  .invoice-preview .ip-row:last-child { border-bottom: none; }
+  .invoice-preview .ip-row .v { color: var(--text); }
+  .invoice-preview .ip-head {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 4px;
+  }
+  .invoice-preview .ip-sub {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .invoice-preview .ip-lines {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .invoice-preview .ip-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 4px 0;
+    color: var(--text);
+  }
+  .invoice-preview .ip-total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid var(--border-strong);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .invoice-preview .ip-total .v { color: var(--teal); }
+
+  .flow-timeline {
+    position: relative;
+    padding-left: 56px;
+  }
+  .flow-timeline::before {
+    content: '';
+    position: absolute;
+    left: 19px; top: 20px; bottom: 20px;
+    width: 2px;
+    background: linear-gradient(180deg,
+      var(--blue) 0%,
+      var(--teal) 25%,
+      var(--green) 45%,
+      var(--purple) 55%,
+      var(--amber) 70%,
+      var(--green) 100%);
+    opacity: 0.4;
+  }
+  .flow-step {
+    position: relative;
+    margin-bottom: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .flow-step:hover {
+    border-color: var(--node-color, var(--teal));
+    transform: translateX(2px);
+  }
+  .flow-step::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -56px; top: 22px;
+    width: 40px; height: 40px;
+    background: var(--bg-2);
+    border: 2px solid var(--node-color, var(--teal));
+    border-radius: 50%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--node-color, var(--teal));
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 0 4px var(--bg), 0 0 20px rgba(94,234,212,0.15);
+    z-index: 2;
+  }
+  .flow-step-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .flow-step-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .flow-step-meta {
+    display: flex;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+  .flow-step-module {
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(94,234,212,0.08);
+    color: var(--node-color, var(--teal));
+    border: 1px solid rgba(94,234,212,0.25);
+    font-weight: 600;
+  }
+  .flow-step-time {
+    padding: 3px 8px;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border-radius: 4px;
+  }
+  .flow-step-body {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-top: 12px;
+  }
+  .flow-step-body strong { color: var(--text); font-weight: 500; }
+  .flow-step-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 1px 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    color: var(--teal);
+  }
+  .flow-step-body ul { margin: 10px 0 0; padding-left: 20px; }
+  .flow-step-body li { margin-bottom: 6px; }
+
+  .flow-step.n-1 { --node-color: var(--blue); }
+  .flow-step.n-2 { --node-color: var(--teal); }
+  .flow-step.n-3 { --node-color: var(--green); }
+  .flow-step.n-4 { --node-color: var(--purple); }
+  .flow-step.n-5 { --node-color: var(--amber); }
+  .flow-step.n-6 { --node-color: var(--amber); }
+  .flow-step.n-7 { --node-color: var(--green); }
+  .flow-step.n-8 { --node-color: var(--green); }
+  .flow-step.n-9 { --node-color: var(--teal); }
+
+  .flow-step.n-1 .flow-step-module { background: rgba(96,165,250,0.1); color: var(--blue); border-color: rgba(96,165,250,0.3); }
+  .flow-step.n-2 .flow-step-module { background: rgba(94,234,212,0.1); color: var(--teal); border-color: rgba(94,234,212,0.3); }
+  .flow-step.n-3 .flow-step-module { background: rgba(52,211,153,0.1); color: var(--green); border-color: rgba(52,211,153,0.3); }
+  .flow-step.n-4 .flow-step-module { background: rgba(167,139,250,0.1); color: var(--purple); border-color: rgba(167,139,250,0.3); }
+  .flow-step.n-5 .flow-step-module, .flow-step.n-6 .flow-step-module { background: rgba(251,191,36,0.1); color: var(--amber); border-color: rgba(251,191,36,0.3); }
+  .flow-step.n-7 .flow-step-module, .flow-step.n-8 .flow-step-module { background: rgba(52,211,153,0.1); color: var(--green); border-color: rgba(52,211,153,0.3); }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(36,43,66,0.5);
+    color: var(--text);
+    font-size: 12px;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .conf-high { color: var(--green); }
+  .data-table .conf-mid { color: var(--amber); }
+
+  .cascade {
+    margin-top: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .cascade .row {
+    display: grid;
+    grid-template-columns: 40px 1fr 80px;
+    gap: 12px;
+    padding: 5px 0;
+    color: var(--text-dim);
+    align-items: center;
+  }
+  .cascade .row .step { color: var(--text-muted); }
+  .cascade .row.skipped { text-decoration: line-through; opacity: 0.45; }
+  .cascade .row.hit { color: var(--text); background: rgba(52,211,153,0.08); margin: 0 -18px; padding: 8px 18px; border-left: 3px solid var(--green); }
+  .cascade .row .result { text-align: right; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .cascade .row.hit .result { color: var(--green); font-weight: 600; }
+  .cascade .row.skipped .result { color: var(--text-muted); }
+
+  .state-walk {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .state-walk .s {
+    padding: 4px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+  }
+  .state-walk .s.terminal { color: var(--amber); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+  .state-walk .arrow { color: var(--text-muted); align-self: center; }
+
+  .final-log {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-top: 24px;
+    overflow-x: auto;
+  }
+  .final-log .ts { color: var(--text-muted); }
+  .final-log .ev { color: var(--teal); font-weight: 600; display: inline-block; width: 170px; }
+  .final-log .ctx { color: var(--text-dim); }
+
+  .touch-callout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  @media (max-width: 700px) { .touch-callout { grid-template-columns: 1fr; } }
+  .touch-metric {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }
+  .touch-metric .m-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .touch-metric .m-val.green { color: var(--green); }
+  .touch-metric .m-val.teal { color: var(--teal); }
+  .touch-metric .m-lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    max-width: 1400px;
+    margin: 40px auto 0;
+    padding: 40px 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px) {
+    .loop-stages, .reuse-layout { grid-template-columns: 1fr; }
+    .stage-arrow { display: none; }
+    .hero { padding: 48px 20px 24px; }
+    section { padding: 40px 20px; }
+    .nav-links { display: none; }
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475072; }
+</style>
+</head>
+<body>
+<main>
+<nav>
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-text">
+        <div class="t1">NSR · AP Automation</div>
+        <div class="t2">Pipeline Visualization</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#actual-understanding">Domain</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#sample-flow">Sample Flow</a>
+      <a href="#modules">Modules</a>
+      <a href="#loop">Human Loop</a>
+      <a href="#reuse">Ops AI Reuse</a>
+      <a href="#exceptions">Exceptions</a>
+      <a href="#special">Special Flows</a>
+    </div>
+    <div class="nav-badge">SOW v1.1</div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">Statement of Work · April 2026</div>
+  <h1 class="hero-title">From inbox to posted,<br/>invisibly.</h1>
+  <p class="hero-lead">
+    An end-to-end AP invoice automation built on TechJays' <span class="hl">Ops AI</span> foundation —
+    capturing invoices from email, manual upload, and <span class="pl">vendor portal scrapes</span>,
+    then matching every line to the right Buy/Sell and posting to CieTrade with zero re-keying.
+  </p>
+  <div class="stat-row">
+    <div class="stat"><div class="num">14</div><div class="label">Modules</div></div>
+    <div class="stat"><div class="num">27</div><div class="label">Header fields</div></div>
+    <div class="stat"><div class="num">8</div><div class="label">B/S match steps</div></div>
+    <div class="stat"><div class="num">11</div><div class="label">Validation checks</div></div>
+    <div class="stat"><div class="num">20</div><div class="label">Exception queues</div></div>
+    <div class="stat"><div class="num">4</div><div class="label">Special workflows</div></div>
+    <div class="stat"><div class="num">≤3m</div><div class="label">Email → record</div></div>
+    <div class="stat"><div class="num">~22%</div><div class="label">Ops AI reuse</div></div>
+  </div>
+  <div class="tag-legend">
+    <div class="item"><span class="tag-dot" style="background:var(--tag-leveraged)"></span><strong style="color:var(--text)">OPS AI — LEVERAGED</strong> &nbsp;used directly, no mods</div>
+    <div class="item"><span class="tag-dot" style="background:var(--tag-extended)"></span><strong style="color:var(--text)">OPS AI — EXTENDED</strong> &nbsp;existing capability, new surface</div>
+    <div class="item"><span class="tag-dot" style="background:var(--tag-new)"></span><strong style="color:var(--text)">NEW</strong> &nbsp;built from scratch</div>
+  </div>
+</section>
+
+<!-- ===================== ACTUAL UNDERSTANDING ===================== -->
+<section id="actual-understanding">
+  <div class="section-head">
+    <div class="eyebrow">Domain Foundation · Actual Flow Understanding</div>
+    <h2>How NSR actually works</h2>
+    <p>Distilled from the discovery call — the original domain understanding behind the SOW. Read this first if you're new to the project. Every concept in the Pipeline, Modules, and Sample Flows tabs maps back to one of the artifacts below.</p>
+  </div>
+
+  <!-- ─── A. Buy/Sell ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">A · Atomic Unit</span>
+      <h3>The Buy/Sell — one load, three actors</h3>
+    </div>
+    <p class="au-block-lead">
+      NSR is a recycling company. Their entire business is captured in one transaction type: a <strong>Buy/Sell</strong> (B/S). It's a single load of recyclable material moving from a supplier through a hauler to an outlet. CieTrade records it; everything downstream — ledgers, invoices, postings, payments — derives from this one event.
+    </p>
+
+    <div class="bs-flow">
+      <div class="bs-actor supplier">
+        <div class="bs-actor-icon">⬣</div>
+        <div class="bs-actor-name">Supplier</div>
+        <div class="bs-actor-role">Originates the recyclable material — the company NSR buys from.</div>
+        <div class="bs-actor-money">NSR → pays them</div>
+      </div>
+      <div class="bs-arrow">
+        <div class="bs-arrow-label">picked up by</div>
+        <div class="bs-arrow-line"></div>
+      </div>
+      <div class="bs-actor hauler">
+        <div class="bs-actor-icon">⬢</div>
+        <div class="bs-actor-name">Hauler</div>
+        <div class="bs-actor-role">Transports the load. Bills NSR for the move + fuel + dump charges.</div>
+        <div class="bs-actor-money">NSR → pays them</div>
+      </div>
+      <div class="bs-arrow">
+        <div class="bs-arrow-label">delivered to</div>
+        <div class="bs-arrow-line"></div>
+      </div>
+      <div class="bs-actor outlet">
+        <div class="bs-actor-icon">⬡</div>
+        <div class="bs-actor-name">Outlet</div>
+        <div class="bs-actor-role">Receives the material — the company NSR sells to.</div>
+        <div class="bs-actor-money">→ pays NSR</div>
+      </div>
+    </div>
+
+    <div class="quote-callout">
+      It's a transaction. Basically it's a load which gets picked up from one supplier and transferred from the supplier to the outlet with the help of a hauler. That's all. The name for recording this transaction is BuySell in the ERP platform.
+      <span class="attribution">— Discovery transcript, speaker_1</span>
+    </div>
+  </div>
+
+  <!-- ─── B. Three Systems ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">B · The Stack</span>
+      <h3>Three systems, one business</h3>
+    </div>
+    <p class="au-block-lead">
+      NSR's stack revolves around three platforms. Knowing what each one does — and what they don't — is the key to understanding why this SOW exists. <strong>CieTrade</strong> is source of truth, <strong>Sage</strong> is the books, and <strong>iRadius</strong> is the automation glue currently keeping them aligned. TechJays is being asked to replace iRadius's job with something better.
+    </p>
+
+    <div class="systems-grid">
+      <div class="system-card ctrade">
+        <div class="system-emoji">ERP · TRANSACTIONS</div>
+        <div class="system-name">CieTrade</div>
+        <div class="system-tag">"CTrade"</div>
+        <div class="system-desc">The ERP NSR runs the business on. Every Buy/Sell, counterparty, order, ledger, and invoice lives here. It's also where invoices get posted — outbound to Sage, inbound payment status from iRadius.</div>
+        <div class="system-role">Source of truth</div>
+        <ul class="system-list">
+          <li>Counterparty master (suppliers, haulers, outlets)</li>
+          <li>Orders (rate negotiations · price baseline)</li>
+          <li>Buy/Sell transactions</li>
+          <li>Generated ledgers</li>
+          <li>AP & AR invoice posting</li>
+        </ul>
+      </div>
+
+      <div class="system-card sage">
+        <div class="system-emoji">ACCOUNTING · BOOKS</div>
+        <div class="system-name">Sage</div>
+        <div class="system-tag">accounting platform</div>
+        <div class="system-desc">The accounting system. Tracks every dollar in and out across the organization. Year-end taxes, audit trail, books reconciliation. Today it's filled mostly by manual entry; reconciling whether an invoice is actually paid takes an accountant sitting in front of a screen.</div>
+        <div class="system-role">Money tally</div>
+        <ul class="system-list">
+          <li>Money-in / money-out ledger</li>
+          <li>Tax calculation</li>
+          <li>Audit & compliance</li>
+          <li>Manual journal entries</li>
+          <li>Receives posted invoices via SFTP</li>
+        </ul>
+      </div>
+
+      <div class="system-card iradius">
+        <div class="system-emoji">AUTOMATION · TODAY</div>
+        <div class="system-name">iRadius</div>
+        <div class="system-tag">"HighRadius" · "IRDS"</div>
+        <div class="system-desc">The automation layer between CieTrade and Sage. Reads CSV files from an SFTP folder, matches invoices to payments, writes the status back. Marks invoices as Fully Paid / Partially Paid / Unpaid. <strong style="color:var(--text)">This is the role TechJays is replacing.</strong></div>
+        <div class="system-role">What we're replacing</div>
+        <ul class="system-list">
+          <li>Reads payment data from SFTP</li>
+          <li>Matches payments → invoices</li>
+          <li>Writes paid status back to CTrade</li>
+          <li>Auto-posts to Sage</li>
+          <li>Handles AR-side: unapplied cash, DMS</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="arch-diagram">
+      <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="au-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#5eead4"/>
+          </marker>
+          <marker id="au-arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/>
+          </marker>
+          <marker id="au-arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/>
+          </marker>
+        </defs>
+
+        <!-- CieTrade -->
+        <g>
+          <rect x="40" y="120" width="220" height="140" rx="12" fill="#1b2137" stroke="#5eead4" stroke-width="2"/>
+          <text x="150" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#5eead4" letter-spacing="2">ERP</text>
+          <text x="150" y="185" text-anchor="middle" font-family="Inter" font-size="20" font-weight="700" fill="#e8ecf7">CieTrade</text>
+          <text x="150" y="210" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa2b9">Buy/Sells · Ledgers</text>
+          <text x="150" y="228" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa2b9">Invoice posting</text>
+        </g>
+
+        <!-- SFTP folder -->
+        <g>
+          <rect x="380" y="60" width="200" height="260" rx="12" fill="#0d111c" stroke="#323b5c" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <text x="480" y="92" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9" letter-spacing="2">SFTP / FTP</text>
+          <text x="480" y="115" text-anchor="middle" font-family="Inter" font-size="14" font-weight="600" fill="#e8ecf7">Shared file path</text>
+
+          <rect x="400" y="135" width="160" height="44" rx="6" fill="#1b2137" stroke="#60a5fa" stroke-width="1"/>
+          <text x="480" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#60a5fa">CTR → IRDS</text>
+          <text x="480" y="170" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa2b9">posting batches</text>
+
+          <rect x="400" y="190" width="160" height="44" rx="6" fill="#1b2137" stroke="#fbbf24" stroke-width="1"/>
+          <text x="480" y="210" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#fbbf24">JPMC → IRDS</text>
+          <text x="480" y="225" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa2b9">lockbox · EDI 820</text>
+
+          <rect x="400" y="245" width="160" height="44" rx="6" fill="#1b2137" stroke="#34d399" stroke-width="1"/>
+          <text x="480" y="265" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#34d399">IRDS → CTR</text>
+          <text x="480" y="280" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9aa2b9">payment status</text>
+        </g>
+
+        <!-- iRadius -->
+        <g>
+          <rect x="700" y="120" width="220" height="140" rx="12" fill="#1b2137" stroke="#a78bfa" stroke-width="2"/>
+          <text x="810" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#a78bfa" letter-spacing="2">AUTOMATION</text>
+          <text x="810" y="185" text-anchor="middle" font-family="Inter" font-size="20" font-weight="700" fill="#e8ecf7">iRadius</text>
+          <text x="810" y="210" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa2b9">match · status</text>
+          <text x="810" y="228" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa2b9">(being replaced)</text>
+        </g>
+
+        <!-- Sage -->
+        <g>
+          <rect x="960" y="120" width="200" height="140" rx="12" fill="#1b2137" stroke="#fbbf24" stroke-width="2"/>
+          <text x="1060" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#fbbf24" letter-spacing="2">ACCOUNTING</text>
+          <text x="1060" y="185" text-anchor="middle" font-family="Inter" font-size="20" font-weight="700" fill="#e8ecf7">Sage</text>
+          <text x="1060" y="210" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa2b9">books · taxes</text>
+          <text x="1060" y="228" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#9aa2b9">(manual + auto)</text>
+        </g>
+
+        <!-- Connections: CTrade writes to SFTP -->
+        <path d="M 260 175 C 320 175, 340 157, 400 157" fill="none" stroke="#5eead4" stroke-width="1.8" marker-end="url(#au-arrow)"/>
+        <text x="305" y="148" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9">writes</text>
+
+        <!-- iRadius reads from SFTP -->
+        <path d="M 700 195 C 640 195, 620 213, 560 213" fill="none" stroke="#a78bfa" stroke-width="1.8" marker-end="url(#au-arrow-purple)"/>
+        <text x="600" y="207" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9">reads</text>
+
+        <!-- iRadius writes back to SFTP -->
+        <path d="M 700 230 C 640 230, 620 267, 560 267" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-dasharray="4 4" marker-end="url(#au-arrow-purple)"/>
+        <text x="600" y="285" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9">writes back</text>
+
+        <!-- CTrade reads payment status -->
+        <path d="M 400 267 C 340 267, 320 220, 260 220" fill="none" stroke="#34d399" stroke-width="1.8" marker-end="url(#au-arrow)"/>
+        <text x="305" y="245" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9">reads</text>
+
+        <!-- CTrade auto-posts to Sage (after iRadius ack) -->
+        <path d="M 260 145 C 600 60, 800 60, 960 145" fill="none" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#au-arrow-amber)"/>
+        <text x="600" y="55" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#fbbf24">auto-post (CSV via SFTP)</text>
+
+        <!-- Manual entries -->
+        <path d="M 1060 90 C 1060 60, 1060 30, 1060 30" fill="none" stroke="#656d86" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <text x="1060" y="20" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9">+ manual</text>
+
+        <!-- Bottom legend -->
+        <text x="600" y="365" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#656d86">No direct CieTrade ↔ Sage connection · Everything routes through SFTP files</text>
+      </svg>
+    </div>
+
+    <div class="quote-callout">
+      iRadius is not directly connected to Sage. Everything is going through CTrade. CTrade writes files in the SFTP path, iRadius reads from that path, similarly iRadius writes there, and CTrade reads it and auto-posts to Sage with that information.
+      <span class="attribution">— Discovery transcript, on the data flow architecture</span>
+    </div>
+  </div>
+
+  <!-- ─── C. Data Hierarchy ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">C · Data Hierarchy</span>
+      <h3>Inside CieTrade — counterparty to invoice</h3>
+    </div>
+    <p class="au-block-lead">
+      Everything in CieTrade rolls up from master data. A Buy/Sell uses counterparty + order data to produce ledgers; ledgers get aggregated into invoices; invoices post out to Sage. Critically, the relationship from <code>buy/sell</code> to <code>ledger</code> is <strong>one-to-many</strong>, and <code>ledger</code> to <code>invoice</code> is <strong>many-to-one</strong>. That's where the matching complexity comes from.
+    </p>
+
+    <div class="hierarchy-tree">
+      <div class="hier-level hier-master">
+        <div class="hier-node">
+          <div class="hier-node-level">MASTER · STATIC</div>
+          <div class="hier-node-name">Counterparty</div>
+          <div class="hier-node-desc">supplier · hauler · outlet · location · billing config</div>
+        </div>
+        <div class="hier-node">
+          <div class="hier-node-level">MASTER · STATIC</div>
+          <div class="hier-node-name">Orders</div>
+          <div class="hier-node-desc">rate negotiations · price baseline · per material × duration</div>
+        </div>
+      </div>
+
+      <div class="hier-arrow"><span>↓ used by ↓</span></div>
+
+      <div class="hier-level hier-transaction">
+        <div class="hier-node">
+          <div class="hier-node-level">TRANSACTION · EVENT</div>
+          <div class="hier-node-name">Buy/Sell</div>
+          <div class="hier-node-desc">a single load movement · supplier → hauler → outlet</div>
+        </div>
+      </div>
+
+      <div class="hier-arrow"><span>↓ produces (1 → many) ↓</span></div>
+
+      <div class="hier-level hier-ledger">
+        <div class="hier-node">
+          <div class="hier-node-level">GENERATED</div>
+          <div class="hier-node-name">Ledger</div>
+          <div class="hier-node-desc">per-party amount · "I owe supplier X · I owe hauler Y · outlet owes me Z"</div>
+        </div>
+        <div class="hier-node">
+          <div class="hier-node-level">GENERATED</div>
+          <div class="hier-node-name">Expenses</div>
+          <div class="hier-node-desc">tied to grade lines · hauler & outlet costs</div>
+        </div>
+      </div>
+
+      <div class="hier-arrow"><span>↓ aggregated per party (many → 1) ↓</span></div>
+
+      <div class="hier-level hier-invoice">
+        <div class="hier-node">
+          <div class="hier-node-level">DERIVED · POSTABLE</div>
+          <div class="hier-node-name">Invoice (AP or AR)</div>
+          <div class="hier-node-desc">one or many ledgers grouped per party · either a vendor bill we receive (AP) or a customer bill we send (AR)</div>
+        </div>
+      </div>
+
+      <div class="hier-arrow"><span>↓ posted as ↓</span></div>
+
+      <div class="hier-level hier-posting">
+        <div class="hier-node">
+          <div class="hier-node-level">OUTBOUND</div>
+          <div class="hier-node-name">AP/AR Batch</div>
+          <div class="hier-node-desc"><code style="font-family:'JetBrains Mono';color:var(--green)">Batch ID = Invoice #</code> · pipe-delimited CSV · written to SFTP</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-callout">
+      Buy/Sell is just its identification. This ledger belongs to this buy/sell, but there won't be one-to-one parity. It will be one to many. There are chances we group multiple buy/sells from one party into one invoice, and there are chances one buy/sell becomes one invoice directly. So mostly we do both.
+      <span class="attribution">— Discovery transcript, on the N:M relationship</span>
+    </div>
+  </div>
+
+  <!-- ─── D. Matching Complexity ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">D · The Hard Part</span>
+      <h3>Three complexity levels of invoice matching</h3>
+    </div>
+    <p class="au-block-lead">
+      When a vendor invoice comes in, the system has to match its line items back to NSR's Buy/Sells. The shape of that match falls into three patterns — Level 3 is what makes this project hard.
+    </p>
+
+    <div class="complexity-grid">
+      <div class="complexity-card l1">
+        <div class="complexity-num">L1 · DIRECT</div>
+        <div class="complexity-name">1 Buy/Sell → 1 Invoice</div>
+        <div class="complexity-desc">Vendor sends one invoice for one B/S. Direct lookup by B/S number on the invoice. Solved by §4.1.1 in the SOW.</div>
+        <div class="complexity-visual">
+          <div class="map-line">
+            <span class="map-token bs">B/S 10342</span>
+            <span style="color:var(--text-muted)">→</span>
+            <span class="map-token inv">Invoice 12-32987</span>
+          </div>
+        </div>
+        <div class="complexity-difficulty">Easy</div>
+      </div>
+
+      <div class="complexity-card l2">
+        <div class="complexity-num">L2 · LINE-BY-LINE</div>
+        <div class="complexity-name">N Buy/Sells → N Invoice lines</div>
+        <div class="complexity-desc">One invoice covers multiple loads, each as its own line. Each invoice line maps cleanly to one B/S. The SOW's 5-step line-match handles this (§4.2.1).</div>
+        <div class="complexity-visual">
+          <div class="map-line">
+            <span class="map-token bs">B/S 10342</span>
+            <span style="color:var(--text-muted)">→</span>
+            <span class="map-token line">Line 1</span>
+          </div>
+          <div class="map-line">
+            <span class="map-token bs">B/S 10343</span>
+            <span style="color:var(--text-muted)">→</span>
+            <span class="map-token line">Line 2</span>
+          </div>
+          <div class="map-line">
+            <span class="map-token bs">B/S 10344</span>
+            <span style="color:var(--text-muted)">→</span>
+            <span class="map-token line">Line 3</span>
+          </div>
+        </div>
+        <div class="complexity-difficulty">Easy-medium</div>
+      </div>
+
+      <div class="complexity-card l3">
+        <div class="complexity-num">L3 · GROUPED</div>
+        <div class="complexity-name">N Buy/Sells → 1 Invoice line</div>
+        <div class="complexity-desc">Vendor groups multiple B/Ss <strong style="color:var(--text)">at the product level over a date range</strong> into a single line. To match, the system has to enumerate all candidate B/Ss in the period and find the subset whose sum equals the invoice line.</div>
+        <div class="complexity-visual">
+          <div class="map-line">
+            <span class="map-token bs">B/S 10342</span>
+            <span class="map-token bs">B/S 10343</span>
+            <span class="map-token bs">B/S 10344</span>
+            <span style="color:var(--text-muted)">→</span>
+            <span class="map-token line">Line 1 (sum)</span>
+          </div>
+          <div class="map-line">
+            <span class="map-token bs">B/S 10345</span>
+            <span class="map-token bs">B/S 10346</span>
+            <span style="color:var(--text-muted)">→</span>
+            <span class="map-token line">Line 2 (sum)</span>
+          </div>
+        </div>
+        <div class="complexity-difficulty">Hard</div>
+      </div>
+    </div>
+
+    <div class="quote-callout">
+      One is a direct match with a buy/sell. Two is one invoice line matching with one buy/sell. The next complexity is multiple buy/sell transactions — ledgers are combined in a single invoice line. So there are three complexities like this. One and two are easy to solve. The third is kind of hard… only if we take and group all the buy/sells within that duration can we do it.
+      <span class="attribution">— Discovery transcript, on matching</span>
+    </div>
+  </div>
+
+  <!-- ─── E. SFTP Posting Mechanics ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">E · Posting Mechanics</span>
+      <h3>How data crosses systems — SFTP folders</h3>
+    </div>
+    <p class="au-block-lead">
+      CieTrade and Sage don't talk directly. Everything goes through SFTP. NSR's existing SFTP layout has <strong>three logical folders</strong> covering both AP and AR posting plus payment status feedback. The TechJays build keeps this exact same SFTP contract — drop-in compatible.
+    </p>
+
+    <div class="sftp-folders">
+      <div class="sftp-folder outbound">
+        <div class="sftp-folder-icon">CTR → IRDS</div>
+        <div class="sftp-folder-name">/posting/outbound/</div>
+        <div class="sftp-folder-from">CieTrade writes · iRadius reads</div>
+        <div class="sftp-folder-desc">AP &amp; AR posting batches. Pipe-delimited CSVs. Twice daily. <code>Posting_NSR_MMDD.txt</code></div>
+      </div>
+      <div class="sftp-folder lockbox">
+        <div class="sftp-folder-icon">JPMC → IRDS</div>
+        <div class="sftp-folder-name">/lockbox/</div>
+        <div class="sftp-folder-from">JPMC writes · iRadius reads</div>
+        <div class="sftp-folder-desc">Customer remittance: lockbox ZIPs, EDI 820 X12 v4010 80-byte-wrapped. AR side · Phase 2.</div>
+      </div>
+      <div class="sftp-folder inbound">
+        <div class="sftp-folder-icon">IRDS → CTR</div>
+        <div class="sftp-folder-name">/posting/inbound/</div>
+        <div class="sftp-folder-from">iRadius writes · CieTrade reads</div>
+        <div class="sftp-folder-desc">Payment status responses. <code>PaymentResponse</code> (POSTED/FAILED) · <code>PaymentUpdate</code> (-BA · -CK · -EF). Daily ~09:00.</div>
+      </div>
+    </div>
+
+    <div class="posting-timeline">
+      <div class="posting-row header">
+        <div>Time</div>
+        <div>Actor</div>
+        <div>Action</div>
+        <div>Output</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">T+0</div>
+        <div class="posting-actor">CieTrade</div>
+        <div class="posting-action">Operator selects ledgers, hits "Post"</div>
+        <div class="posting-output">batch_id assigned</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">T+~1m</div>
+        <div class="posting-actor">CieTrade</div>
+        <div class="posting-action">Writes pipe-delimited CSV → SFTP outbound</div>
+        <div class="posting-output">Posting_NSR_MMDD.txt</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">T+~5m</div>
+        <div class="posting-actor">iRadius</div>
+        <div class="posting-action">Reads CSV, validates, attempts match</div>
+        <div class="posting-output">match decision</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">next day</div>
+        <div class="posting-actor">iRadius</div>
+        <div class="posting-action">Writes PaymentResponse → SFTP inbound</div>
+        <div class="posting-output">POSTED / FAILED</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">next day</div>
+        <div class="posting-actor">CieTrade</div>
+        <div class="posting-action">Reads response, updates invoice state, pushes to Sage</div>
+        <div class="posting-output">state → Posted</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">+days</div>
+        <div class="posting-actor">iRadius</div>
+        <div class="posting-action">Receives bank confirmation, writes PaymentUpdate</div>
+        <div class="posting-output">-CK1048 · $354.00</div>
+      </div>
+      <div class="posting-row">
+        <div class="posting-time">+days</div>
+        <div class="posting-actor">CieTrade</div>
+        <div class="posting-action">Reads PaymentUpdate, marks invoice Paid</div>
+        <div class="posting-output">state → Paid</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── F. CSV Schema ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">F · File Schema</span>
+      <h3>The flat-file contract</h3>
+    </div>
+    <p class="au-block-lead">
+      Every file flowing across SFTP follows a flat schema. The four key fields shown below — established in the existing CTrade ↔ iRadius contract — are the join keys that hold the entire reconciliation together.
+    </p>
+
+    <div class="csv-schema">
+      <div class="csv-schema-head">
+        <div class="csv-schema-name">Posting_NSR_MMDD.txt</div>
+        <div class="csv-schema-direction">CieTrade → iRadius</div>
+      </div>
+      <div class="csv-fields">
+        <div class="csv-field">
+          <div class="csv-field-name">UUID</div>
+          <div class="csv-field-desc">Unique identifier per record · used by iRadius internally</div>
+        </div>
+        <div class="csv-field">
+          <div class="csv-field-name">AP_BATCH_ID</div>
+          <div class="csv-field-desc">Same as Invoice # for AP batches · used to tie multiple B/Ss together</div>
+        </div>
+        <div class="csv-field">
+          <div class="csv-field-name">BUY_SELL_NUMBER</div>
+          <div class="csv-field-desc">Source transaction reference · ties the row to a CTrade B/S</div>
+        </div>
+        <div class="csv-field">
+          <div class="csv-field-name">REFERENCE_NUMBER</div>
+          <div class="csv-field-desc">Cross-reference for matching · vendor's invoice number on the AP side</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="csv-schema">
+      <div class="csv-schema-head">
+        <div class="csv-schema-name">PaymentResponse / PaymentUpdate</div>
+        <div class="csv-schema-direction">iRadius → CieTrade</div>
+      </div>
+      <div class="csv-fields">
+        <div class="csv-field">
+          <div class="csv-field-name">DOCUMENT_NUMBER</div>
+          <div class="csv-field-desc">Source identifier echoed back · join key</div>
+        </div>
+        <div class="csv-field">
+          <div class="csv-field-name">PAYMENT_REFERENCE</div>
+          <div class="csv-field-desc">Bank reference · prefix tells channel: -BA ACH · -CK check · -EF EFT</div>
+        </div>
+        <div class="csv-field">
+          <div class="csv-field-name">PAYMENT_DATE</div>
+          <div class="csv-field-desc">When the payment cleared</div>
+        </div>
+        <div class="csv-field">
+          <div class="csv-field-name">INVOICE_NUMBER + STATUS</div>
+          <div class="csv-field-desc">What the payment applies to · Fully Paid / Partially Paid / Unpaid</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── G. AP / AR / CP ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">G · The Three Flavors</span>
+      <h3>AP, AR, and Create Pay</h3>
+    </div>
+    <p class="au-block-lead">
+      Same buy/sell, same posting infrastructure, but three different posting "directions". <strong>Phase 1 of this project is AP only</strong>; AR is Phase 2. Create Pay sits between them — it's a hybrid month-end batch.
+    </p>
+
+    <div class="apar-grid">
+      <div class="apar-card ap">
+        <div class="apar-header">AP</div>
+        <div class="apar-name">Accounts Payable</div>
+        <div class="apar-desc">NSR pays a vendor (a supplier or hauler).</div>
+        <ul>
+          <li>Vendor sends NSR an invoice (email · upload · portal)</li>
+          <li>System extracts fields · matches to a B/S</li>
+          <li>Posts to Sage to record the obligation</li>
+          <li>NSR pays via check · ACH · EFT</li>
+          <li>iRadius confirms paid status back</li>
+        </ul>
+        <div class="direction">money flow · NSR → vendor</div>
+      </div>
+
+      <div class="apar-card ar">
+        <div class="apar-header">AR</div>
+        <div class="apar-name">Accounts Receivable</div>
+        <div class="apar-desc">A customer (the outlet) pays NSR. Phase 2.</div>
+        <ul>
+          <li>NSR generates the invoice in CieTrade</li>
+          <li>Sends it to the customer (email or mail)</li>
+          <li>JPMC lockbox / EDI 820 captures the remittance</li>
+          <li>iRadius applies cash to invoices</li>
+          <li>Unapplied cash, deductions, disputes routed</li>
+        </ul>
+        <div class="direction">money flow · customer → NSR</div>
+      </div>
+
+      <div class="apar-card cp">
+        <div class="apar-header">CP</div>
+        <div class="apar-name">Create Pay</div>
+        <div class="apar-desc">Month-end batch for CP-terms counterparties (CP15, CP30, CP45). Hybrid.</div>
+        <ul>
+          <li>Triggered on biz day 10–11 after period close</li>
+          <li><strong style="color:var(--text)">Net positive row → AP invoice</strong> (NSR pays them)</li>
+          <li><strong style="color:var(--text)">Net negative row → AR invoice</strong> (they pay NSR)</li>
+          <li>Same batch, mixed direction</li>
+          <li>Atomic post · locked after period close</li>
+        </ul>
+        <div class="direction">money flow · both directions</div>
+      </div>
+    </div>
+
+    <div class="quote-callout">
+      Create Pay AP terms — when it is net positive, then it is AP invoice. When net is negative, then it is AR invoice that is put. So it's completely related to AP.
+      <span class="attribution">— Discovery transcript, clarifying Create Pay scope</span>
+    </div>
+  </div>
+
+  <!-- ─── H. iRadius Loop ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">H · The Replacement</span>
+      <h3>What iRadius does today — and what we're replacing</h3>
+    </div>
+    <p class="au-block-lead">
+      iRadius is an automation layer NSR added on top of Sage to avoid manually reconciling every invoice. Today, iRadius can't match every invoice cleanly because it doesn't know how to handle all of NSR's invoice shapes — particularly the L3 grouped case. <strong>That's the gap TechJays is filling.</strong>
+    </p>
+
+    <div class="status-grid">
+      <div class="status-card fully">
+        <div class="status-side">AP · AR</div>
+        <div class="status-name">Fully Paid</div>
+        <div class="status-desc">Payment matched to invoice; full amount applied; ledger balanced.</div>
+      </div>
+      <div class="status-card partial">
+        <div class="status-side">AP · AR</div>
+        <div class="status-name">Partially Paid</div>
+        <div class="status-desc">Some money applied, but invoice total not covered. Left open.</div>
+      </div>
+      <div class="status-card unpaid">
+        <div class="status-side">AP · AR</div>
+        <div class="status-name">Unpaid</div>
+        <div class="status-desc">Posted but no payment received yet. The aging clock is running.</div>
+      </div>
+      <div class="status-card unapplied">
+        <div class="status-side">AR ONLY</div>
+        <div class="status-name">Unapplied Cash</div>
+        <div class="status-desc">Money received but no clear invoice match. Sits in unapplied bucket until disposed.</div>
+      </div>
+      <div class="status-card applied">
+        <div class="status-side">AR ONLY</div>
+        <div class="status-name">DMS / Disputes</div>
+        <div class="status-desc">Deductions, short-pays, and customer disputes routed to AM or AR for resolution.</div>
+      </div>
+    </div>
+
+    <div class="quote-callout">
+      Sage is an accounting system which is purely manual. It's a big process — does a person sit and check whether this is completely paid or not? iRadius is the automation. So for me, everything is an end-of-day invoice. iRadius helps to clarify whether my invoices have been paid or not.
+      <span class="attribution">— Discovery transcript, on why iRadius exists</span>
+    </div>
+  </div>
+
+  <!-- ─── I. Glossary ─── -->
+  <div class="au-block">
+    <div class="au-block-head">
+      <span class="au-block-num">I · Glossary</span>
+      <h3>Terms you'll see across the docs</h3>
+    </div>
+    <p class="au-block-lead">
+      Quick reference for the domain-specific terms that show up in the SOW, transcripts, and sample invoices.
+    </p>
+    <div class="glossary">
+      <div class="glossary-row">
+        <div class="glossary-term">Buy/Sell <span class="alias">B/S · BS</span></div>
+        <div class="glossary-def">A single load of recyclable material moving from supplier → hauler → outlet. The atomic transaction unit in CieTrade. Every cost, revenue, ledger, and invoice traces back to a B/S.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Counterparty <span class="alias">CPID</span></div>
+        <div class="glossary-def">Any third party NSR transacts with — supplier, hauler, or outlet. Identified by <code>CPID</code>. Has address, billing terms, IsRemit flag, IsActive flag.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Order</div>
+        <div class="glossary-def">A rate negotiation. Defines what NSR will pay (or charge) per unit of a material for a duration of time. Sets the price baseline that ledgers compute against.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Ledger</div>
+        <div class="glossary-def">Per-party financial record generated from a B/S. One B/S can produce 2–3+ ledgers (one per party involved). Ledgers get aggregated into invoices.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Grade lines</div>
+        <div class="glossary-def">Material classification on the B/S. Tied to expenses (hauler/outlet costs). Different grades have different pricing per the order.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">CieTrade <span class="alias">CTrade · CTR</span></div>
+        <div class="glossary-def">The ERP NSR runs operations on. All B/Ss, ledgers, and invoice generation happen here.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Sage</div>
+        <div class="glossary-def">Accounting platform. Receives invoice postings, tracks money in/out, supports tax calculation. Filled by SFTP feed + manual entries.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">iRadius <span class="alias">HighRadius · IRDS</span></div>
+        <div class="glossary-def">Current automation between CieTrade and Sage. Reads payment files, matches to invoices, writes status back. Being augmented/replaced for AP coverage by this project.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">JPMC</div>
+        <div class="glossary-def">JPMorgan Chase — NSR's bank. Drops customer remittance files (lockbox ZIPs, EDI 820) into SFTP for the AR side (Phase 2).</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">AP Batch <span class="alias">batch_id = invoice #</span></div>
+        <div class="glossary-def">A group of ledgers posted together as one accounting record. Batch ID and invoice number are the same value.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Posting</div>
+        <div class="glossary-def">The act of writing a batch to SFTP for downstream systems (Sage / iRadius) to consume. Two cadences: AP outbound twice daily, response inbound daily ~09:00.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Create Pay <span class="alias">CP-terms · CP15 · CP30 · CP45</span></div>
+        <div class="glossary-def">Month-end invoice generation for counterparties on CP payment terms. Net positive → AP, net negative → AR. Atomic batch at biz day 10–11.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">DND</div>
+        <div class="glossary-def">Discovery & Design — the formal scoping phase that comes after SOW signoff and before implementation. Where final scope is locked.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">DMS</div>
+        <div class="glossary-def">AR-side terminology for deduction management state. Used by iRadius for tracking customer disputes / short pays.</div>
+      </div>
+      <div class="glossary-row">
+        <div class="glossary-term">Unapplied Cash</div>
+        <div class="glossary-def">AR-side: money received with no clear invoice to apply it against. Sits in a holding bucket until reconciled.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================== PIPELINE ===================== -->
+<section id="pipeline">
+  <div class="section-head">
+    <div class="eyebrow">The Flow</div>
+    <h2>Invoice-to-Post Pipeline</h2>
+    <p>Every invoice flows left-to-right through ingestion, OCR, vendor resolution, B/S matching, validation, and posting. Exceptions and special workflows branch off. Hover the nodes to trace the path.</p>
+  </div>
+  <div class="pipeline-wrap">
+    <svg id="pipeline-svg" viewBox="0 0 1400 640" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5eead4" />
+        </marker>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#f87171" opacity="0.6" />
+        </marker>
+        <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#a78bfa" opacity="0.7" />
+        </marker>
+        <linearGradient id="flowgrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#60a5fa"/>
+          <stop offset="50%" stop-color="#5eead4"/>
+          <stop offset="100%" stop-color="#34d399"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Sources -->
+      <g data-node="source-email" class="n">
+        <rect class="node-rect source" x="20" y="60" width="180" height="64" />
+        <text class="node-title" x="110" y="88" text-anchor="middle">Email · APayable@</text>
+        <text class="node-sub" x="110" y="108" text-anchor="middle">MS Graph · ≤60s poll</text>
+      </g>
+      <g data-node="source-upload" class="n">
+        <rect class="node-rect source" x="20" y="140" width="180" height="64" />
+        <text class="node-title" x="110" y="168" text-anchor="middle">Manual Upload</text>
+        <text class="node-sub" x="110" y="188" text-anchor="middle">drag &amp; drop · batch</text>
+      </g>
+      <g data-node="source-portal" class="n">
+        <rect class="node-rect source" x="20" y="220" width="180" height="64" />
+        <text class="node-title" x="110" y="248" text-anchor="middle">Portal Scrape</text>
+        <text class="node-sub" x="110" y="268" text-anchor="middle">WC · GFL · WM daily</text>
+      </g>
+
+      <!-- Merge paths to M1 -->
+      <path class="flow-path active" d="M 200 92 C 260 92, 260 172, 320 172" marker-end="url(#arrow)" />
+      <path class="flow-path active" d="M 200 172 L 320 172" marker-end="url(#arrow)" />
+      <path class="flow-path active" d="M 200 252 C 260 252, 260 172, 320 172" marker-end="url(#arrow)" />
+
+      <!-- Main pipeline stages -->
+      <g data-node="module-1" class="n">
+        <rect class="node-rect main" x="320" y="140" width="160" height="64" />
+        <text class="node-title" x="400" y="168" text-anchor="middle">1 · Ingestion</text>
+        <text class="node-sub" x="400" y="188" text-anchor="middle">unified invoice record</text>
+      </g>
+      <path class="flow-path active" d="M 480 172 L 540 172" marker-end="url(#arrow)" />
+      <g data-node="module-2" class="n">
+        <rect class="node-rect main" x="540" y="140" width="160" height="64" />
+        <text class="node-title" x="620" y="168" text-anchor="middle">2 · OCR &amp; Extract</text>
+        <text class="node-sub" x="620" y="188" text-anchor="middle">27 header / 5 line fields</text>
+      </g>
+      <path class="flow-path active" d="M 700 172 L 760 172" marker-end="url(#arrow)" />
+      <g data-node="module-3" class="n">
+        <rect class="node-rect main" x="760" y="140" width="160" height="64" />
+        <text class="node-title" x="840" y="168" text-anchor="middle">3 · Vendor Match</text>
+        <text class="node-sub" x="840" y="188" text-anchor="middle">CPID · addr-aware</text>
+      </g>
+      <path class="flow-path active" d="M 920 172 L 980 172" marker-end="url(#arrow)" />
+      <g data-node="module-4" class="n">
+        <rect class="node-rect main" x="980" y="140" width="160" height="64" />
+        <text class="node-title" x="1060" y="168" text-anchor="middle">4 · B/S Match</text>
+        <text class="node-sub" x="1060" y="188" text-anchor="middle">8-step cascade</text>
+      </g>
+      <path class="flow-path active" d="M 1140 172 L 1200 172" marker-end="url(#arrow)" />
+      <g data-node="module-5" class="n">
+        <rect class="node-rect main" x="1200" y="140" width="160" height="64" />
+        <text class="node-title" x="1280" y="168" text-anchor="middle">5 · Validation</text>
+        <text class="node-sub" x="1280" y="188" text-anchor="middle">11 checks · gate</text>
+      </g>
+
+      <!-- Down to posting -->
+      <path class="flow-path active" d="M 1280 204 L 1280 280 L 1060 280 L 1060 340" marker-end="url(#arrow)" />
+      <g data-node="module-7" class="n">
+        <rect class="node-rect terminal" x="980" y="340" width="160" height="64" />
+        <text class="node-title" x="1060" y="368" text-anchor="middle">7 · Posting</text>
+        <text class="node-sub" x="1060" y="388" text-anchor="middle">CieTrade SFTP · twice/day</text>
+      </g>
+      <path class="flow-path active" d="M 1060 404 L 1060 450" marker-end="url(#arrow)" />
+      <g data-node="module-7-2">
+        <rect class="node-rect terminal" x="980" y="450" width="160" height="54" fill-opacity="0.7" />
+        <text class="node-title" x="1060" y="472" text-anchor="middle">Posted → Paid</text>
+        <text class="node-sub" x="1060" y="490" text-anchor="middle">PaymentResponse · Update</text>
+      </g>
+
+      <!-- Exception branch -->
+      <path class="flow-path branch" d="M 1280 204 L 1280 430" marker-end="url(#arrow-red)" />
+      <g data-node="exceptions" class="n">
+        <rect class="node-rect exception" x="1200" y="430" width="180" height="64" />
+        <text class="node-title" x="1290" y="458" text-anchor="middle">Exception Queues</text>
+        <text class="node-sub" x="1290" y="478" text-anchor="middle">20 types · AP · AM · Mgr</text>
+      </g>
+
+      <!-- Special workflow branch (from Module 1/2 classification) -->
+      <path class="flow-path branch" d="M 400 204 L 400 340" marker-end="url(#arrow-purple)" />
+      <g data-node="special" class="n">
+        <rect class="node-rect special" x="320" y="340" width="180" height="64" />
+        <text class="node-title" x="410" y="368" text-anchor="middle">Special Workflows</text>
+        <text class="node-sub" x="410" y="388" text-anchor="middle">Credit · Confidential · Stmt · CP</text>
+      </g>
+
+      <!-- Cross-cutting strip -->
+      <g>
+        <rect x="20" y="540" width="1360" height="72" fill="rgba(94,234,212,0.04)" stroke="#323b5c" stroke-width="1" rx="10" />
+        <text x="40" y="566" font-family="JetBrains Mono" font-size="10" fill="#9aa2b9" letter-spacing="1.5">CROSS-CUTTING · ALL MODULES</text>
+        <g font-family="Inter" font-size="12" fill="#e8ecf7" font-weight="500">
+          <text x="40" y="590">8 · Collaboration + Roles</text>
+          <text x="220" y="590">9 · Search + Reports</text>
+          <text x="380" y="590">10 · Audit Trail</text>
+          <text x="520" y="590">11 · Auth + Security</text>
+          <text x="700" y="590">12 · Integration (SFTP · JPMC)</text>
+          <text x="920" y="590">13 · Portal UI</text>
+          <text x="1040" y="590">14 · AR (Phase 2)</text>
+        </g>
+      </g>
+
+      <!-- Pulsing dot animated along the main pipeline -->
+      <circle class="pulse-dot" r="5">
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="0"
+          path="M 110 92 C 260 92, 260 172, 400 172 L 620 172 L 840 172 L 1060 172 L 1280 172 L 1280 280 L 1060 280 L 1060 372" />
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.95;1" dur="7s" repeatCount="indefinite" />
+      </circle>
+      <circle class="pulse-dot purple" r="4">
+        <animateMotion dur="7s" begin="2s" repeatCount="indefinite" rotate="0"
+          path="M 110 252 C 260 252, 260 172, 400 172 L 400 372" />
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.95;1" dur="7s" begin="2s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+
+    <div class="pipeline-legend">
+      <div class="lg-item"><span class="lg-swatch" style="border-color: var(--blue)"></span>Source</div>
+      <div class="lg-item"><span class="lg-swatch" style="border-color: var(--teal)"></span>Main pipeline</div>
+      <div class="lg-item"><span class="lg-swatch" style="border-color: var(--green)"></span>Terminal (Posted/Paid)</div>
+      <div class="lg-item"><span class="lg-swatch" style="border-color: var(--red)"></span>Exception branch</div>
+      <div class="lg-item"><span class="lg-swatch" style="border-color: var(--purple)"></span>Special workflow branch</div>
+      <div class="lg-item" style="margin-left:auto;color:var(--text-muted)">Click any node to open module detail →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SAMPLE FLOW ===================== -->
+<section id="sample-flow">
+  <div class="section-head">
+    <div class="eyebrow">Sample Flows</div>
+    <h2>End-to-end walkthroughs</h2>
+    <p>Concrete examples of how a single invoice moves through the pipeline under different conditions. Pick a card to expand the full walkthrough. More flows are being added as each use case is modeled.</p>
+  </div>
+
+  <div class="flow-gallery" id="flow-gallery">
+    <div class="flow-card" data-flow="happy-path" style="--accent: var(--teal); --tag-bg: rgba(94,234,212,0.1); --tag-border: rgba(94,234,212,0.3);">
+      <div class="flow-card-tag">HAPPY PATH</div>
+      <div class="flow-card-title">Email → Posted in one clean pass</div>
+      <div class="flow-card-desc">A vendor emails a PDF that matches cleanly — single B/S found on Step 3, all 11 validation checks green, human Submits once, SFTP posts to CieTrade, payment reconciles. The 80% path.</div>
+      <div class="flow-card-meta">
+        <span>9 stages · Modules 1 → 10</span>
+        <span class="flow-card-cta">Open flow →</span>
+      </div>
+    </div>
+
+    <div class="flow-card disabled" style="--accent: var(--red); --tag-bg: rgba(248,113,113,0.1); --tag-border: rgba(248,113,113,0.3);">
+      <div class="flow-card-tag">EXCEPTION</div>
+      <div class="flow-card-title">Ship date off by 3 days</div>
+      <div class="flow-card-desc">Invoice ship date lands outside the ±1 day tolerance. Validation hard-stops and the invoice forks into the "Ship Date Mismatch" queue for AP resolution, never reaching posting.</div>
+      <div class="flow-card-meta">
+        <span>Module 5.1 → 5.4 queue</span>
+        <span class="soon-badge">SOON</span>
+      </div>
+    </div>
+
+    <div class="flow-card disabled" style="--accent: var(--pink); --tag-bg: rgba(244,114,182,0.1); --tag-border: rgba(244,114,182,0.3);">
+      <div class="flow-card-tag">CREDIT MEMO</div>
+      <div class="flow-card-title">Vendor credit, contra offset</div>
+      <div class="flow-card-desc">Document classified as Credit Memo bypasses B/S matching entirely and lands in the dedicated Credit Memo queue — picked up on a future check run, offsetting outstanding invoices A, B, C.</div>
+      <div class="flow-card-meta">
+        <span>Module 6.1</span>
+        <span class="soon-badge">SOON</span>
+      </div>
+    </div>
+
+    <div class="flow-card disabled" style="--accent: var(--blue); --tag-bg: rgba(96,165,250,0.1); --tag-border: rgba(96,165,250,0.3);">
+      <div class="flow-card-tag">PORTAL SCRAPE</div>
+      <div class="flow-card-title">Waste Management · new-tab fallback</div>
+      <div class="flow-card-desc">WM has no direct-PDF-download control. Playwright logs in, navigates invoice history, opens the PDF in a new tab, saves it, and injects the file into the standard email pipeline as if it had been mailed.</div>
+      <div class="flow-card-meta">
+        <span>Module 1.3</span>
+        <span class="soon-badge">SOON</span>
+      </div>
+    </div>
+
+    <div class="flow-card disabled" style="--accent: var(--purple); --tag-bg: rgba(167,139,250,0.1); --tag-border: rgba(167,139,250,0.3);">
+      <div class="flow-card-tag">CONFIDENTIAL</div>
+      <div class="flow-card-title">High-sensitivity · direct-to-Sage</div>
+      <div class="flow-card-desc">Invoice arrives at the separate confidential mailbox, subject marked "High". Access is restricted to Group A; B/S matching is skipped entirely; posts directly to Sage with indefinite retention.</div>
+      <div class="flow-card-meta">
+        <span>Module 6.2</span>
+        <span class="soon-badge">SOON</span>
+      </div>
+    </div>
+
+    <div class="flow-card disabled" style="--accent: var(--amber); --tag-bg: rgba(251,191,36,0.1); --tag-border: rgba(251,191,36,0.3);">
+      <div class="flow-card-tag">CREATE PAYS</div>
+      <div class="flow-card-title">End-of-month CP-terms batch</div>
+      <div class="flow-card-desc">On business day 10–11, CP-terms counterparties are batch-uploaded (CSV manifest + PDFs). Net positive rows become AP invoices; net negative rows flip to AR. One-click atomic batch post.</div>
+      <div class="flow-card-meta">
+        <span>Module 6.4</span>
+        <span class="soon-badge">SOON</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-detail-wrap" id="flow-detail-wrap">
+    <div class="flow-detail" data-flow="happy-path">
+      <div class="flow-detail-head" style="--accent: var(--teal)">
+        <div>
+          <div class="fdh-title">Happy Path · Email → Posted</div>
+          <div class="fdh-sub">Homewood Disposal Service → Rice Baking Co. · $354.00 · 4.45 short tons</div>
+        </div>
+        <button class="flow-detail-close" type="button">Collapse ✕</button>
+      </div>
+
+      <div class="flow-intro">
+    <div class="flow-intro-copy">
+      <h3>Why this example</h3>
+      <p>Three channels feed invoices into the system: <span class="kbd">Email</span>, <span class="kbd">Manual Upload</span>, and <span class="kbd">Portal Scrape</span>. This walk-through follows the most common path — email — but the key insight is that once the invoice record is created, <strong>every channel converges into the same downstream pipeline</strong>. A portal-scraped PDF is injected into the email pipeline as if it had been mailed. A hand-uploaded PDF joins the same OCR stage. From step 2 onwards, the code path is identical.</p>
+      <p>The invoice on the right has three line items, 4.45 short tons of material hauled, a fuel surcharge, and ships on <span class="kbd">2026-04-17</span>. Everything in this walk-through maps to actual features in the SOW — click any <strong style="color:var(--text)">module badge</strong> on a step to jump to its feature list.</p>
+    </div>
+    <div class="invoice-preview">
+      <div class="ip-head">Homewood Disposal Service, Inc.</div>
+      <div class="ip-sub">billing@homewood.com &nbsp;→&nbsp; APayable@nsrecycle.com</div>
+      <div class="ip-row"><span>Invoice #</span><span class="v">12-32987-7</span></div>
+      <div class="ip-row"><span>Invoice Date</span><span class="v">2026-04-19</span></div>
+      <div class="ip-row"><span>Ship Date</span><span class="v">2026-04-17</span></div>
+      <div class="ip-row"><span>Bill To</span><span class="v">Rice Baking Co.</span></div>
+      <div class="ip-row"><span>Site</span><span class="v">Portland</span></div>
+      <div class="ip-lines">
+        <div class="ip-line"><span>Hauling · 4.45 short tons</span><span>$260.00</span></div>
+        <div class="ip-line"><span>Dump charges per ton</span><span>$19.00</span></div>
+        <div class="ip-line"><span>42-yard compact empty + fuel adj</span><span>$75.00</span></div>
+      </div>
+      <div class="ip-total"><span>Total</span><span class="v">$354.00</span></div>
+    </div>
+  </div>
+
+  <div class="flow-timeline">
+
+    <div class="flow-step n-1">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Email arrives at AP inbox</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="1">MODULE 01 · INGESTION</span>
+          <span class="flow-step-time">T + 0 to T + 60s</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        Homewood's billing system emails the invoice PDF to <code>APayable@nsrecycle.com</code>. Within a minute, the MS Graph email monitor polls, sees the new message, and runs three invariants before accepting it:
+        <ul>
+          <li><strong>Unread-preservation</strong> — read without marking read, so AP humans sharing the inbox still see it as new.</li>
+          <li><strong>Forwarding-chain check</strong> — trace the chain; use the <em>original</em> sender (Homewood), not a forwarder, for vendor identity.</li>
+          <li><strong>SHA-256 dedupe</strong> — hash the PDF bytes against the 30-day dedupe table to reject accidental re-forwards.</li>
+        </ul>
+        A new invoice record is created: <code>UUID abc123…</code>, <code>source = email</code>.
+      </div>
+    </div>
+
+    <div class="flow-step n-2">
+      <div class="flow-step-head">
+        <div class="flow-step-title">OCR and 27-field extraction</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="2">MODULE 02 · OCR</span>
+          <span class="flow-step-time">~ 30s</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        Azure Document Intelligence runs per-page with <strong>bounding boxes retained</strong> so the UI can highlight fields on the PDF when a user clicks them. The header extractor returns the canonical 27 fields; every field carries an independent confidence score.
+        <table class="data-table">
+          <thead><tr><th>Field</th><th>Extracted Value</th><th>Confidence</th></tr></thead>
+          <tbody>
+            <tr><td>Vendor</td><td>Homewood Disposal Service</td><td class="conf-high">0.98</td></tr>
+            <tr><td>Bill-To</td><td>Rice Baking Company</td><td class="conf-high">0.97</td></tr>
+            <tr><td>Invoice #</td><td>12-32987-7</td><td class="conf-high">0.99</td></tr>
+            <tr><td>Ship Date</td><td>2026-04-17</td><td class="conf-mid">0.94</td></tr>
+            <tr><td>Subtotal</td><td>$319.00</td><td class="conf-high">0.98</td></tr>
+            <tr><td>Fuel Surcharge</td><td>$35.00</td><td class="conf-high">0.96</td></tr>
+            <tr><td>Invoice Total</td><td>$354.00</td><td class="conf-high">0.99</td></tr>
+          </tbody>
+        </table>
+        Line extractor finds <strong>3 lines</strong>. UoM normalizer stores both <code>short_tons</code> and <code>lbs</code>. Document classifier labels this <code>Invoice</code> (not Credit Memo, not Statement). All mandatory fields populated → skips the low-confidence hold queue.
+      </div>
+    </div>
+
+    <div class="flow-step n-3">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Vendor resolution → CPID assignment</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="3">MODULE 03 · VENDOR</span>
+          <span class="flow-step-time">~ 2s</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        Homewood is looked up in the CPID master (28k+ rows, synced daily at 19:00 from CieTrade's <code>VM_Extract</code>). The matching engine runs a weighted cascade:
+        <ul>
+          <li><strong>Fuzzy name match</strong> — Levenshtein + token-set ratio returns a single strong candidate.</li>
+          <li><strong>Remit-To address match</strong> — invoice's remit address hits an <code>IsRemit=1</code> row for <code>CPID HOMEWOOD001</code>. This is the "<em>50 Waste Managements</em>" problem solved by address-aware indexing.</li>
+          <li><strong>Stream-history tiebreak</strong> — Ops AI's StreamMatchingService confirms prior Rice Baking ↔ Homewood B/S history.</li>
+        </ul>
+        Composite confidence <strong>0.97</strong> ≥ 0.95 threshold → <strong>auto-assigns CPID</strong>. Payment method, terms, Sage #, and tax code auto-populate from the master.
+      </div>
+    </div>
+
+    <div class="flow-step n-4">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Buy/Sell matching — the critical step</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="4">MODULE 04 · B/S MATCH</span>
+          <span class="flow-step-time">~ 3s</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        The invoice has no explicit B/S number and no aliases point at one, so the <strong>8-step fallback cascade</strong> runs. It stops at the first qualifying match.
+        <div class="cascade">
+          <div class="row skipped"><span class="step">1</span><span>Release / Ref Number + Vendor</span><span class="result">no release #</span></div>
+          <div class="row skipped"><span class="step">2</span><span>Invoice # vs B/S Release # + Vendor</span><span class="result">no hit</span></div>
+          <div class="row hit"><span class="step">3</span><span>Vendor + Site + Ship Date + Total Amount</span><span class="result">match · 99%</span></div>
+          <div class="row" style="opacity:0.3"><span class="step">4</span><span>Vendor + Site + Ship Date</span><span class="result">—</span></div>
+          <div class="row" style="opacity:0.3"><span class="step">5</span><span>Vendor + Total + Ship Date</span><span class="result">—</span></div>
+          <div class="row" style="opacity:0.3"><span class="step">6–8</span><span>Remaining fallbacks</span><span class="result">—</span></div>
+        </div>
+        Result: single B/S header <code>BS-10342</code>. Per-line 5-step match runs against it:
+        <ul>
+          <li>Invoice hauling $260 ↔ B/S hauling line $260 — <strong>Step 1</strong> (total line amount) ✓</li>
+          <li>4.45 short tons ↔ B/S 4.45 short tons — <strong>Step 3</strong> (quantity + UoM) ✓</li>
+          <li>Dump charges + fuel adj → single B/S expense line $35 — <strong>Step 5</strong> (combined surcharge) ✓</li>
+        </ul>
+        Invoice-total invariant: <code>$260 + $35 + … = $354</code> within ±$0.10 ✓. Not a contra, no Flip-to-AR needed.
+      </div>
+    </div>
+
+    <div class="flow-step n-5">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Parallel validation + state machine walk</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="5">MODULE 05 · VALIDATION</span>
+          <span class="flow-step-time">~ 1s (parallel)</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        All <strong>11 pre-posting checks</strong> run in parallel and all pass:
+        <ul>
+          <li>Vendor valid · no duplicate · mandatory fields · B/S# valid · all lines matched · no price variance · no weight/qty variance · B/S status = Invoiced · ship date within ±1 day · Bill-To fuzzy matches NSR legal entity · tax code matches B/S tax code.</li>
+        </ul>
+        The state machine walks, every transition hitting the hash-chained audit log:
+        <div class="state-walk">
+          <span class="s">Received</span><span class="arrow">→</span>
+          <span class="s">OCR_In_Progress</span><span class="arrow">→</span>
+          <span class="s">Vendor_Matching</span><span class="arrow">→</span>
+          <span class="s">Duplicate_Check</span><span class="arrow">→</span>
+          <span class="s">B/S_Matching</span><span class="arrow">→</span>
+          <span class="s">Validation</span><span class="arrow">→</span>
+          <span class="s terminal">Ready_For_Submission</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step n-6">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Human Submit — the intentional pause</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="5">§ 5.3 · STAGE 1</span>
+          <span class="flow-step-time">~ 20s human time</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        We're in Phase 1, so <code>auto_post_enabled = false</code>. The invoice lands in the <strong>Ready_For_Submission</strong> queue and waits for a human.
+        The AP Processor opens the 3-pane UI:
+        <ul>
+          <li><strong>Left</strong> — PDF render; click any extracted field → highlights its bounding box on the PDF.</li>
+          <li><strong>Middle</strong> — the 27 editable header fields, each with a color-coded confidence badge.</li>
+          <li><strong>Right</strong> — the matched B/S side-by-side, showing "<em>Step 3 · Vendor + Site + Date + Total · 99%</em>" rationale and the line-level $ compare.</li>
+        </ul>
+        Everything looks right. They click <strong>Submit</strong>. In Stage 2, after this vendor clears the §5.3.3 gate criteria, AI submits automatically and the human only steps in for exceptions. In Stage 3, whitelisted low-risk vendors post fully autonomously.
+      </div>
+    </div>
+
+    <div class="flow-step n-7">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Posting to CieTrade (SFTP)</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="7">MODULE 07 · POSTING</span>
+          <span class="flow-step-time">next 14:00 run</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        At the next scheduled cadence (twice daily):
+        <ul>
+          <li>Row tagged <code>UUID abc123…</code> + <code>source_system = CIETRADE_PATH</code> is written to <code>Posting_NSR_0424.txt</code> (pipe-delimited).</li>
+          <li>SFTP write → post-write <strong>read-back verification</strong> → SFTP ACK captured to the outbound audit log (timestamp, row count, UUIDs).</li>
+          <li>State → <code>Posted</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow-step n-8">
+      <div class="flow-step-head">
+        <div class="flow-step-title">Payment confirmation and reconciliation</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="7">MODULE 07.2 · INBOUND</span>
+          <span class="flow-step-time">+ 1 day → + ~9 days</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        <ul>
+          <li><strong>Next day ~09:00</strong> — CieTrade's <code>PaymentResponse</code> file arrives. Row matched by UUID → <code>POSTED</code> confirmed. (If it had come back <code>FAILED</code>, it would fork into an exception queue.)</li>
+          <li><strong>A few days later</strong> — <code>PaymentUpdate</code> arrives, reference pattern <code>-CK1048</code> (check, vs <code>-BA</code> ACH or <code>-EF</code> EFT). State → <code>Paid</code>. Check # and date surface in the "<em>Have you paid this?</em>" timeline.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow-step n-9">
+      <div class="flow-step-head">
+        <div class="flow-step-title">The final audit trail</div>
+        <div class="flow-step-meta">
+          <span class="flow-step-module" data-mod="10">MODULE 10 · AUDIT</span>
+          <span class="flow-step-time">7-year retention</span>
+        </div>
+      </div>
+      <div class="flow-step-body">
+        Search "Rice Baking" or "12-32987" in the global index → the full timeline reconstructs from the hash-chained audit log:
+        <div class="final-log">
+<span class="ts">2026-04-19 10:14:02</span> &nbsp;<span class="ev">Received</span><span class="ctx">email · billing@homewood.com · UUID abc123…</span><br/>
+<span class="ts">2026-04-19 10:14:28</span> &nbsp;<span class="ev">OCR_Complete</span><span class="ctx">avg confidence 0.97 · 27/27 fields</span><br/>
+<span class="ts">2026-04-19 10:14:30</span> &nbsp;<span class="ev">Vendor_Assigned</span><span class="ctx">CPID HOMEWOOD001 · auto · conf 0.97</span><br/>
+<span class="ts">2026-04-19 10:14:33</span> &nbsp;<span class="ev">B/S_Matched</span><span class="ctx">BS-10342 · Step 3 · 99%</span><br/>
+<span class="ts">2026-04-19 10:14:34</span> &nbsp;<span class="ev">Validated</span><span class="ctx">11/11 pass</span><br/>
+<span class="ts">2026-04-19 10:16:52</span> &nbsp;<span class="ev">Submitted</span><span class="ctx">Jane Doe · AP · reviewed 18s</span><br/>
+<span class="ts">2026-04-19 14:02:11</span> &nbsp;<span class="ev">Posted</span><span class="ctx">Posting_NSR_0424.txt · SFTP ACK OK</span><br/>
+<span class="ts">2026-04-28 09:04:07</span> &nbsp;<span class="ev">Paid</span><span class="ctx">Check #1048 · $354.00 · -CK</span>
+        </div>
+        <div class="touch-callout">
+          <div class="touch-metric">
+            <div class="m-val green">~ 20s</div>
+            <div class="m-lbl">Total human touch time</div>
+          </div>
+          <div class="touch-metric">
+            <div class="m-val teal">~ 9 days</div>
+            <div class="m-lbl">Email to check cleared (mostly CieTrade pay run)</div>
+          </div>
+        </div>
+        <p style="margin-top:20px;color:var(--text-dim);font-size:13px;line-height:1.65">
+          That's the happy path. Any deviation — vendor not in master, line doesn't balance, tax code mismatch, ship date off by 3 days — forks the invoice into one of the <strong style="color:var(--text)">20 exception queues</strong> below instead of flowing straight through.
+        </p>
+      </div>
+    </div>
+
+      </div><!-- /flow-timeline -->
+    </div><!-- /flow-detail -->
+  </div><!-- /flow-detail-wrap -->
+</section>
+
+<!-- ===================== MODULES ===================== -->
+<section id="modules">
+  <div class="section-head">
+    <div class="eyebrow">Scope Breakdown</div>
+    <h2>14 Modules · Click for Detail</h2>
+    <p>Each card opens a side-panel with the full feature list from the SOW, tagged by reuse status. Modules 1–7 form the sequential pipeline; 8–13 are cross-cutting; 14 is AR (Phase 2).</p>
+  </div>
+  <div class="module-grid" id="module-grid"></div>
+</section>
+
+<!-- ===================== HUMAN LOOP ===================== -->
+<section id="loop">
+  <div class="section-head">
+    <div class="eyebrow">§5.3 · Stabilization Gate</div>
+    <h2>Three-Stage Human-Loop Progression</h2>
+    <p>Added to v1.1 post-POC review. The system does not go auto-pilot on day one — it earns autonomy per vendor class as quality signals (auto-post rate, vendor-match rate, Over-10-Day trend) stabilize.</p>
+  </div>
+  <div class="loop-wrap">
+    <div class="loop-stages">
+      <div class="stage stage-1">
+        <div class="stage-num">STAGE 1</div>
+        <div class="stage-title">Human-in-the-loop</div>
+        <div class="stage-sub">Phase 1 default (0–3 months)</div>
+        <div class="stage-desc">Every line matched and submitted by a user. AI shows candidates with rationale and confidence; human clicks Submit. Auto-post disabled globally.</div>
+        <div class="stage-state">auto_post_enabled = false</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage stage-2">
+        <div class="stage-num">STAGE 2</div>
+        <div class="stage-title">Human-on-the-loop</div>
+        <div class="stage-sub">Post-gate, per-vendor rollout</div>
+        <div class="stage-desc">AI proposes matches and submits; user reviews in Ready-for-Submission queue and intervenes only on exceptions. Enabled when §5.3.3 gate criteria clear.</div>
+        <div class="stage-state">per-vendor flag + SLA watch</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage stage-3">
+        <div class="stage-num">STAGE 3</div>
+        <div class="stage-title">AI-autonomous</div>
+        <div class="stage-sub">Whitelisted vendor classes</div>
+        <div class="stage-desc">Fully automatic match + submit for low-risk vendors. Credit memos and confidential invoices remain permanently manual. All actions still audit-logged.</div>
+        <div class="stage-state">whitelist-only · audited</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REUSE MAP ===================== -->
+<section id="reuse">
+  <div class="section-head">
+    <div class="eyebrow">Build vs Reuse</div>
+    <h2>Ops AI Reuse Map</h2>
+    <p>Roughly 20–25% of engineering effort saved by leveraging the existing Ops AI platform. The build splits into three buckets: direct reuse, extend-on-top, and from-scratch.</p>
+  </div>
+  <div class="reuse-layout">
+    <div class="reuse-col leveraged">
+      <h3><span class="dot"></span>Leveraged</h3>
+      <div class="col-sub">direct reuse · no modification</div>
+      <ul class="reuse-list">
+        <li><span>Stream matching service</span><span class="extension">tiebreak in 8-step hierarchy</span></li>
+        <li><span>buy_sell_service post-to-ar</span><span class="extension">direct call</span></li>
+        <li><span>VM_Extract SFTP ingestion</span><span class="extension">daily 19:00, pipe-delimited</span></li>
+        <li><span>Azure AD SAML SSO</span><span class="extension">unchanged</span></li>
+        <li><span>At-rest encryption</span><span class="extension">unchanged</span></li>
+        <li><span>TLS 1.2+ · session mgmt</span><span class="extension">unchanged</span></li>
+      </ul>
+    </div>
+    <div class="reuse-col extended">
+      <h3><span class="dot"></span>Extended</h3>
+      <div class="col-sub">existing foundation · new surface</div>
+      <ul class="reuse-list">
+        <li><span>MS Graph email pipeline</span><span class="extension">+ AP inbox, unread logic</span></li>
+        <li><span>OCR scaffolding</span><span class="extension">+ 27-field extraction, confidence</span></li>
+        <li><span>Counterparty master sync</span><span class="extension">+ address-level index</span></li>
+        <li><span>Fuzzy name matching</span><span class="extension">+ weighted composite</span></li>
+        <li><span>Portal UI shell</span><span class="extension">+ all AP screens</span></li>
+        <li><span>SFTP client framework</span><span class="extension">+ retry, integrity</span></li>
+        <li><span>JIT provisioning</span><span class="extension">+ AP role mapping</span></li>
+      </ul>
+    </div>
+    <div class="reuse-col newcol">
+      <h3><span class="dot"></span>New</h3>
+      <div class="col-sub">built from scratch</div>
+      <ul class="reuse-list">
+        <li><span>Vendor portal scraping</span><span class="extension">WC · GFL · WM · two strategies</span></li>
+        <li><span>B/S matching engine</span><span class="extension">8-step header · 5-step line</span></li>
+        <li><span>Validation state machine</span><span class="extension">11 checks · 11 states</span></li>
+        <li><span>20 exception queues</span><span class="extension">routing + SLA</span></li>
+        <li><span>Special workflows</span><span class="extension">Credit · Conf · Stmt · CP</span></li>
+        <li><span>CieTrade posting integration</span><span class="extension">outbound + 3 inbound feeds</span></li>
+        <li><span>Audit hash-chain</span><span class="extension">append-only · 7-year</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EXCEPTIONS ===================== -->
+<section id="exceptions">
+  <div class="section-head">
+    <div class="eyebrow">§5.4 · Exception Queues</div>
+    <h2>20 Queues, Routed by Role</h2>
+    <p>Every invoice that can't flow straight through lands in one of these queues. Color band = severity. Owner on each card shows who picks it up first.</p>
+  </div>
+  <div class="ex-grid" id="ex-grid"></div>
+</section>
+
+<!-- ===================== SPECIAL WORKFLOWS ===================== -->
+<section id="special">
+  <div class="section-head">
+    <div class="eyebrow">Module 6</div>
+    <h2>Four Special Workflow Branches</h2>
+    <p>Not every invoice fits the standard pipeline. These four branches are first-class citizens in the state machine.</p>
+  </div>
+  <div class="sw-grid">
+    <div class="sw-card" style="--accent: var(--amber)">
+      <div class="sw-icon">CM</div>
+      <div class="sw-name">Credit Memo</div>
+      <div class="sw-desc">Bypasses B/S matching. Goes to dedicated queue with contra-offset linkage display ("picked up on check run X, offsetting A, B, C"). Manual terminal states only.</div>
+    </div>
+    <div class="sw-card" style="--accent: var(--red)">
+      <div class="sw-icon">CI</div>
+      <div class="sw-name">Confidential Invoice</div>
+      <div class="sw-desc">Separate mailbox, separate Graph subscription. Sensitivity-classified (High / Low). Group-based access enforced at DB + API + URL. Direct-to-Sage posting path.</div>
+    </div>
+    <div class="sw-card" style="--accent: var(--teal)">
+      <div class="sw-icon">SR</div>
+      <div class="sw-name">Statement Reconciliation</div>
+      <div class="sw-desc">Vendor statements ingested as first-class docs. Reconciles against local ledger. Detects status mismatch, amount discrepancy, missing invoices — row by row.</div>
+    </div>
+    <div class="sw-card" style="--accent: var(--purple)">
+      <div class="sw-icon">CP</div>
+      <div class="sw-name">End-of-Month Create Pays</div>
+      <div class="sw-desc">CP-terms counterparties. Batch upload on business day 10–11 (CSV/XLSX manifest + PDFs). Net positive → AP invoice; net negative → flip to AR. Atomic batch post.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <strong style="color:var(--text)">NSR AP Automation</strong> &nbsp;·&nbsp; SOW Supporting Document v1.1 &nbsp;·&nbsp; Prepared by TechJays
+  </div>
+  <div>April 2026 · Revised post-POC review</div>
+</footer>
+</main>
+
+<!-- Drawer -->
+<div class="drawer-backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="title">
+      <div class="drawer-num" id="drawer-num"></div>
+      <div class="drawer-title" id="drawer-title"></div>
+      <div class="drawer-purpose" id="drawer-purpose"></div>
+    </div>
+    <button class="drawer-close" id="drawer-close" aria-label="Close">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script>
+/* ------------------------ DATA ------------------------ */
+const modules = [
+  { id: 1, num: "01", name: "Ingestion Pipeline", color: "var(--blue)", purpose: "Capture every incoming invoice from all sources and create a unified invoice record.",
+    counts: { new: 16, extended: 1, leveraged: 0 },
+    subsections: [
+      { id: "1.1", name: "Email Ingestion (AP Inbox Monitor)", features: [
+        {id:"1.1.1", tag:"extended", text:"AP mailbox subscription (APayable@nsrecycle.com, ≤60s poll, ≤3 min end-to-end)"},
+        {id:"1.1.2", tag:"new", text:"Unread-preservation invariant (Graph non-mutating read)"},
+        {id:"1.1.3", tag:"new", text:"Per-attachment invoice record (UUID + source metadata)"},
+        {id:"1.1.4", tag:"new", text:"Supported types: PDF, JPG, JPEG, BMP, TIF, TIFF, PNG, XLS, DOCX, EML"},
+        {id:"1.1.5", tag:"new", text:"Body-link invoice detection (vendors emailing portal URL)"},
+        {id:"1.1.6", tag:"new", text:"Supporting doc association (CODs, BOLs, weight tickets)"},
+        {id:"1.1.7", tag:"new", text:"SHA-256 file-hash deduplication (30-day window)"},
+        {id:"1.1.8", tag:"new", text:"Forwarding chain detection (use original sender)"},
+      ]},
+      { id: "1.2", name: "Manual Upload", features: [
+        {id:"1.2.1", tag:"new", text:"Drag-and-drop multi-file upload UI"},
+        {id:"1.2.2", tag:"new", text:"Batch upload for Create Pays (§6.4)"},
+        {id:"1.2.3", tag:"new", text:"Upload history view (90 days; retry)"},
+      ]},
+      { id: "1.3", name: "Vendor Portal Scraping", features: [
+        {id:"1.3.1", tag:"new", text:"Playwright per-portal modules (WM, WC, GFL) · two strategies: direct-PDF-download (WC, GFL) + open-in-new-tab fallback (WM); WM USA/Canada split"},
+        {id:"1.3.2", tag:"new", text:"Azure Key Vault credential store (~15 logins each for WC and GFL; WM sized on handover)"},
+        {id:"1.3.3", tag:"new", text:"Hot rotation of credentials (no restart)"},
+        {id:"1.3.4", tag:"new", text:"Account-number sweep per login (20–40 accounts); watermark tracking"},
+        {id:"1.3.5", tag:"new", text:"Portal-to-email routing (inject into standard pipeline)"},
+        {id:"1.3.6", tag:"new", text:"ToS/legal compliance guard (per-portal feature flag)"},
+        {id:"1.3.7", tag:"new", text:"Portal failure recovery (alerts, retries, health dashboard)"},
+        {id:"1.3.8", tag:"new", text:"WC sub-brand routing (Aeros Sanitary, Harold Lame Pacific et al. share one login surface; filter into correct account)"},
+        {id:"1.3.9", tag:"new", text:"Retention-aware pagination (~2 year portal history; watermark prevents re-pull)"},
+        {id:"1.3.10", tag:"new", text:"Email-first, portal-fallback policy (dedup against hash §1.1.7)"},
+      ]},
+    ]
+  },
+  { id: 2, num: "02", name: "OCR & Data Extraction", color: "var(--teal)", purpose: "Turn every ingested invoice into structured data ready for matching.",
+    counts: { new: 13, extended: 1, leveraged: 0 },
+    subsections: [
+      { id: "2.1", name: "OCR Engine", features: [
+        {id:"2.1.1", tag:"extended", text:"Pluggable engine (Azure Doc Intelligence / OpenAI Vision / Tesseract)"},
+        {id:"2.1.2", tag:"new", text:"Per-page OCR with layout retention (bounding boxes for citations)"},
+        {id:"2.1.3", tag:"new", text:"Per-field confidence scoring (vendor ≥0.95, amounts ≥0.90)"},
+      ]},
+      { id: "2.2", name: "Field Extraction (27 header, 5 line)", features: [
+        {id:"2.2.1", tag:"new", text:"27 header fields extracted per invoice (vendor, CPID, tax, remit, etc.)"},
+        {id:"2.2.2", tag:"new", text:"Alias resolution dictionary (Ship Date ↔ Service/Pickup/Load Date, etc.)"},
+        {id:"2.2.3", tag:"new", text:"Invoice # normalization (strip zeros/apostrophes, max 20 chars)"},
+        {id:"2.2.4", tag:"new", text:"Line-item grid extraction (sign-preserving for net invoices)"},
+        {id:"2.2.5", tag:"new", text:"Header-vs-line propagation"},
+        {id:"2.2.6", tag:"new", text:"UoM normalization (lbs → short tons, kg → lbs)"},
+        {id:"2.2.7", tag:"new", text:"Document classification: Invoice vs Credit Memo"},
+        {id:"2.2.8", tag:"new", text:"Statement classification"},
+        {id:"2.2.9", tag:"new", text:"Low-confidence hold queue"},
+      ]},
+      { id: "2.3", name: "Extraction UI", features: [
+        {id:"2.3.1", tag:"new", text:"3-pane view: PDF | editable fields | B/S context; click-field highlights bbox"},
+        {id:"2.3.2", tag:"new", text:"Keyword highlighting on PDF"},
+        {id:"2.3.3", tag:"new", text:"Color-coded confidence badge per field"},
+      ]},
+    ]
+  },
+  { id: 3, num: "03", name: "Vendor Resolution", color: "var(--green)", purpose: "Identify the correct CieTrade CPID for every invoice, even when the vendor appears under many names or addresses.",
+    counts: { new: 9, extended: 1, leveraged: 2 },
+    subsections: [
+      { id: "3.1", name: "Master Data Sync", features: [
+        {id:"3.1.1", tag:"leveraged", text:"VM_Extract SFTP ingestion (daily 19:00, 28,261 rows in sample)"},
+        {id:"3.1.2", tag:"new", text:"Active-only filter (IsActive=1 for matching)"},
+        {id:"3.1.3", tag:"new", text:"Address-aware index on (CPID, Address, IsRemit) — solves '50 Waste Managements'"},
+        {id:"3.1.4", tag:"new", text:"Payment Terms Master feed"},
+        {id:"3.1.5", tag:"new", text:"Tax Code Master feed (GST/H13/H15/QST/PST)"},
+      ]},
+      { id: "3.2", name: "Vendor Matching Engine", features: [
+        {id:"3.2.1", tag:"extended", text:"Fuzzy name match (Levenshtein + token set ratio)"},
+        {id:"3.2.2", tag:"new", text:"Remit-To exact address match (IsRemit=1)"},
+        {id:"3.2.3", tag:"new", text:"Ship-From address match (IsRemit=0)"},
+        {id:"3.2.4", tag:"leveraged", text:"Stream-history tiebreak (Ops AI StreamMatchingService)"},
+        {id:"3.2.5", tag:"new", text:"Composite confidence + threshold (≥0.95 auto-assigns)"},
+        {id:"3.2.6", tag:"new", text:"Manual vendor selection UI (typeahead)"},
+        {id:"3.2.7", tag:"new", text:"Learning loop (manual selections → training signals)"},
+        {id:"3.2.8", tag:"new", text:"Post-match property auto-pop (payment method, terms, remit, Sage #, tax)"},
+      ]},
+    ]
+  },
+  { id: 4, num: "04", name: "Buy/Sell Matching Engine", color: "var(--purple)", purpose: "Link every invoice line to the right B/S line. The single most critical capability of the AP solution.",
+    counts: { new: 16, extended: 0, leveraged: 1 },
+    subsections: [
+      { id: "4.1", name: "B/S Header ID · 8-step Cascade", features: [
+        {id:"4.1.1", tag:"new", text:"Direct B/S number match (incl. aliases)"},
+        {id:"4.1.2", tag:"new", text:"8-step fallback: Release+Vendor → Inv#vs Release+Vendor → V+Site+Date+Amt → V+Site+Date → V+Amt+Date → V+Site+Amt → V+Date → No-Match"},
+        {id:"4.1.3", tag:"new", text:"Ship-date tolerance: exact or ±1 day"},
+        {id:"4.1.4", tag:"new", text:"Per-step match rationale capture (no black box)"},
+        {id:"4.1.5", tag:"new", text:"Confidence per step (Step 1 = 99%, Step 8 = 45%)"},
+      ]},
+      { id: "4.2", name: "Line-Level 5-step Match", features: [
+        {id:"4.2.1", tag:"new", text:"5-step per line: Total → Unit price → Qty/wt+UoM → Expense (Cost+/Chargeback−) → Combined surcharge"},
+        {id:"4.2.2", tag:"new", text:"Invoice-total invariant (±$0.10 tolerance; zero for Contra)"},
+        {id:"4.2.3", tag:"new", text:"10 line-match rules (freight matches expense, GST/HST header-only, multi-B/S up to ~20, etc.)"},
+      ]},
+      { id: "4.3", name: "Contra / Flip-to-AR", features: [
+        {id:"4.3.1", tag:"new", text:"Contra detection (WksDetail-SALES non-zero → is_contra=true)"},
+        {id:"4.3.2", tag:"leveraged", text:"Flip-to-AR balance check (Ops AI post-to-ar/check)"},
+        {id:"4.3.3", tag:"new", text:"Per-line Flip-to-AR flag + override + audit"},
+        {id:"4.3.4", tag:"new", text:"Negative chargeback detection (matches Reconserve B/S rule)"},
+        {id:"4.3.5", tag:"new", text:"Tax pass-through at posting"},
+        {id:"4.3.6", tag:"new", text:"Contra zero-tolerance enforcement"},
+      ]},
+      { id: "4.4", name: "Manual Match UI", features: [
+        {id:"4.4.1", tag:"new", text:"B/S candidate picker with rationale; side-by-side invoice+B/S detail; per-line mark-as-matched; unlink of wrong candidates"},
+        {id:"4.4.2", tag:"new", text:"Manual B/S # entry with live validation"},
+        {id:"4.4.3", tag:"new", text:"Match override with reason code + audit"},
+      ]},
+      { id: "4.5", name: "No-Match Routing", features: [
+        {id:"4.5.1", tag:"new", text:"No-history detection → AP-only"},
+        {id:"4.5.2", tag:"new", text:"Recurring parking lot (daily retry 15 days)"},
+        {id:"4.5.3", tag:"new", text:"Non-recurring → immediate AM assignment"},
+        {id:"4.5.4", tag:"new", text:"Month-start recurring regeneration"},
+      ]},
+      { id: "4.6", name: "Auto-Retry on B/S State Change", features: [
+        {id:"4.6.1", tag:"new", text:"B/S status diff per Buysell_Extract cycle"},
+        {id:"4.6.2", tag:"new", text:"Auto re-match parked invoices on transition"},
+        {id:"4.6.3", tag:"new", text:"Manual re-match trigger"},
+      ]},
+    ]
+  },
+  { id: 5, num: "05", name: "Validation & Workflow", color: "var(--amber)", purpose: "Gate every invoice through a deterministic set of checks and route to the right place.",
+    counts: { new: 15, extended: 0, leveraged: 0 },
+    subsections: [
+      { id: "5.1", name: "11 Pre-Posting Validations", features: [
+        {id:"5.1.1", tag:"new", text:"11 checks run in parallel: vendor valid, no dup, mandatory fields, B/S# valid, all lines matched, no price/weight/qty variance, B/S=Invoiced, ship date ±1d, Bill-To fuzzy, tax code match"},
+        {id:"5.1.2", tag:"new", text:"Hard stop vs warning classification per check"},
+        {id:"5.1.3", tag:"new", text:"Duplicate override (must change invoice # to proceed)"},
+      ]},
+      { id: "5.2", name: "Workflow State Machine", features: [
+        {id:"5.2.1", tag:"new", text:"11 states: Received, OCR_In_Progress, Vendor_Matching, Duplicate_Check, B/S_Matching, Validation, Exception, Ready_For_Submission, Posted, Paid, Voided"},
+        {id:"5.2.2", tag:"new", text:"Transition rules + guards (all logged)"},
+        {id:"5.2.3", tag:"new", text:"Multi-exception simultaneity (N at once; not sequentialized)"},
+        {id:"5.2.4", tag:"new", text:"Every transition = audit event"},
+      ]},
+      { id: "5.3", name: "Ready-for-Submission Gate", features: [
+        {id:"5.3.1", tag:"new", text:"Global toggle (auto_post_enabled=false for first 3 months)"},
+        {id:"5.3.2", tag:"new", text:"Ready-for-Submission queue (human Submit required when gate closed)"},
+        {id:"5.3.3", tag:"new", text:"Gate exit criteria evaluator (days, auto-post rate, vendor-match rate, regressions, Over-10-Day trend)"},
+        {id:"5.3.4", tag:"new", text:"Auto-Submit path post-gate (credit memo + confidential stay manual)"},
+        {id:"5.3.5", tag:"new", text:"Three-stage human-loop progression: in-the-loop → on-the-loop → AI-autonomous (per POC intent)"},
+      ]},
+      { id: "5.4", name: "Exception Queues · 20 types", features: [
+        {id:"5.4.1", tag:"new", text:"20 queue types routed to AP / AM / AP Monitor / Client Services"},
+        {id:"5.4.2", tag:"new", text:"Queue metadata (id, assigned_to, severity, entered_at, last_action)"},
+        {id:"5.4.3", tag:"new", text:"Queue list view (filter, sort, bulk actions)"},
+        {id:"5.4.4", tag:"new", text:"Assignment rules engine (Manager-configurable)"},
+        {id:"5.4.5", tag:"new", text:"Reassignment UI (AP ↔ AM flows)"},
+        {id:"5.4.6", tag:"new", text:"SLA timers (overdue badged on dashboard)"},
+      ]},
+    ]
+  },
+  { id: 6, num: "06", name: "Special Workflows", color: "var(--pink)", purpose: "Handle four workflow branches that don't fit the standard invoice flow.",
+    counts: { new: 28, extended: 0, leveraged: 0 },
+    subsections: [
+      { id: "6.1", name: "Credit Memo", features: [
+        {id:"6.1.1", tag:"new", text:"Dedicated Credit Memo queue (bypasses B/S matching)"},
+        {id:"6.1.2", tag:"new", text:"Terminal states: Manually_Posted, Void (both manual)"},
+        {id:"6.1.3", tag:"new", text:"Assignment parity with invoices"},
+        {id:"6.1.4", tag:"new", text:"Posting/paid details display from PaymentResponse"},
+        {id:"6.1.5", tag:"new", text:"Contra-offset linkage display"},
+      ]},
+      { id: "6.2", name: "Confidential Invoice", features: [
+        {id:"6.2.1", tag:"new", text:"Dedicated mailbox (separate Graph subscription)"},
+        {id:"6.2.2", tag:"new", text:"Sensitivity classification (High/Low)"},
+        {id:"6.2.3", tag:"new", text:"Group-based access (A: all; B: Low only) at DB+API+URL"},
+        {id:"6.2.4", tag:"new", text:"No B/S matching, no validation → Confidential queue"},
+        {id:"6.2.5", tag:"new", text:"Terminal states manual only"},
+        {id:"6.2.6", tag:"new", text:"Direct-to-Sage posting (UUID + source_system=CONFIDENTIAL_SAGE_DIRECT)"},
+        {id:"6.2.7", tag:"new", text:"Double-post reconciliation (daily UUID collision check)"},
+        {id:"6.2.8", tag:"new", text:"Indefinite retention"},
+        {id:"6.2.9", tag:"new", text:"Comment + attachment support"},
+      ]},
+      { id: "6.3", name: "Statement Reconciliation", features: [
+        {id:"6.3.1", tag:"new", text:"Statement ingestion classification (subject keyword or upload flag)"},
+        {id:"6.3.2", tag:"new", text:"States: Open, In_Progress, On_Hold, Closed, Void, System_Processing"},
+        {id:"6.3.3", tag:"new", text:"Match key: Vendor + Invoice # + Invoice Date"},
+        {id:"6.3.4", tag:"new", text:"Discrepancy detection (status, amount, missing invoice)"},
+        {id:"6.3.5", tag:"new", text:"Row-by-row statement detail UI"},
+        {id:"6.3.6", tag:"new", text:"Actions: re-reconcile, comment, reassign, close"},
+      ]},
+      { id: "6.4", name: "End-of-Month Create Pays", features: [
+        {id:"6.4.1", tag:"new", text:"CP-terms counterparty ID (APTerms starts with 'CP')"},
+        {id:"6.4.2", tag:"new", text:"Batch upload UI (biz day 10–11; CSV/XLSX + PDFs)"},
+        {id:"6.4.3", tag:"new", text:"Row-level classification (net positive → AP; net negative → flip to AR)"},
+        {id:"6.4.4", tag:"new", text:"Batch metadata (period-tagged; locked after close)"},
+        {id:"6.4.5", tag:"new", text:"Row validation (11-check; failures → Create Pays Review)"},
+        {id:"6.4.6", tag:"new", text:"One-click atomic batch post"},
+        {id:"6.4.7", tag:"new", text:"Invoice # templating (configurable per supplier)"},
+        {id:"6.4.8", tag:"new", text:"Special Instructions (per-counterparty billing)"},
+      ]},
+    ]
+  },
+  { id: 7, num: "07", name: "Posting Integration (CieTrade)", color: "var(--green)", purpose: "Write posting files to CieTrade and consume response / payment files.",
+    counts: { new: 12, extended: 0, leveraged: 0 },
+    subsections: [
+      { id: "7.1", name: "Outbound Posting", features: [
+        {id:"7.1.1", tag:"new", text:"Posting_NSR_MMDD.txt generator (pipe-delimited)"},
+        {id:"7.1.2", tag:"new", text:"Cadence scheduler (twice daily)"},
+        {id:"7.1.3", tag:"new", text:"UUID + source-system tagging per row"},
+        {id:"7.1.4", tag:"new", text:"SFTP write with verification (read-back + retry)"},
+        {id:"7.1.5", tag:"new", text:"Outbound audit log"},
+      ]},
+      { id: "7.2", name: "Inbound Response Files", features: [
+        {id:"7.2.1", tag:"new", text:"PaymentResponse ingestion (daily ~09:00; POSTED/FAILED)"},
+        {id:"7.2.2", tag:"new", text:"PaymentUpdate ingestion (-BA/-CK/-EF ref patterns)"},
+        {id:"7.2.3", tag:"new", text:"'Have you paid this?' lookup UI (full timeline)"},
+        {id:"7.2.4", tag:"new", text:"Unmatched response handling (unknown UUIDs → reconciliation)"},
+      ]},
+      { id: "7.3", name: "Integration Health", features: [
+        {id:"7.3.1", tag:"new", text:"Per-feed health dashboard"},
+        {id:"7.3.2", tag:"new", text:"Failed file re-trigger (one-click)"},
+        {id:"7.3.3", tag:"new", text:"Alerting (email + Slack)"},
+      ]},
+    ]
+  },
+  { id: 8, num: "08", name: "Collaboration, Roles, Permissions", color: "var(--blue)", purpose: "Enable in-app communication between AP, AM, Finance, and enforce role boundaries.",
+    counts: { new: 9, extended: 1, leveraged: 0 },
+    subsections: [
+      { id: "8.1", name: "Collaboration Framework", features: [
+        {id:"8.1.1", tag:"new", text:"@-tag mentions (Azure AD typeahead; notifications)"},
+        {id:"8.1.2", tag:"new", text:"Comment scopes: header, line, statement, deduction (P2)"},
+        {id:"8.1.3", tag:"new", text:"Notification preferences (real-time / daily digest)"},
+        {id:"8.1.4", tag:"new", text:"On-Hold lock (Manager+Admin can release)"},
+        {id:"8.1.5", tag:"new", text:"Reassign-with-comment (mandatory comment + audit)"},
+        {id:"8.1.6", tag:"new", text:"Comment-content search (entitlement-respecting)"},
+      ]},
+      { id: "8.2", name: "User Roles (6)", features: [
+        {id:"8.2.1", tag:"extended", text:"Role claims from Azure AD (SAML groups → role + access)"},
+        {id:"8.2.2", tag:"new", text:"Field-level permission enforcement server-side"},
+        {id:"8.2.3", tag:"new", text:"Queue-level permission at query layer"},
+        {id:"8.2.4", tag:"new", text:"Role change audit"},
+      ]},
+    ]
+  },
+  { id: 9, num: "09", name: "Search, Queues, Reporting", color: "var(--teal)", purpose: "Give users fast access to any invoice and give management visibility into operations.",
+    counts: { new: 13, extended: 0, leveraged: 0 },
+    subsections: [
+      { id: "9.1", name: "Global Search", features: [
+        {id:"9.1.1", tag:"new", text:"Full-text (invoice #, vendor, B/S #, site, ref #, comments, OCR text)"},
+        {id:"9.1.2", tag:"new", text:"Structured filters (status, queue, vendor, AM, date, age, currency)"},
+        {id:"9.1.3", tag:"new", text:"Saved searches / custom queues"},
+      ]},
+      { id: "9.2", name: "Dashboard", features: [
+        {id:"9.2.1", tag:"new", text:"Role-tailored landing page (AP, AM, Manager)"},
+        {id:"9.2.2", tag:"new", text:"Queue count + aging cards"},
+        {id:"9.2.3", tag:"new", text:"Multi-queue membership"},
+      ]},
+      { id: "9.3", name: "Reporting (5 P1)", features: [
+        {id:"9.3.1", tag:"new", text:"Over-10-Day Report (highest priority; exportable)"},
+        {id:"9.3.2", tag:"new", text:"Invoice Status Summary (count + $ by stage; real-time)"},
+        {id:"9.3.3", tag:"new", text:"Exception / Error Report"},
+        {id:"9.3.4", tag:"new", text:"Aging Report AP (0–30, 31–60, 61–90, 90+)"},
+        {id:"9.3.5", tag:"new", text:"Missing Invoice Report (recurring B/S patterns vs received)"},
+        {id:"9.3.6", tag:"new", text:"P2/P3 reports post-Phase 1 (Pending, Cycle Time, Vendor, Cash Forecast, KPI, etc.)"},
+        {id:"9.3.7", tag:"new", text:"XLSX/CSV export + scheduled email delivery"},
+      ]},
+    ]
+  },
+  { id: 10, num: "10", name: "Audit Trail", color: "var(--amber)", purpose: "Immutable record of everything that happens to every document.",
+    counts: { new: 6, extended: 0, leveraged: 0 },
+    subsections: [
+      { id: "10", name: "Audit Events", features: [
+        {id:"10.1", tag:"new", text:"Append-only hash-chained log (no UPDATE / DELETE)"},
+        {id:"10.2", tag:"new", text:"Event schema (event_id, invoice_id, user_id, action, ts, before, after)"},
+        {id:"10.3", tag:"new", text:"Queryability (by document, user, date)"},
+        {id:"10.4", tag:"new", text:"Time-on-task tracking (session time per doc)"},
+        {id:"10.5", tag:"new", text:"7-year retention; indefinite for confidential"},
+        {id:"10.6", tag:"new", text:"Export on termination (JSON + CSV, hash-verifiable)"},
+      ]},
+    ]
+  },
+  { id: 11, num: "11", name: "Identity, Security, Compliance", color: "var(--red)", purpose: "Lock everything down to NSR's security posture.",
+    counts: { new: 3, extended: 1, leveraged: 4 },
+    subsections: [
+      { id: "11", name: "Security Stack", features: [
+        {id:"11.1", tag:"leveraged", text:"SAML SSO via Azure AD"},
+        {id:"11.2", tag:"extended", text:"JIT provisioning with AP role mapping"},
+        {id:"11.3", tag:"leveraged", text:"Session management"},
+        {id:"11.4", tag:"leveraged", text:"TLS 1.2+ everywhere"},
+        {id:"11.5", tag:"leveraged", text:"At-rest encryption (DB, Blob, Key Vault)"},
+        {id:"11.6", tag:"new", text:"Confidential segregation (server-side on every read; direct URL 403)"},
+        {id:"11.7", tag:"new", text:"Annual pen-testing (pre-go-live)"},
+        {id:"11.8", tag:"new", text:"SOC 2 Type II (pre-cutover)"},
+      ]},
+    ]
+  },
+  { id: 12, num: "12", name: "Data Integration Layer", color: "var(--purple)", purpose: "Reliably exchange files with CieTrade and JPMC.",
+    counts: { new: 4, extended: 1, leveraged: 0 },
+    subsections: [
+      { id: "12", name: "Feeds", features: [
+        {id:"12.1", tag:"extended", text:"SFTP client framework (retry + integrity added)"},
+        {id:"12.2", tag:"new", text:"10 inbound feeds from CieTrade: VM, Payment Terms, Buysell (2h), Tax, CM, CC, AR (2h), OpenUAC (2h), PaymentResponse, PaymentUpdate"},
+        {id:"12.3", tag:"new", text:"Outbound (2): Posting_NSR 2x/day; Northstar CAA CSV (P2)"},
+        {id:"12.4", tag:"new", text:"JPMC SFTP ingestion (P2): lockbox ZIP + EDI 820 X12"},
+        {id:"12.5", tag:"new", text:"Per-feed health monitoring + missing-file detection"},
+        {id:"12.6", tag:"new", text:"One-click re-trigger UI"},
+      ]},
+    ]
+  },
+  { id: 13, num: "13", name: "Portal UI Components", color: "var(--blue)", purpose: "The screens AP / AM / Finance users actually use.",
+    counts: { new: 5, extended: 2, leveraged: 0 },
+    subsections: [
+      { id: "13", name: "Screens", features: [
+        {id:"13.1", tag:"extended", text:"Invoice detail 3-pane (PDF | fields | B/S context)"},
+        {id:"13.2", tag:"new", text:"Queue / grid view (inline actions, keyboard nav)"},
+        {id:"13.3", tag:"new", text:"Exception tab (all simultaneously with resolve actions)"},
+        {id:"13.4", tag:"new", text:"Match rationale popup (step, confidence, field compare)"},
+        {id:"13.5", tag:"new", text:"Bulk actions UI (multi-select reassign/post/void)"},
+        {id:"13.6", tag:"new", text:"Live updates (WebSocket / polling)"},
+        {id:"13.7", tag:"extended", text:"Mobile-responsive (queue + quick actions)"},
+      ]},
+    ]
+  },
+  { id: 14, num: "14", name: "AR Phase 2 (Sketched)", color: "var(--pink)", purpose: "Extend the platform to handle incoming payments and deductions.",
+    counts: { new: 12, extended: 0, leveraged: 0 },
+    subsections: [
+      { id: "14.1", name: "Cash Application", features: [
+        {id:"14.1", tag:"new", text:"Ingest JPMC lockbox ZIPs, EDI 820, AR-inbox remittances"},
+        {id:"14.1", tag:"new", text:"OCR check images; parse EDI 820 RMR segments"},
+        {id:"14.1", tag:"new", text:"Match ladder: Invoice# → B/S# → Trace/Ref# → Customer+Amount → Exception"},
+      ]},
+      { id: "14.2", name: "Deductions Management", features: [
+        {id:"14.2", tag:"new", text:"9-category classification (PRICE/QTY/SHORT_PAYMENT/UNAPPLIED/NO_MATCH etc.)"},
+        {id:"14.2", tag:"new", text:"Routing: price/qty → AM on B/S; short-pay/unapplied → AR first-pass"},
+        {id:"14.2", tag:"new", text:"Hand-off tracking: AM ↔ AR counter; per-user time buckets"},
+        {id:"14.2", tag:"new", text:"3 standing reports: by type, customer, age"},
+      ]},
+      { id: "14.3", name: "Unapplied Cash", features: [
+        {id:"14.3", tag:"new", text:"Dedicated view"},
+        {id:"14.3", tag:"new", text:"Disposition: apply / refund / write-off"},
+      ]},
+      { id: "14.4", name: "Remittance Parsing", features: [
+        {id:"14.4", tag:"new", text:"Email attachment + EDI 820 + lockbox image OCR"},
+        {id:"14.4", tag:"new", text:"Associate to open AR invoices"},
+      ]},
+      { id: "14.5", name: "CAA Posting Back", features: [
+        {id:"14.5", tag:"new", text:"File: Northstar_{customerNo}_{EFT|CHECK}_*.csv per payment event"},
+      ]},
+    ]
+  },
+];
+
+const exceptions = [
+  {name:"Missing Mandatory Info", owner:"AP", sev:"Hard stop", cls:"sev-hard"},
+  {name:"Vendor Not Found", owner:"AP", sev:"Hard stop", cls:"sev-hard"},
+  {name:"Duplicate Invoice", owner:"AP", sev:"Medium", cls:"sev-medium"},
+  {name:"Bill-To Name Mismatch", owner:"AP", sev:"Warning", cls:"sev-warning"},
+  {name:"Bill-To Address Mismatch", owner:"AP", sev:"Warning", cls:"sev-warning"},
+  {name:"Invoice Not in Balance", owner:"AP", sev:"Hard stop", cls:"sev-hard"},
+  {name:"Ship Date Mismatch >1d", owner:"AP", sev:"Hard stop", cls:"sev-hard"},
+  {name:"No B/S Found — Non-Recurring", owner:"AM", sev:"High", cls:"sev-high"},
+  {name:"No B/S Found — Recurring", owner:"AP Monitor", sev:"Medium", cls:"sev-medium"},
+  {name:"No B/S Found — No History", owner:"AP", sev:"Medium", cls:"sev-medium"},
+  {name:"Price Variance", owner:"AM", sev:"Medium", cls:"sev-medium"},
+  {name:"Weight / Qty Variance", owner:"AM", sev:"Medium", cls:"sev-medium"},
+  {name:"Unable to Link Line to B/S", owner:"AP → AM", sev:"Medium", cls:"sev-medium"},
+  {name:"B/S Line Not on Invoice", owner:"AP", sev:"Warning", cls:"sev-warning"},
+  {name:"B/S Status = Work", owner:"AP", sev:"Low (auto)", cls:"sev-low"},
+  {name:"B/S Status = Completed", owner:"Client Svcs", sev:"Low", cls:"sev-low"},
+  {name:"B/S Status = Approved", owner:"AP Monitor", sev:"Low 24h", cls:"sev-low"},
+  {name:"Tax Code Mismatch", owner:"AP", sev:"Hard stop", cls:"sev-hard"},
+  {name:"Flip-to-AR Balance Failure", owner:"AP", sev:"Medium", cls:"sev-medium"},
+  {name:"Unreadable / Poor Quality", owner:"AP", sev:"Medium", cls:"sev-medium"},
+];
+
+/* ------------------------ RENDER ------------------------ */
+const tagLabels = { new: "NEW", extended: "EXT", leveraged: "LEV" };
+
+function renderModuleGrid() {
+  const grid = document.getElementById('module-grid');
+  grid.innerHTML = modules.map(m => {
+    const total = m.counts.new + m.counts.extended + m.counts.leveraged;
+    const tags = [];
+    if (m.counts.new) tags.push(`<span class="mini-tag new">${m.counts.new} NEW</span>`);
+    if (m.counts.extended) tags.push(`<span class="mini-tag extended">${m.counts.extended} EXT</span>`);
+    if (m.counts.leveraged) tags.push(`<span class="mini-tag leveraged">${m.counts.leveraged} LEV</span>`);
+    return `
+      <div class="module-card" data-module="${m.id}" style="--accent:${m.color}">
+        <div class="module-num">MODULE ${m.num}</div>
+        <div class="module-name">${m.name}</div>
+        <div class="module-desc">${m.purpose}</div>
+        <div class="module-meta">
+          <div class="module-tags">${tags.join('')}</div>
+          <div>${total} features →</div>
+        </div>
+      </div>`;
+  }).join('');
+  grid.querySelectorAll('.module-card').forEach(c => {
+    c.addEventListener('click', () => openDrawer(parseInt(c.dataset.module)));
+  });
+}
+
+function renderExceptions() {
+  const grid = document.getElementById('ex-grid');
+  grid.innerHTML = exceptions.map(e => `
+    <div class="ex-card ${e.cls}">
+      <div class="ex-title">${e.name}</div>
+      <div class="ex-meta">
+        <span class="ex-assigned">${e.owner}</span>
+        <span class="sev-badge">${e.sev}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDrawer(id) {
+  const m = modules.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('drawer-num').textContent = `MODULE ${m.num}`;
+  document.getElementById('drawer-num').style.color = m.color;
+  document.getElementById('drawer-title').textContent = m.name;
+  document.getElementById('drawer-purpose').textContent = m.purpose;
+  const body = document.getElementById('drawer-body');
+  body.innerHTML = m.subsections.map(s => `
+    <div class="subsection">
+      <div class="subsection-head">
+        <span>${s.name}</span>
+        <span class="id">§${s.id}</span>
+      </div>
+      <ul class="feature-list">
+        ${s.features.map(f => `
+          <li class="feature-item">
+            <span class="f-id">${f.id}</span>
+            <span class="f-text">${f.text}</span>
+            <span class="f-tag mini-tag ${f.tag}">${tagLabels[f.tag]}</span>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `).join('');
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+document.getElementById('backdrop').addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+// Pipeline node clicks → open matching module drawer
+document.querySelectorAll('#pipeline-svg g[data-node]').forEach(g => {
+  const node = g.dataset.node;
+  const map = {
+    'module-1': 1, 'module-2': 2, 'module-3': 3, 'module-4': 4,
+    'module-5': 5, 'module-7': 7, 'special': 6, 'exceptions': 5,
+    'source-email': 1, 'source-upload': 1, 'source-portal': 1,
+  };
+  if (map[node]) {
+    g.style.cursor = 'pointer';
+    g.addEventListener('click', () => openDrawer(map[node]));
+  }
+});
+
+// Sample-flow gallery: click card → reveal matching flow-detail; click again or close → collapse
+function closeAllFlows() {
+  document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.flow-detail').forEach(d => d.classList.remove('show'));
+}
+document.querySelectorAll('.flow-card').forEach(card => {
+  if (card.classList.contains('disabled')) return;
+  card.addEventListener('click', () => {
+    const flow = card.dataset.flow;
+    const detail = document.querySelector(`.flow-detail[data-flow="${flow}"]`);
+    const wasActive = card.classList.contains('active');
+    closeAllFlows();
+    if (!wasActive && detail) {
+      card.classList.add('active');
+      detail.classList.add('show');
+      setTimeout(() => {
+        detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  });
+});
+document.querySelectorAll('.flow-detail-close').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const gallery = document.getElementById('flow-gallery');
+    closeAllFlows();
+    if (gallery) gallery.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Sample-flow module badges open the drawer
+document.querySelectorAll('.flow-step-module[data-mod]').forEach(el => {
+  el.style.cursor = 'pointer';
+  el.title = 'Open module detail';
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const id = parseInt(el.dataset.mod);
+    if (id) openDrawer(id);
+  });
+});
+
+renderModuleGrid();
+renderExceptions();
+</script>
+</body>
+</html>

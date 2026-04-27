@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSR Invoice Test Corpus Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --surface: #ffffff;
+    --surface-2: #f1f5f9;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-2: #475569;
+    --text-3: #94a3b8;
+
+    --c-prod: #2563eb;
+    --c-tricky: #dc2626;
+    --c-totals: #d97706;
+    --c-addr: #7c3aed;
+    --c-billto: #db2777;
+    --c-contra: #ea580c;
+    --c-email: #0d9488;
+    --c-stmt: #4f46e5;
+    --c-ref: #6b7280;
+    --c-mixed: #059669;
+
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.05);
+    --shadow-md: 0 4px 16px rgba(15,23,42,.07);
+    --shadow-lg: 0 12px 40px rgba(15,23,42,.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-feature-settings: "ss01";
+  }
+
+  /* ============ NAV ============ */
+  nav.top {
+    position: sticky; top: 0;
+    background: rgba(247,248,251,.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+  }
+  .nav-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; letter-spacing: -.2px;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--c-prod), var(--c-contra));
+    border-radius: 9px;
+    display: grid; place-items: center;
+    color: white; font-weight: 800; font-size: 14px;
+  }
+  .brand-text { font-size: 13px; }
+  .brand-text small {
+    display: block;
+    font-weight: 500;
+    color: var(--text-3);
+    font-size: 11px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+  }
+  .nav-jump { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-jump a {
+    font-size: 12px;
+    padding: 7px 12px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: all .2s;
+    font-weight: 500;
+  }
+  .nav-jump a:hover {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 70px 32px 30px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    color: var(--c-prod);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  h1.hero-title {
+    font-size: clamp(2rem, 4.2vw, 3.4rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    max-width: 1000px;
+  }
+  h1.hero-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--c-prod), var(--c-contra));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-lead {
+    font-size: 17px;
+    color: var(--text-2);
+    max-width: 820px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-num {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.6px;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--c-prod), var(--c-contra));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: .3px;
+    line-height: 1.4;
+  }
+
+  /* ============ TREEMAP ============ */
+  .treemap-wrap {
+    max-width: 1320px;
+    margin: 50px auto 0;
+    padding: 0 32px;
+  }
+  .section-head { margin-bottom: 24px; max-width: 760px; }
+  .section-num {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--c-prod);
+    background: rgba(37,99,235,.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-head h2 {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -.7px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .section-head p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+
+  .treemap {
+    display: grid;
+    grid-template-columns: 4fr 2fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  @media (max-width: 900px) {
+    .treemap { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .tm-cell.huge { grid-column: 1 / -1; height: 180px; }
+  }
+  .tm-cell {
+    border-radius: 10px;
+    padding: 16px 18px;
+    color: white;
+    text-decoration: none;
+    background: var(--tm-c);
+    transition: transform .2s, box-shadow .2s;
+    overflow: hidden;
+    position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .tm-cell:hover {
+    transform: scale(1.015);
+    box-shadow: var(--shadow-lg);
+    z-index: 2;
+  }
+  .tm-cell.huge { grid-row: 1 / 3; --tm-c: var(--c-prod); }
+  .tm-cell.tricky { --tm-c: var(--c-tricky); }
+  .tm-cell.contra { --tm-c: var(--c-contra); }
+  .tm-cell.statements { --tm-c: var(--c-stmt); }
+  .tm-cell.email { --tm-c: var(--c-email); }
+  .tm-cell.ref { --tm-c: var(--c-ref); }
+  .tm-cell.totals { --tm-c: var(--c-totals); }
+  .tm-cell.addr { --tm-c: var(--c-addr); }
+  .tm-cell.billto { --tm-c: var(--c-billto); }
+  .tm-cell.mixed { --tm-c: var(--c-mixed); }
+
+  .tm-count {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+  }
+  .tm-cell.huge .tm-count { font-size: 64px; letter-spacing: -3px; }
+  .tm-cell.tricky .tm-count, .tm-cell.contra .tm-count { font-size: 32px; }
+  .tm-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+    line-height: 1.3;
+    letter-spacing: -.1px;
+  }
+  .tm-cell.huge .tm-name { font-size: 18px; max-width: 70%; }
+  .tm-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: .8;
+    font-weight: 600;
+  }
+
+  /* ============ CATEGORY CARDS ============ */
+  .categories {
+    max-width: 1320px;
+    margin: 80px auto 0;
+    padding: 0 32px;
+  }
+  .cat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    border-left: 4px solid var(--cat-c);
+    transition: box-shadow .2s;
+  }
+  .cat:hover { box-shadow: var(--shadow-md); }
+  .cat.prod { --cat-c: var(--c-prod); }
+  .cat.tricky { --cat-c: var(--c-tricky); }
+  .cat.totals { --cat-c: var(--c-totals); }
+  .cat.addr { --cat-c: var(--c-addr); }
+  .cat.billto { --cat-c: var(--c-billto); }
+  .cat.contra { --cat-c: var(--c-contra); }
+  .cat.email { --cat-c: var(--c-email); }
+  .cat.stmt { --cat-c: var(--c-stmt); }
+  .cat.ref { --cat-c: var(--c-ref); }
+  .cat.mixed { --cat-c: var(--c-mixed); }
+
+  .cat-summary {
+    padding: 26px 32px;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+    list-style: none;
+  }
+  .cat-summary::-webkit-details-marker { display: none; }
+  .cat-count-block {
+    text-align: center;
+    min-width: 90px;
+  }
+  .cat-count {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--cat-c);
+  }
+  .cat-count-lbl {
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .cat-meta { min-width: 0; }
+  .cat-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--cat-c);
+    background: color-mix(in srgb, var(--cat-c) 12%, transparent);
+    padding: 3px 8px;
+    border-radius: 5px;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .cat-name {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+    margin-bottom: 6px;
+    line-height: 1.25;
+  }
+  .cat-desc {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .cat-arrow {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    display: grid; place-items: center;
+    transition: transform .2s, background .2s;
+    color: var(--text-3);
+    flex-shrink: 0;
+  }
+  details[open] > .cat-summary .cat-arrow {
+    transform: rotate(180deg);
+    background: var(--cat-c);
+    color: white;
+  }
+
+  .cat-body {
+    border-top: 1px solid var(--border);
+    padding: 24px 32px 28px;
+    background: var(--surface-2);
+  }
+
+  .cat-sow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .cat-sow strong { color: var(--cat-c); font-weight: 700; }
+  .cat-sow code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--text);
+  }
+
+  .file-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .file-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    transition: border-color .15s, transform .15s;
+  }
+  .file-row:hover {
+    border-color: var(--cat-c);
+    transform: translateX(2px);
+  }
+  .file-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+    line-height: 1.4;
+  }
+  .file-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  @media (max-width: 700px) { .file-detail { grid-template-columns: 1fr; } }
+  .file-tricky, .file-test {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .file-tricky strong, .file-test strong {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .file-tricky { color: var(--text); }
+  .file-test { color: var(--text-2); }
+  .file-test strong { color: var(--cat-c); }
+
+  .vendor-bars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .vbar {
+    display: grid;
+    grid-template-columns: 200px 1fr 40px;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+  }
+  @media (max-width: 700px) { .vbar { grid-template-columns: 1fr; gap: 4px; } }
+  .vbar-name { color: var(--text); font-weight: 500; }
+  .vbar-track {
+    background: var(--surface-2);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .vbar-fill {
+    height: 100%;
+    background: var(--cat-c);
+    border-radius: 4px;
+  }
+  .vbar-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--cat-c);
+    text-align: right;
+  }
+
+  .note-block {
+    background: rgba(217,119,6,.06);
+    border-left: 2px solid var(--c-totals);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .note-block strong { color: var(--c-totals); }
+
+  /* SOW mapping table at the end */
+  .mapping {
+    max-width: 1320px;
+    margin: 80px auto 0;
+    padding: 0 32px;
+  }
+  .map-table {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+  .map-table th, .map-table td {
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .map-table th {
+    background: var(--surface-2);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    font-weight: 700;
+  }
+  .map-table tr:last-child td { border-bottom: none; }
+  .map-table .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: white;
+  }
+
+  footer {
+    max-width: 1320px;
+    margin: 60px auto 0;
+    padding: 36px 32px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  footer strong { color: var(--text-2); font-weight: 600; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--surface-2); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-text">
+        Test Corpus Map
+        <small>Invoice Examples folder</small>
+      </div>
+    </div>
+    <div class="nav-jump">
+      <a href="#overview">Overview</a>
+      <a href="#categories">Categories</a>
+      <a href="#mapping">SOW Mapping</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">Test Corpus · Invoice Examples Folder</div>
+  <h1 class="hero-title">Every invoice they shared, <em>categorized by what it teaches the system</em>.</h1>
+  <p class="hero-lead">
+    NSR shared roughly 900 documents across 13 folders. Most of them are bulk production volume; about 80 are hand-picked edge cases each labelled with the trick they expose. This map groups every file by its purpose, links each edge case to the SOW feature it tests, and calls out duplications so the team doesn't double-count.
+  </p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">~900</div><div class="stat-lbl">Total files</div></div>
+    <div class="stat"><div class="stat-num">~250 MB</div><div class="stat-lbl">Total size</div></div>
+    <div class="stat"><div class="stat-num">10</div><div class="stat-lbl">Functional categories</div></div>
+    <div class="stat"><div class="stat-num">748</div><div class="stat-lbl">Production volume PDFs</div></div>
+    <div class="stat"><div class="stat-num">~80</div><div class="stat-lbl">Curated edge cases</div></div>
+    <div class="stat"><div class="stat-num">25</div><div class="stat-lbl">Vendor statements</div></div>
+    <div class="stat"><div class="stat-num">22</div><div class="stat-lbl">Email-paired invoices</div></div>
+    <div class="stat"><div class="stat-num">11</div><div class="stat-lbl">Reference + schema files</div></div>
+  </div>
+</header>
+
+<!-- ============ TREEMAP OVERVIEW ============ -->
+<section id="overview" class="treemap-wrap">
+  <div class="section-head">
+    <span class="section-num">01 · At a glance</span>
+    <h2>Sized by file count.</h2>
+    <p>Cells are scaled by how many files each category contains. Production volume dominates, but the curated edge cases are where the matching engine earns its keep.</p>
+  </div>
+
+  <div class="treemap">
+    <a class="tm-cell huge" href="#cat-prod">
+      <div>
+        <div class="tm-tag">Production volume</div>
+        <div class="tm-name">TOP 80% Vendor Invoices · September 2025</div>
+      </div>
+      <div class="tm-count">748</div>
+    </a>
+    <a class="tm-cell mixed" href="#cat-mixed">
+      <div>
+        <div class="tm-tag">Curated mix</div>
+        <div class="tm-name">Sample Invoices</div>
+      </div>
+      <div class="tm-count">66</div>
+    </a>
+    <a class="tm-cell stmt" href="#cat-stmt">
+      <div>
+        <div class="tm-tag">Statements</div>
+        <div class="tm-name">Vendor Statements</div>
+      </div>
+      <div class="tm-count">25</div>
+    </a>
+    <a class="tm-cell email" href="#cat-email">
+      <div>
+        <div class="tm-tag">Email-paired</div>
+        <div class="tm-name">Invoices with Emails</div>
+      </div>
+      <div class="tm-count">22</div>
+    </a>
+    <a class="tm-cell tricky" href="#cat-tricky">
+      <div>
+        <div class="tm-tag">Tricky</div>
+        <div class="tm-name">Tricky Examples</div>
+      </div>
+      <div class="tm-count">12</div>
+    </a>
+    <a class="tm-cell contra" href="#cat-contra">
+      <div>
+        <div class="tm-tag">Contra</div>
+        <div class="tm-name">Flip-to-AR / Contra</div>
+      </div>
+      <div class="tm-count">10+</div>
+    </a>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px;">
+    <a class="tm-cell addr" href="#cat-addr" style="height: 100px; padding: 12px 16px;">
+      <div>
+        <div class="tm-tag">Addresses</div>
+        <div class="tm-name" style="font-size: 12px;">Supplier Address Cases</div>
+      </div>
+      <div class="tm-count" style="font-size: 26px;">8</div>
+    </a>
+    <a class="tm-cell billto" href="#cat-billto" style="height: 100px; padding: 12px 16px;">
+      <div>
+        <div class="tm-tag">Bill-To</div>
+        <div class="tm-name" style="font-size: 12px;">Not Addressed to NSR</div>
+      </div>
+      <div class="tm-count" style="font-size: 26px;">8</div>
+    </a>
+    <a class="tm-cell totals" href="#cat-totals" style="height: 100px; padding: 12px 16px;">
+      <div>
+        <div class="tm-tag">Totals</div>
+        <div class="tm-name" style="font-size: 12px;">Total / Balance Cases</div>
+      </div>
+      <div class="tm-count" style="font-size: 26px;">4</div>
+    </a>
+    <a class="tm-cell ref" href="#cat-ref" style="height: 100px; padding: 12px 16px;">
+      <div>
+        <div class="tm-tag">Reference</div>
+        <div class="tm-name" style="font-size: 12px;">Schemas + Sample Data</div>
+      </div>
+      <div class="tm-count" style="font-size: 26px;">11</div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ CATEGORY DRILL-DOWN ============ -->
+<section id="categories" class="categories">
+  <div class="section-head">
+    <span class="section-num">02 · Categories</span>
+    <h2>Click any category to see the files inside.</h2>
+    <p>Each category is sorted by what it teaches the matching engine. Bulk corpora show vendor distribution; curated folders list every file with its trick and the SOW feature it tests.</p>
+  </div>
+
+  <!-- ─── A · Production volume ─── -->
+  <details id="cat-prod" class="cat prod">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">748</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">A · Production Volume</div>
+        <div class="cat-name">TOP 80% VENDOR INVOICES SEPTEMBER 2025</div>
+        <div class="cat-desc">One full month of real production AP invoices, covering the top 80% of NSR's vendors by volume. This is the realistic-load corpus — what the platform must handle in steady state.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> Bulk OCR accuracy at production volume · Vendor resolution across 80+ unique vendors · Realistic load testing for the matching engine · Dedup behavior across recurring vendors. Used as the <code>UAT corpus</code> and as training data for the vendor-resolution model.
+      </div>
+      <div style="font-size: 13px; color: var(--text-2); margin-bottom: 12px; font-weight: 600;">Top 20 vendors by invoice count in this set</div>
+      <div class="vendor-bars">
+        <div class="vbar"><div class="vbar-name">Terra Renewal Services Inc</div><div class="vbar-track"><div class="vbar-fill" style="width: 100%"></div></div><div class="vbar-num">11</div></div>
+        <div class="vbar"><div class="vbar-name">DisposAll Waste Services, LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 100%"></div></div><div class="vbar-num">11</div></div>
+        <div class="vbar"><div class="vbar-name">C &amp; L Grease and Wastewater</div><div class="vbar-track"><div class="vbar-fill" style="width: 100%"></div></div><div class="vbar-num">11</div></div>
+        <div class="vbar"><div class="vbar-name">Waste Recovery Systems, Inc.</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Valley Vista Services Inc</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">U-Pak (Canadian)</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Transport Petit 1997 Inc.</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">TOR Texas, LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">SMC Grease Specialist, Inc</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Simplified E-Solutions LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Silver Creek Materials, Inc</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Shur-Green Farms LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Reworld Medina, LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Reinford Farms Inc.</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Recycling Solutions Inc.</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Quasar Energy Group, LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Outlaw Roll-Off, LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">North Carolina Organics Recycling</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">MSG Waste &amp; Refuse LLC</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+        <div class="vbar"><div class="vbar-name">Malvaes Solutions Inc.</div><div class="vbar-track"><div class="vbar-fill" style="width: 91%"></div></div><div class="vbar-num">10</div></div>
+      </div>
+      <div class="note-block"><strong>Note.</strong> Invoice filenames follow the pattern <code style="font-family:'JetBrains Mono',monospace">_AP Invoice {invoice#} {Vendor Name} {amount}.pdf</code>. The folder is the canonical UAT corpus — do not modify; copy to a working folder for testing.</div>
+    </div>
+  </details>
+
+  <!-- ─── B · Tricky ─── -->
+  <details id="cat-tricky" class="cat tricky">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">12</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">B · Hardest Edge Cases</div>
+        <div class="cat-name">Tricky Invoice Examples</div>
+        <div class="cat-desc">Hand-picked invoices NSR specifically wants the system to handle correctly. Each filename describes the trick. If the matching engine can't process these, the platform isn't ready to ship.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> Currency &amp; multi-region (M3) · Surcharge handling (M4 line match) · Site/address aliases (M3 alias) · Contra and Flip-to-AR (M4.3) · Multi-B/S support
+      </div>
+      <div class="file-list">
+
+        <div class="file-row">
+          <div class="file-name">Dan Foam ApS · 1567633 · $34,350.04</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>International vendor (Danish), high-value invoice.</div>
+            <div class="file-test"><strong>What it tests</strong>Currency detection + multi-region vendor resolution.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">Malvaes Solutions Inc · M26517 · $907.59</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Has chargebacks — negative lines mixed with positives.</div>
+            <div class="file-test"><strong>What it tests</strong>Line-match rule: Cost = +, Chargeback = −.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">20241101101843129 (Dunkirk)</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Only a city name, no full address. Site identified via historical Buy/Sell lookup for Dunkirk.</div>
+            <div class="file-test"><strong>What it tests</strong>Site-location alias resolution + historical-pattern fallback.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">Burrtec Waste Group · N2114817630 · $6,197.37</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Invoice has both ongoing balances AND current charges in the same document.</div>
+            <div class="file-test"><strong>What it tests</strong>Total-amount disambiguation — must extract current period, not running balance.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">U-Pak · 4406226 · CAD $4,915.80</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Canadian vendor, CAD currency, Canadian taxes.</div>
+            <div class="file-test"><strong>What it tests</strong>GST / HST / QST handling, currency detection, multi-currency support.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">ReConserve of Colorado · INV77-032146 · $1,128.49</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Freight on AP side, material on AR side — same invoice.</div>
+            <div class="file-test"><strong>What it tests</strong>Mixed AP/AR within one invoice; Contra detection at line level.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">Denali Water Solutions · INV1070465 · $3,440.08</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Per-line individual fuel surcharges (not a single combined surcharge line).</div>
+            <div class="file-test"><strong>What it tests</strong>5-step line match step 5 (combined surcharge) — should NOT combine here.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">U-Pak · 4399135 · CAD $26,421.19 (Large)</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Hardest single invoice — large + Canadian + AP + AR mixed.</div>
+            <div class="file-test"><strong>What it tests</strong>Full Contra / Flip-to-AR + multi-currency + multi-B/S, all at once.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">Waste Management of Delaware · 3392303-2428-9 · $53,767.59 (Large)</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Very large vendor invoice with many line items.</div>
+            <div class="file-test"><strong>What it tests</strong>Multi-B/S support (up to ~20 B/Ss per invoice).</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">Reworld · 541249INDYY</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Reworld is a major outlet/processor — a high-volume vendor.</div>
+            <div class="file-test"><strong>What it tests</strong>Standard high-volume vendor flow as a baseline.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">Malvaes Solutions · M22278 — "We pay $250 haul, they sometimes pay commodity"</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Reciprocal billing — Malvaes is both vendor and customer in different transactions.</div>
+            <div class="file-test"><strong>What it tests</strong>Counterparty role flip, Contra detection across multiple transactions.</div>
+          </div>
+        </div>
+
+        <div class="file-row">
+          <div class="file-name">TRICKY INVOICE EXAMPLES.zip</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>All of the above, bundled into one archive.</div>
+            <div class="file-test"><strong>What it tests</strong>n/a — convenience bundle for sharing externally.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── C · Totals/Balances ─── -->
+  <details id="cat-totals" class="cat totals">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">4</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">C · Totals + Current Charges</div>
+        <div class="cat-name">Invoice Examples with Total Amounts, Total Balances, Current Charges</div>
+        <div class="cat-desc">Edge cases where the invoice has multiple "totals" printed, or running balances mixed with current charges. The OCR has to pick the right field.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> 27-field header extractor — Invoice Total disambiguation (M3 §2.2.1) · Low-confidence hold queue when the right total isn't obvious (M3 §2.2.9).
+      </div>
+      <div class="file-list">
+        <div class="file-row">
+          <div class="file-name">Waste Management of California · 3143676-0051-2 · $1,510.26</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Standard WM line shape — used as the "normal" reference.</div>
+            <div class="file-test"><strong>What it tests</strong>Reference baseline for WM-format invoices.</div>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">EDCO · 77087APR25 · paying $69.62</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Total amount printed on PDF is misleading; actual payable is much smaller.</div>
+            <div class="file-test"><strong>What it tests</strong>Current-charge vs. total-balance extraction logic.</div>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">GFL Environmental · P70005201266 · $4,078.76</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Aging buckets (0-30, 31-60, 61-90, 90+) printed on the invoice.</div>
+            <div class="file-test"><strong>What it tests</strong>Distinguishing current-period total from aged amounts.</div>
+          </div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">Republic Services · $574.35</div>
+          <div class="file-detail">
+            <div class="file-tricky"><strong>The trick</strong>Three different "totals" printed on the invoice; only one is the real Invoice Amount.</div>
+            <div class="file-test"><strong>What it tests</strong>Layout-aware extraction; pick the labelled "Invoice Amount" at the top.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── D · Supplier Addresses ─── -->
+  <details id="cat-addr" class="cat addr">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">8</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">D · Address &amp; Site Detection</div>
+        <div class="cat-name">Invoices for examples of Supplier Addresses</div>
+        <div class="cat-desc">Eight invoices that exercise every address-extraction edge case NSR has seen — supplier address in unusual places, missing addresses, multi-site vendors, address embedded in line descriptions.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> Address-aware indexing keyed on (CPID, Address, IsRemit) (M1) · Site-location alias resolution (M3 §2.2.2) · Bill-To validation (M5 check #10).
+      </div>
+      <div class="file-list">
+        <div class="file-row"><div class="file-name">Standard Industries · 1435549A · $1,188.00</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To Northstar with Supplier's Address printed UNDER NSR's name — confusing layout.</div><div class="file-test"><strong>What it tests</strong>Layout-aware Bill-To vs. Remit-To disambiguation.</div></div></div>
+        <div class="file-row"><div class="file-name">Tennessee Trash · 64703 · $81.00 (in NOT-ADDRESSED-TO-NSR subfolder)</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To is not Northstar at all. Should flag/exception.</div><div class="file-test"><strong>What it tests</strong>Bill-To validation hard-flag path.</div></div></div>
+        <div class="file-row"><div class="file-name">Dunkirk Storer's · 20241101101843129</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Only a city name, no full address. Site identified via previous Storer's lookup for Dunkirk.</div><div class="file-test"><strong>What it tests</strong>Historical-pattern fallback for site resolution.</div></div></div>
+        <div class="file-row"><div class="file-name">Rockwood Sustainable Solutions · 134460</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Many service-address fields on one invoice (Bill-To, Service, Remit, Ship-From).</div><div class="file-test"><strong>What it tests</strong>Multi-address parsing and disambiguation.</div></div></div>
+        <div class="file-row"><div class="file-name">Sacramento Rendering · SRC Pumping · 1241404</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Multi-site vendor with similar-sounding entities.</div><div class="file-test"><strong>What it tests</strong>Site disambiguation across vendor-owned locations.</div></div></div>
+        <div class="file-row"><div class="file-name">Tennessee Trash · 64703 · $81.00 (Site in Description)</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Site identifier appears in the line-item description, not the header.</div><div class="file-test"><strong>What it tests</strong>Header-to-line propagation in reverse — line-level extraction surfacing site to header.</div></div></div>
+        <div class="file-row"><div class="file-name">Houston Waste · 572699</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Supplier address embedded in the invoice body, not in the header block.</div><div class="file-test"><strong>What it tests</strong>Body-level address parsing.</div></div></div>
+        <div class="file-row"><div class="file-name">Terra Renewal · INV1079911</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Both Ship-From AND Facility ID present.</div><div class="file-test"><strong>What it tests</strong>Multiple address-source disambiguation; pick the right one for B/S match.</div></div></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── E · Bill-To Mismatch ─── -->
+  <details id="cat-billto" class="cat billto">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">8</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">E · Bill-To Mismatch</div>
+        <div class="cat-name">Invoices Not Addressed to Northstar (BILL TO)</div>
+        <div class="cat-desc">Eight invoices where the Bill-To name and address do not match NSR's legal entity. These should raise warnings (not hard stops) and continue through the workflow.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> Validation Check #10 — "Bill-To name and address fuzzy-match NSR's legal entity (warning only since NSR has one legal entity)" (M5 §5.1).
+      </div>
+      <div class="file-list">
+        <div class="file-row"><div class="file-name">Compactor Rentals of America · 105365-0026 · $677.22</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To is a different entity name.</div><div class="file-test"><strong>What it tests</strong>Should raise warning, continue workflow.</div></div></div>
+        <div class="file-row"><div class="file-name">3L Ag LLC · 139765 · $1,692.05</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+        <div class="file-row"><div class="file-name">Best Way of Indiana-KY · 1443528 · $150.74</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+        <div class="file-row"><div class="file-name">Wall Recycling NC · 1701899 · $279.24</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+        <div class="file-row"><div class="file-name">De Young Refuse Co. · 213056-CR · $429.37</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+        <div class="file-row"><div class="file-name">A-1 Disposal Service · 545811 · $414.75</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+        <div class="file-row"><div class="file-name">Carters Environmental LLC · I2812 · $1,620.00</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+        <div class="file-row"><div class="file-name">VanGold · 2340VANG</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Bill-To not Northstar.</div><div class="file-test"><strong>What it tests</strong>Same — warning only.</div></div></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── F · Flip-to-AR / Contra ─── -->
+  <details id="cat-contra" class="cat contra">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">10+</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">F · Highest-Value Edge Category</div>
+        <div class="cat-name">Flip to AR / Contra Example Invoices</div>
+        <div class="cat-desc">Invoices that are partially or wholly AR rather than AP. These exercise the Contra detection logic, the Flip-to-AR balance check, and the L3 grouped matching that HighRadius can't currently handle.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> The entire §4.3 of the SOW — Contra detection (B/S line type WksDetail-SALES non-zero) · Flip-to-AR balance check · Per-line Flip-to-AR override · Negative chargeback exclusion (Reconserve rule) · Zero-tolerance enforcement. <strong>Plus</strong> the Georgetown set is the gold-standard L3 grouped test case.
+      </div>
+      <div class="file-list">
+        <div class="file-row"><div class="file-name">U-Pak · 4378107 — CANADIAN WITH NOTES</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Same Canadian invoice with manual margin notes from AP. Shows current annotation pattern.</div><div class="file-test"><strong>What it tests</strong>Reference for what AP currently writes by hand during Contra processing.</div></div></div>
+        <div class="file-row"><div class="file-name">U-Pak · 4378107 — CANADIAN WITHOUT NOTES</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Same invoice without notes — what the system actually receives.</div><div class="file-test"><strong>What it tests</strong>Clean Canadian Contra detection.</div></div></div>
+        <div class="file-row"><div class="file-name">Federal Recycling · 1330123 — CONTRA ONLY</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Entire invoice is AR, none is AP. Pure Contra.</div><div class="file-test"><strong>What it tests</strong>100% Contra detection; full flip without remainder.</div></div></div>
+        <div class="file-row"><div class="file-name">Georgetown Paper Stock · 957096 · $3,569.90 (LARGE FLIP THEN CONTRA)</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>The canonical L3 grouped case — one invoice covers many B/Ss aggregated at the product level. Comes WITH and WITHOUT manual notes.</div><div class="file-test"><strong>What it tests</strong>L3 grouped matching + mixed Flip-to-AR. <strong>This is the make-or-break test.</strong></div></div></div>
+        <div class="file-row"><div class="file-name">Georgetown Example/ subfolder — 1 invoice + 17 worksheets</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>The actual B/S worksheets AP currently uses to reconcile the Georgetown invoice by hand.</div><div class="file-test"><strong>What it tests</strong>Reference for the L3 grouping algorithm — shows the current manual approach the system must reproduce automatically.</div></div></div>
+        <div class="file-row"><div class="file-name">Malvaes Solutions · M26931</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Negative chargeback case.</div><div class="file-test"><strong>What it tests</strong>Reconserve rule — already AR, do not flip.</div></div></div>
+        <div class="file-row"><div class="file-name">Other Buy Sell Worksheets / Federal Contra (2 worksheets)</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>B/S worksheets for the Federal Recycling pure-Contra case.</div><div class="file-test"><strong>What it tests</strong>Reference for pure-Contra B/S structure.</div></div></div>
+        <div class="file-row"><div class="file-name">UPAK Invoice Buy Sells/ subfolder — 22 worksheets</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>The B/S worksheets for the U-Pak Canadian invoices.</div><div class="file-test"><strong>What it tests</strong>L3 grouping + Canadian taxes + Contra in raw worksheet form.</div></div></div>
+        <div class="file-row"><div class="file-name">VIM Recyclers · 249395A</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>VIM is a known Contra vendor.</div><div class="file-test"><strong>What it tests</strong>Standard Contra vendor pattern.</div></div></div>
+      </div>
+      <div class="note-block"><strong>Why this matters most.</strong> HighRadius cannot handle the L3 grouped invoices today. Those are exactly what the Georgetown set demonstrates. If the new platform can auto-process Georgetown, it has materially improved on HighRadius.</div>
+    </div>
+  </details>
+
+  <!-- ─── G · Email-paired ─── -->
+  <details id="cat-email" class="cat email">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">22</div>
+        <div class="cat-count-lbl">items</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">G · Arrival-Format Tests</div>
+        <div class="cat-name">Invoices with Emails (.eml + .pdf pairs)</div>
+        <div class="cat-desc">Real email envelopes with their invoice attachments. Tests the email ingestion pipeline against actual subjects, sender patterns, multi-attachment messages, and forwarded chains.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> Entire email ingestion pipeline (M2 §1.1) — multi-attachment emails, forwarded emails (FW_), body-link invoices (no attachment), supporting-document association, forwarding-chain detection (use original sender).
+      </div>
+      <div class="file-list">
+        <div class="file-row"><div class="file-name">FW_ Your Homewood Disposal Service ... Account 12-32987 7.eml + 4 PDFs (Billing12-32987 7_4.pdf through _7.pdf)</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Multi-attachment email. Forwarded message. Four invoices in one envelope.</div><div class="file-test"><strong>What it tests</strong>Per-attachment invoice record creation + forwarding-chain detection.</div></div></div>
+        <div class="file-row"><div class="file-name">FW_ Invoice # 11183.eml + INVOICE 11183.pdf</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Forwarded by AM from personal inbox.</div><div class="file-test"><strong>What it tests</strong>Forwarding-chain detection — use original vendor sender, not the AM.</div></div></div>
+        <div class="file-row"><div class="file-name">Invoice 5006650 from 02_25_2026.eml + invoice_5006650.pdf</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Direct vendor email, dated subject.</div><div class="file-test"><strong>What it tests</strong>Standard direct-from-vendor path.</div></div></div>
+        <div class="file-row"><div class="file-name">New Invoice_Statement from 48forty Solutions LLC - R0234899.eml + R0234899.pdf</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Subject says "Invoice_Statement" — could be either type.</div><div class="file-test"><strong>What it tests</strong>Document classification at ingestion (Invoice vs. Statement).</div></div></div>
+        <div class="file-row"><div class="file-name">Reworld Invoice - CI407830.eml + CI407830_91131.pdf · Reworld Invoice - CI407832.eml + CI407832_91131.pdf</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Two invoices from the same vendor on the same day, similar names.</div><div class="file-test"><strong>What it tests</strong>SHA-256 dedup distinguishes them; UUID assignment per attachment.</div></div></div>
+        <div class="file-row"><div class="file-name">Total Disposal Invoice 17363.eml</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>PDF embedded inline in email body, not as discrete attachment.</div><div class="file-test"><strong>What it tests</strong>Body-embedded PDF extraction.</div></div></div>
+        <div class="file-row"><div class="file-name">VLS Environmental Solutions Invoice #299396 available for viewing.eml + 299396 2768374.pdf</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Subject says "available for viewing" — likely a body-link case where the email points to a portal URL, but PDF is also attached.</div><div class="file-test"><strong>What it tests</strong>Body-link detection (M2 §1.1.5) + standard attachment handling.</div></div></div>
+        <div class="file-row"><div class="file-name">Kerry Inc · _AP Invoice 0226KERRYBIOFUE · $13,434.74</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>BIOFUE is a product code embedded in invoice number.</div><div class="file-test"><strong>What it tests</strong>Invoice number normalization (max 20 chars, strip leading zeros).</div></div></div>
+        <div class="file-row"><div class="file-name">IRCAtest3.30.2026.pdf</div><div class="file-detail"><div class="file-tricky"><strong>The trick</strong>Test file from IRCA. Likely a PDF without an associated email.</div><div class="file-test"><strong>What it tests</strong>Manual upload path baseline.</div></div></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── H · Statements ─── -->
+  <details id="cat-stmt" class="cat stmt">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">25</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">H · Different Doc Type · Different Workflow</div>
+        <div class="cat-name">Vendor Statements</div>
+        <div class="cat-desc">Statements, not invoices. Each one lists the vendor's open invoices for reconciliation. These should never trigger posting; they only feed the Statement Reconciliation workflow.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> §6.3 Statement Reconciliation Workflow — statement classification at ingestion, match key (Vendor + Invoice # + Invoice Date), discrepancy detection (status mismatch, amount discrepancy, missing invoice), row-by-row UI. <strong>Statements must NOT post.</strong>
+      </div>
+      <div class="file-list">
+        <div class="file-row"><div class="file-name">25 vendor statements covering: American Recycling · Butler · Contractor's Disposal · Denali · EBI · Evergreen Recyclers · FLEXPAK · Interstate Waste CT · IWP · Lighting Resources · Martin Custom · Organic Matters · Plummers Disposal · Price Farms Organics · Quincy · Shore Waste · Smurfit Westrock · St Louis Composting · Sun Services · The Compost Company · TOR Cust50614 (Northstar Recycling) · Waste Reduction Recycling &amp; Transfer (Bimbo Bakeries) · Waste Solutions Canada · WR Environmental · Zollett</div><div class="file-detail"><div class="file-tricky"><strong>What's tricky</strong>Statements look superficially like invoices but have different purposes. Filenames include vendor + statement date — tests classifier on subject + filename + content.</div><div class="file-test"><strong>What it tests</strong>Document classification accuracy. Misclassifying a statement as an invoice would cause double-posting.</div></div></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- ─── I · Mixed sample ─── -->
+  <details id="cat-mixed" class="cat mixed">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">66</div>
+        <div class="cat-count-lbl">PDFs</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">I · Curated Demo Set</div>
+        <div class="cat-name">Sample_Invoices (overlapping mix)</div>
+        <div class="cat-desc">A hand-picked superset that NSR pulled together for early conversations. Most files here also appear in the Tricky / Address / Contra / Bill-To folders above.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it tests:</strong> Nothing unique. <strong>Avoid using as a source-of-truth corpus</strong> — pick from the curated category folders instead so each test maps cleanly to one feature.
+      </div>
+      <div class="note-block"><strong>Important.</strong> This folder duplicates files from Tricky, Supplier Addresses, Bill-To Mismatch, and Flip-to-AR. Files include the Georgetown 957096 invoice, Federal Recycling Contra, Tennessee Trash, EDCO, and 17 Georgetown worksheets. <strong>For UAT, use the dedicated category folders rather than this mix.</strong></div>
+    </div>
+  </details>
+
+  <!-- ─── J · Reference / Schema ─── -->
+  <details id="cat-ref" class="cat ref">
+    <summary class="cat-summary">
+      <div class="cat-count-block">
+        <div class="cat-count">11</div>
+        <div class="cat-count-lbl">files</div>
+      </div>
+      <div class="cat-meta">
+        <div class="cat-tag">J · Reference Data &amp; Schemas</div>
+        <div class="cat-name">Interface Specs · SFTP Samples · SQL Queries · B/S Master</div>
+        <div class="cat-desc">Reference data for the integration design and matching engine. Not test data — these are contracts and source-system reference artifacts.</div>
+      </div>
+      <div class="cat-arrow">▼</div>
+    </summary>
+    <div class="cat-body">
+      <div class="cat-sow">
+        <strong>What it provides:</strong> Field-level integration design (cuts across M1, M3, M6) · Matching-engine training/test data (M4) · Schema for the data-sync feeds (M1).
+      </div>
+      <div class="file-list">
+        <div class="file-row"><div class="file-name">Reference Excels / AP - Interface Specs NorthStar Recycling 12-2.xlsx</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Field-by-field AP interface spec.</div><div class="file-test"><strong>Used for</strong>Outbound posting CSV contract design.</div></div></div>
+        <div class="file-row"><div class="file-name">Reference Excels / Northstar _CAA, DMS, Livecube Interface Specifications 06.19.2025.xlsx</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>CAA, DMS, Livecube specs (Phase 2 systems).</div><div class="file-test"><strong>Used for</strong>AR-side integration contracts.</div></div></div>
+        <div class="file-row"><div class="file-name">Reference Excels / NSR AP Design Sheet - Phase 1 edited.xlsx</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>The Phase 1 design sheet.</div><div class="file-test"><strong>Used for</strong>Most authoritative source on Phase 1 commitments. Cross-reference for the SOW.</div></div></div>
+        <div class="file-row"><div class="file-name">cieTrade_HR_Exports_Ingests / Cietrade_to_HRC/</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Real outbound files (CieTrade → HighRadius).</div><div class="file-test"><strong>Used for</strong>Posting CSV format reference, byte-for-byte.</div></div></div>
+        <div class="file-row"><div class="file-name">cieTrade_HR_Exports_Ingests / HRC_to_Cietrade/</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Real inbound files (HighRadius → CieTrade).</div><div class="file-test"><strong>Used for</strong>PaymentResponse and PaymentUpdate format reference.</div></div></div>
+        <div class="file-row"><div class="file-name">cieTrade_HR_Exports_Ingests / JPMC to HRC/</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Bank lockbox + EDI 820 samples.</div><div class="file-test"><strong>Used for</strong>Phase 2 bank integration format reference.</div></div></div>
+        <div class="file-row"><div class="file-name">Buy Sell Queries / NSR_HR_BuySell_Select.sql</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>SQL: how Buy/Sell records are pulled from CieTrade.</div><div class="file-test"><strong>Used for</strong>Schema reference for the daily B/S sync feed.</div></div></div>
+        <div class="file-row"><div class="file-name">Buy Sell Queries / NSR_HR_Payables_Select.sql</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>SQL: how AP payables are pulled.</div><div class="file-test"><strong>Used for</strong>Schema for inbound posting status feed.</div></div></div>
+        <div class="file-row"><div class="file-name">Buy Sell Queries / NSR_HR_WKSDeliv_Select.sql · NSR_HR_WKSDetail.sql</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>SQL: B/S deliveries (worksheets) and B/S line detail.</div><div class="file-test"><strong>Used for</strong>The L3 grouping query + line-level match data source.</div></div></div>
+        <div class="file-row"><div class="file-name">Buy Sell Queries / HRC quries AP.xlsx · 2438578 Trading Inquery.xlsx · 2438578 worksheet.xlsx</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Compiled query library + a single-B/S inquiry walkthrough.</div><div class="file-test"><strong>Used for</strong>Reference for how AP currently investigates one B/S manually.</div></div></div>
+        <div class="file-row"><div class="file-name">NSR_HR_SampleBuysellData.xlsb (101 MB!)</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Massive B/S data extract.</div><div class="file-test"><strong>Used for</strong>Bulk B/S corpus for matching engine training and load testing.</div></div></div>
+        <div class="file-row"><div class="file-name">Adjustment Reporting.xlsx · Copy of UOM Handling.xlsx · Unit of Measures.png</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Variance reporting + UoM conversion reference.</div><div class="file-test"><strong>Used for</strong>UoM normalization rules (lbs ↔ short tons ↔ kg) and adjustment-tracking reference.</div></div></div>
+        <div class="file-row"><div class="file-name">Multi bs invoices example.pdf (root)</div><div class="file-detail"><div class="file-tricky"><strong>What it is</strong>Multi-B/S invoice walkthrough.</div><div class="file-test"><strong>Used for</strong>Reference for the multi-B/S support requirement (~20 B/Ss per invoice).</div></div></div>
+      </div>
+    </div>
+  </details>
+
+</section>
+
+<!-- ============ SOW MAPPING ============ -->
+<section id="mapping" class="mapping">
+  <div class="section-head">
+    <span class="section-num">03 · SOW Mapping</span>
+    <h2>Each test corpus → which SOW feature it validates.</h2>
+    <p>Use this when planning UAT. For every milestone in the SOW, here's which folder of test data exercises it.</p>
+  </div>
+
+  <table class="map-table">
+    <thead>
+      <tr>
+        <th>Corpus</th>
+        <th>SOW Section</th>
+        <th>Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge" style="background: var(--c-prod);">A · Production Volume</span></td>
+        <td>Bulk UAT corpus (cross-cuts M2, M3, M4, M5)</td>
+        <td>Realistic volume + vendor diversity. Used for accuracy benchmarking.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-tricky);">B · Tricky</span></td>
+        <td>M3 · M4 · M4.3 (multiple)</td>
+        <td>Currency, surcharges, address aliases, Contra — one invoice per tricky case.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-totals);">C · Total / Balances</span></td>
+        <td>M3 §2.2.1 · M3 §2.2.9</td>
+        <td>Invoice Total disambiguation when multiple totals are printed.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-addr);">D · Supplier Addresses</span></td>
+        <td>M1 (address-aware indexing) · M3 §2.2.2</td>
+        <td>Address parsing in unusual layouts; site-location alias resolution.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-billto);">E · Bill-To Mismatch</span></td>
+        <td>M5 §5.1 check #10</td>
+        <td>Validation warning (not hard stop) when Bill-To doesn't match NSR.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-contra);">F · Flip-to-AR / Contra</span></td>
+        <td>M4 §4.3 · L3 grouped matching</td>
+        <td>The hardest feature in the SOW. Georgetown set is the gold standard.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-email);">G · Email-paired</span></td>
+        <td>M2 §1.1 (entire pipeline)</td>
+        <td>Multi-attachment, forwarded, body-link, supporting documents.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-stmt);">H · Statements</span></td>
+        <td>M6 §6.3 (Statement Reconciliation)</td>
+        <td>Different doc type. Must NOT post. Tests classifier accuracy.</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background: var(--c-ref);">J · Reference / Schema</span></td>
+        <td>M1 (data sync) · M6 (posting) · M4 (matching data)</td>
+        <td>Interface contracts and source-system reference. Not test data.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <div>
+    <strong>NSR AP Automation</strong> &nbsp;·&nbsp; Test Corpus Map &nbsp;·&nbsp; Companion to the SOW
+  </div>
+  <div>
+    Prepared by TechJays for NorthStar Recycling Company, LLC
+  </div>
+</footer>
+
+</body>
+</html>

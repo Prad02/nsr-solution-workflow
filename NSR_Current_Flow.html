@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSR — How AP Works Today</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f8fb;
+    --surface: #ffffff;
+    --surface-2: #f1f5f9;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-2: #475569;
+    --text-3: #94a3b8;
+
+    --teal: #0d9488;
+    --amber: #d97706;
+    --purple: #7c3aed;
+    --blue: #2563eb;
+    --green: #059669;
+    --red: #dc2626;
+    --pink: #db2777;
+
+    --supplier: #2563eb;
+    --hauler: #d97706;
+    --outlet: #059669;
+
+    --ctrade: #0d9488;
+    --sage: #d97706;
+    --iradius: #7c3aed;
+    --docstar: #6b7280;
+    --jpmc: #2563eb;
+
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+    --shadow-md: 0 4px 16px rgba(15,23,42,.08);
+    --shadow-lg: 0 12px 40px rgba(15,23,42,.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* ============ NAV ============ */
+  nav.top {
+    position: sticky;
+    top: 0;
+    background: rgba(247, 248, 251, .9);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+  }
+  .nav-inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: -.2px;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--ctrade), var(--iradius));
+    border-radius: 9px;
+    display: grid; place-items: center;
+    color: white; font-weight: 800; font-size: 14px;
+  }
+  .brand-text { font-size: 13px; }
+  .brand-text small {
+    display: block;
+    font-weight: 500;
+    color: var(--text-3);
+    font-size: 11px;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+  }
+  .nav-jump { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-jump a {
+    font-size: 12px;
+    padding: 7px 12px;
+    color: var(--text-2);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: all .2s;
+    font-weight: 500;
+  }
+  .nav-jump a:hover {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 80px 32px 50px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    color: var(--ctrade);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  h1.hero-title {
+    font-size: clamp(2rem, 4.2vw, 3.6rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -1.8px;
+    margin-bottom: 22px;
+    max-width: 1000px;
+  }
+  h1.hero-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--ctrade), var(--iradius));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-lead {
+    font-size: 19px;
+    color: var(--text-2);
+    max-width: 820px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .hero-callout {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-2);
+    box-shadow: var(--shadow-sm);
+  }
+  .hero-callout strong { color: var(--text); font-weight: 600; }
+
+  /* ============ SECTION ============ */
+  section { max-width: 1320px; margin: 0 auto; padding: 60px 32px; scroll-margin-top: 80px; }
+  .section-head { margin-bottom: 36px; max-width: 800px; }
+  .section-num {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ctrade);
+    background: rgba(13,148,136,.1);
+    padding: 5px 11px;
+    border-radius: 6px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .section-head h2 {
+    font-size: clamp(1.75rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -.8px;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .section-head p {
+    font-size: 16px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+
+  /* ============ THE BUSINESS (three actors) ============ */
+  .actors {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 36px 28px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 32px;
+  }
+  @media (max-width: 900px) {
+    .actors { grid-template-columns: 1fr; padding: 24px; }
+    .actors .arrow { transform: rotate(90deg); padding: 12px 0; }
+  }
+  .actor {
+    text-align: center;
+    padding: 24px 18px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    border-top: 4px solid var(--actor-c);
+    position: relative;
+  }
+  .actor.supplier { --actor-c: var(--supplier); }
+  .actor.hauler { --actor-c: var(--hauler); }
+  .actor.outlet { --actor-c: var(--outlet); }
+  .actor-shape {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: var(--actor-c);
+    margin: 0 auto 12px;
+    display: grid; place-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 22px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.1);
+  }
+  .actor-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -.2px;
+  }
+  .actor-role {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .actor-money {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: white;
+    border: 1px dashed var(--actor-c);
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: var(--actor-c);
+    font-weight: 600;
+  }
+  .arrow {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+  }
+  .arrow-line {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--supplier), var(--hauler), var(--outlet));
+    position: relative;
+  }
+  .arrow-line::after {
+    content: '';
+    position: absolute; right: -4px; top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-left-color: var(--outlet);
+  }
+  .arrow-label {
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .bs-record {
+    background: linear-gradient(135deg, rgba(13,148,136,.06), rgba(124,58,237,.04));
+    border: 1px solid var(--ctrade);
+    border-radius: 14px;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+  @media (max-width: 700px) { .bs-record { grid-template-columns: 1fr; } }
+  .bs-icon {
+    width: 64px; height: 64px;
+    background: var(--ctrade);
+    color: white;
+    border-radius: 16px;
+    display: grid; place-items: center;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -.5px;
+  }
+  .bs-text h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -.2px;
+  }
+  .bs-text p { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+  /* ============ SYSTEMS (three platforms) ============ */
+  .systems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .system {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    border-top: 4px solid var(--sys-c);
+    position: relative;
+    overflow: hidden;
+  }
+  .system::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, var(--sys-c) 0%, transparent 60%);
+    opacity: .07;
+    pointer-events: none;
+  }
+  .system.ctrade { --sys-c: var(--ctrade); }
+  .system.sage { --sys-c: var(--sage); }
+  .system.iradius { --sys-c: var(--iradius); }
+  .system.docstar { --sys-c: var(--docstar); }
+  .system.jpmc { --sys-c: var(--jpmc); }
+  .sys-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--sys-c);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .sys-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    margin-bottom: 4px;
+  }
+  .sys-alias {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .sys-desc {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .sys-desc strong { color: var(--text); font-weight: 600; }
+
+  /* ============ ARCHITECTURE ============ */
+  .arch {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+  }
+  .arch svg { width: 100%; height: auto; min-width: 880px; }
+
+  .sftp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 28px;
+  }
+  @media (max-width: 900px) { .sftp-grid { grid-template-columns: 1fr; } }
+  .sftp {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    border-left: 3px solid var(--sftp-c);
+  }
+  .sftp.outbound { --sftp-c: var(--ctrade); }
+  .sftp.inbound { --sftp-c: var(--green); }
+  .sftp.lockbox { --sftp-c: var(--jpmc); }
+  .sftp-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--sftp-c);
+    margin-bottom: 6px;
+  }
+  .sftp-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .sftp-from {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 10px;
+  }
+  .sftp-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  /* ============ FLOW STEPS ============ */
+  .flow-steps {
+    position: relative;
+  }
+  .flow-step {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 24px;
+    margin-bottom: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .flow-step:hover {
+    transform: translateX(2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--step-c, var(--ctrade));
+  }
+  @media (max-width: 700px) {
+    .flow-step { grid-template-columns: 1fr; gap: 12px; padding: 18px 20px; }
+  }
+
+  .step-circle {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: var(--step-c, var(--ctrade));
+    color: white;
+    display: grid; place-items: center;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -.5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+  .step-body { padding-top: 4px; }
+  .step-actor {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--step-c, var(--ctrade));
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .step-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.2px;
+    margin-bottom: 8px;
+  }
+  .step-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: 10px;
+  }
+  .step-desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 1px 6px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    color: var(--step-c, var(--ctrade));
+  }
+  .step-pain {
+    background: rgba(220,38,38,.06);
+    border-left: 2px solid var(--red);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin-top: 10px;
+  }
+  .step-pain strong { color: var(--red); font-weight: 700; }
+
+  /* color-codes per step actor */
+  .flow-step.vendor { --step-c: var(--text-3); }
+  .flow-step.ap { --step-c: var(--blue); }
+  .flow-step.am { --step-c: var(--amber); }
+  .flow-step.docstar-step { --step-c: var(--docstar); }
+  .flow-step.ctrade { --step-c: var(--ctrade); }
+  .flow-step.sftp { --step-c: var(--text-3); }
+  .flow-step.iradius { --step-c: var(--iradius); }
+  .flow-step.sage { --step-c: var(--sage); }
+  .flow-step.bank { --step-c: var(--jpmc); }
+
+  /* ============ INVOICE JOURNEY ============ */
+  .journey {
+    display: grid;
+    grid-template-columns: 1.1fr 1.4fr;
+    gap: 24px;
+    margin-top: 12px;
+  }
+  @media (max-width: 900px) { .journey { grid-template-columns: 1fr; } }
+  .journey-card {
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border: 2px solid var(--border-strong);
+    border-radius: 14px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+  }
+  .journey-card::before {
+    content: 'SAMPLE INVOICE';
+    position: absolute;
+    top: 14px; right: 18px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-3);
+  }
+  .ji-head {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .ji-sub {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-2);
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .ji-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(203,213,225,.7);
+    color: var(--text-2);
+    font-size: 11px;
+  }
+  .ji-row:last-of-type { border-bottom: none; }
+  .ji-row .v { color: var(--text); font-weight: 600; }
+  .ji-lines {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .ji-line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 4px 0;
+    color: var(--text);
+  }
+  .ji-total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid var(--border-strong);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .ji-total .v { color: var(--ctrade); }
+
+  .journey-trace {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .trace {
+    display: grid;
+    grid-template-columns: 90px 110px 1fr;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    align-items: center;
+  }
+  @media (max-width: 700px) { .trace { grid-template-columns: 1fr; gap: 6px; } }
+  .trace-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ctrade);
+    font-weight: 700;
+  }
+  .trace-system {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    background: var(--surface-2);
+    border-radius: 5px;
+    color: var(--text-2);
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .trace-system.ct { color: var(--ctrade); border-color: rgba(13,148,136,.3); background: rgba(13,148,136,.06); }
+  .trace-system.ir { color: var(--iradius); border-color: rgba(124,58,237,.3); background: rgba(124,58,237,.06); }
+  .trace-system.sg { color: var(--sage); border-color: rgba(217,119,6,.3); background: rgba(217,119,6,.06); }
+  .trace-system.ap { color: var(--blue); border-color: rgba(37,99,235,.3); background: rgba(37,99,235,.06); }
+  .trace-system.dc { color: var(--docstar); border-color: #d1d5db; background: #f3f4f6; }
+  .trace-act { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+  /* ============ PAIN POINTS ============ */
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .pain {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    border-left: 3px solid var(--red);
+  }
+  .pain-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .pain-name {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -.1px;
+  }
+  .pain-desc {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+
+  /* ============ STATS BAR ============ */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-bottom: 0;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .stat-num {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.6px;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--ctrade), var(--iradius));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: .3px;
+    line-height: 1.4;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    max-width: 1320px;
+    margin: 60px auto 0;
+    padding: 36px 32px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  footer strong { color: var(--text-2); font-weight: 600; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--surface-2); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-text">
+        NSR Current Flow
+        <small>How AP Works Today</small>
+      </div>
+    </div>
+    <div class="nav-jump">
+      <a href="#business">Business</a>
+      <a href="#systems">Systems</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#flow">The Flow</a>
+      <a href="#journey">Sample Journey</a>
+      <a href="#pain">Pain Points</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">Current State · As-Is Process Map</div>
+  <h1 class="hero-title">How NSR <em>actually runs AP today</em>, end to end.</h1>
+  <p class="hero-lead">
+    A walk through the real, current process — what NSR does as a business, the systems they depend on, how data physically moves between those systems via SFTP files, and the 14 steps every invoice goes through from arrival to payment confirmation. Read this if you want to understand the "before" picture before looking at the SOW for what gets built next.
+  </p>
+  <div class="hero-callout">
+    <strong>Volume:</strong>&nbsp;~9,000 invoices per month (450/day) &nbsp;·&nbsp; <strong>Currencies:</strong>&nbsp;USD + CAD &nbsp;·&nbsp; <strong>Legal entity:</strong>&nbsp;Northstar Recycling Company, LLC
+  </div>
+</header>
+
+<!-- ============ 1 · BUSINESS ============ -->
+<section id="business">
+  <div class="section-head">
+    <span class="section-num">01 · The Business</span>
+    <h2>NSR is a recycling company. Every transaction is a Buy/Sell.</h2>
+    <p>NSR sources recyclable material from suppliers, moves it via haulers, and sells it to outlets. A single load of material moving from supplier to outlet is recorded in CieTrade as one Buy/Sell (B/S). Every cost, revenue, ledger, invoice, and payment in NSR's books traces back to a B/S.</p>
+  </div>
+
+  <div class="actors">
+    <div class="actor supplier">
+      <div class="actor-shape">S</div>
+      <div class="actor-name">Supplier</div>
+      <div class="actor-role">A company that produces or holds recyclable material — manufacturers, retailers, food-service, or municipal sources.</div>
+      <div class="actor-money">NSR &rarr; pays them</div>
+    </div>
+    <div class="arrow">
+      <div class="arrow-label">picked up by</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="actor hauler">
+      <div class="actor-shape">H</div>
+      <div class="actor-name">Hauler</div>
+      <div class="actor-role">A transport company that physically picks up the load and moves it. Bills NSR for the move plus fuel and dump charges.</div>
+      <div class="actor-money">NSR &rarr; pays them</div>
+    </div>
+    <div class="arrow">
+      <div class="arrow-label">delivered to</div>
+      <div class="arrow-line"></div>
+    </div>
+    <div class="actor outlet">
+      <div class="actor-shape">O</div>
+      <div class="actor-name">Outlet</div>
+      <div class="actor-role">The end-buyer of the material — paper mills, plastics processors, smelters, brokers. Pays NSR for the material.</div>
+      <div class="actor-money">&rarr; pays NSR</div>
+    </div>
+  </div>
+
+  <div class="bs-record">
+    <div class="bs-icon">B/S</div>
+    <div class="bs-text">
+      <h4>The Buy/Sell record</h4>
+      <p>Every load is captured in CieTrade as one Buy/Sell record. From that single record, CieTrade generates per-party ledgers (one for the supplier, one for the hauler, one for the outlet). Ledgers later get aggregated into invoices — sometimes one B/S becomes one invoice, sometimes many B/Ss roll up into one invoice line. <strong>That N:M relationship is the core matching complexity AP has to handle.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 · SYSTEMS ============ -->
+<section id="systems">
+  <div class="section-head">
+    <span class="section-num">02 · The Systems</span>
+    <h2>Five platforms, none of which talk to each other directly.</h2>
+    <p>NSR's AP runs on top of five systems with very specific roles. They're connected through SFTP file drops, not APIs. Knowing what each one does is the first step to understanding why a problem in one place creates work in another.</p>
+  </div>
+
+  <div class="systems-grid">
+    <div class="system ctrade">
+      <div class="sys-tag">ERP · Source of truth</div>
+      <div class="sys-name">CieTrade</div>
+      <div class="sys-alias">"CTrade"</div>
+      <div class="sys-desc">The ERP NSR runs the business on. Every Buy/Sell, counterparty, order, ledger, and invoice is created here. CieTrade is also where AP staff post invoices and where payment status comes back. <strong>If the data isn't in CieTrade, it doesn't exist for accounting.</strong></div>
+    </div>
+    <div class="system sage">
+      <div class="sys-tag">Accounting · Books</div>
+      <div class="sys-name">Sage MAS 500</div>
+      <div class="sys-alias">accounting platform</div>
+      <div class="sys-desc">The accounting system. Every dollar in and out lands here. Year-end taxes, audit trail, reconciliation. Today it's heavily manual — accountants verify postings against bank activity. <strong>This is the system the new automation is meant to feed cleanly.</strong></div>
+    </div>
+    <div class="system iradius">
+      <div class="sys-tag">Automation · Today</div>
+      <div class="sys-name">HighRadius</div>
+      <div class="sys-alias">"iRadius" · "IRDS"</div>
+      <div class="sys-desc">Sits between CieTrade and Sage. Reads payment data and posting files from SFTP, matches payments to invoices, writes status back. <strong>The new platform replaces HighRadius's role on the AP side.</strong></div>
+    </div>
+    <div class="system docstar">
+      <div class="sys-tag">Doc storage · Legacy</div>
+      <div class="sys-name">Docstar / Eclipse</div>
+      <div class="sys-alias">virtual document storage</div>
+      <div class="sys-desc">The current AP document store. Every incoming invoice gets manually downloaded, sorted, coded, and uploaded here. <strong>Retired in the new platform — perpetual license, no migration of historical records.</strong></div>
+    </div>
+    <div class="system jpmc">
+      <div class="sys-tag">Banking</div>
+      <div class="sys-name">JPMorgan Chase</div>
+      <div class="sys-alias">"JPMC" · the bank</div>
+      <div class="sys-desc">NSR's bank. Drops customer remittance into SFTP as lockbox image ZIPs and EDI 820 wire/ACH notifications. Used on the AR side (Phase 2 in the SOW). <strong>Phase 1 doesn't touch this; Phase 2 does.</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · ARCHITECTURE ============ -->
+<section id="architecture">
+  <div class="section-head">
+    <span class="section-num">03 · The Plumbing</span>
+    <h2>Everything moves through SFTP — three folders, scheduled file drops.</h2>
+    <p>CieTrade and Sage do not talk directly. CieTrade and HighRadius do not have APIs to one another. The entire integration is shared SFTP folders, where one system writes a flat file and the other one reads it on a schedule. Three folders carry the entire AP and AR data flow.</p>
+  </div>
+
+  <div class="arch">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ar-tl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0d9488"/></marker>
+        <marker id="ar-pp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/></marker>
+        <marker id="ar-gn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#059669"/></marker>
+        <marker id="ar-am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d97706"/></marker>
+      </defs>
+
+      <!-- CieTrade -->
+      <g>
+        <rect x="40" y="120" width="220" height="140" rx="14" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+        <text x="150" y="152" text-anchor="middle" font-family="Inter" font-size="10" fill="#0d9488" letter-spacing="2" font-weight="700">ERP</text>
+        <text x="150" y="184" text-anchor="middle" font-family="Inter" font-size="22" font-weight="800" fill="#0f172a">CieTrade</text>
+        <text x="150" y="210" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">Buy/Sells &middot; Ledgers</text>
+        <text x="150" y="228" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">Invoice posting</text>
+      </g>
+      <!-- SFTP folders box -->
+      <g>
+        <rect x="380" y="60" width="200" height="260" rx="12" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="480" y="92" text-anchor="middle" font-family="Inter" font-size="10" fill="#475569" letter-spacing="2" font-weight="700">SFTP / FTP</text>
+        <text x="480" y="115" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#0f172a">Shared file path</text>
+
+        <rect x="400" y="135" width="160" height="44" rx="6" fill="#ffffff" stroke="#0d9488" stroke-width="1"/>
+        <text x="480" y="155" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#0d9488" font-weight="700">CTR &rarr; IRDS</text>
+        <text x="480" y="170" text-anchor="middle" font-family="Inter" font-size="10" fill="#475569">posting batches</text>
+
+        <rect x="400" y="190" width="160" height="44" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1"/>
+        <text x="480" y="210" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#2563eb" font-weight="700">JPMC &rarr; IRDS</text>
+        <text x="480" y="225" text-anchor="middle" font-family="Inter" font-size="10" fill="#475569">lockbox &middot; EDI 820</text>
+
+        <rect x="400" y="245" width="160" height="44" rx="6" fill="#ffffff" stroke="#059669" stroke-width="1"/>
+        <text x="480" y="265" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#059669" font-weight="700">IRDS &rarr; CTR</text>
+        <text x="480" y="280" text-anchor="middle" font-family="Inter" font-size="10" fill="#475569">payment status</text>
+      </g>
+      <!-- HighRadius -->
+      <g>
+        <rect x="700" y="120" width="220" height="140" rx="14" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+        <text x="810" y="152" text-anchor="middle" font-family="Inter" font-size="10" fill="#7c3aed" letter-spacing="2" font-weight="700">AUTOMATION</text>
+        <text x="810" y="184" text-anchor="middle" font-family="Inter" font-size="22" font-weight="800" fill="#0f172a">HighRadius</text>
+        <text x="810" y="210" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">match &middot; status</text>
+        <text x="810" y="228" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">(being replaced)</text>
+      </g>
+      <!-- Sage -->
+      <g>
+        <rect x="960" y="120" width="200" height="140" rx="14" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+        <text x="1060" y="152" text-anchor="middle" font-family="Inter" font-size="10" fill="#d97706" letter-spacing="2" font-weight="700">ACCOUNTING</text>
+        <text x="1060" y="184" text-anchor="middle" font-family="Inter" font-size="22" font-weight="800" fill="#0f172a">Sage</text>
+        <text x="1060" y="210" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">books &middot; taxes</text>
+        <text x="1060" y="228" text-anchor="middle" font-family="Inter" font-size="11" fill="#475569">(manual + auto)</text>
+      </g>
+
+      <!-- Connections -->
+      <path d="M 260 175 C 320 175, 340 157, 400 157" fill="none" stroke="#0d9488" stroke-width="2" marker-end="url(#ar-tl)"/>
+      <text x="305" y="148" font-family="Inter" font-size="10" fill="#475569" font-weight="600">writes</text>
+      <path d="M 700 195 C 640 195, 620 213, 560 213" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#ar-pp)"/>
+      <text x="600" y="207" font-family="Inter" font-size="10" fill="#475569" font-weight="600">reads</text>
+      <path d="M 700 230 C 640 230, 620 267, 560 267" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#ar-pp)"/>
+      <text x="600" y="285" font-family="Inter" font-size="10" fill="#475569" font-weight="600">writes back</text>
+      <path d="M 400 267 C 340 267, 320 220, 260 220" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#ar-gn)"/>
+      <text x="305" y="245" font-family="Inter" font-size="10" fill="#475569" font-weight="600">reads</text>
+      <path d="M 260 145 C 600 60, 800 60, 960 145" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#ar-am)"/>
+      <text x="600" y="55" text-anchor="middle" font-family="Inter" font-size="10" fill="#d97706" font-weight="700">auto-post (CSV via SFTP)</text>
+
+      <text x="600" y="365" text-anchor="middle" font-family="Inter" font-size="10" fill="#94a3b8">No direct CieTrade ↔ Sage connection. All cross-system traffic goes through SFTP files.</text>
+    </svg>
+  </div>
+
+  <div class="sftp-grid">
+    <div class="sftp outbound">
+      <div class="sftp-tag">CTR &rarr; IRDS</div>
+      <div class="sftp-path">/posting/outbound/</div>
+      <div class="sftp-from">CieTrade writes &middot; HighRadius reads</div>
+      <div class="sftp-desc">Posting batches. Pipe-delimited CSVs. Twice daily. Filename pattern <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#0d9488">Posting_NSR_MMDD.txt</code>. Four key fields per row: UUID, AP_Batch_ID, Invoice_Number, CPID.</div>
+    </div>
+    <div class="sftp lockbox">
+      <div class="sftp-tag">JPMC &rarr; IRDS</div>
+      <div class="sftp-path">/lockbox/</div>
+      <div class="sftp-from">JPMorgan Chase writes &middot; HighRadius reads</div>
+      <div class="sftp-desc">Customer remittance data: lockbox image ZIPs (TIFF) and EDI 820 X12 v4010 (80-byte wrapped). AR-side, Phase 2 of the new build.</div>
+    </div>
+    <div class="sftp inbound">
+      <div class="sftp-tag">IRDS &rarr; CTR</div>
+      <div class="sftp-path">/posting/inbound/</div>
+      <div class="sftp-from">HighRadius writes &middot; CieTrade reads</div>
+      <div class="sftp-desc">Payment status responses. <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#0d9488">PaymentResponse</code> (POSTED or FAILED) and <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#0d9488">PaymentUpdate</code> (-BA ACH, -CK check, -EF EFT). Daily ~09:00.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · THE FLOW ============ -->
+<section id="flow">
+  <div class="section-head">
+    <span class="section-num">04 · The Flow</span>
+    <h2>Fourteen steps from invoice arrival to "Paid".</h2>
+    <p>This is the actual end-to-end path of an AP invoice today. Numbered, step-by-step, including who does what, which system holds the data, and where things break (the red callouts on selected steps).</p>
+  </div>
+
+  <div class="flow-steps">
+
+    <div class="flow-step vendor">
+      <div class="step-circle">1</div>
+      <div class="step-body">
+        <div class="step-actor">Vendor &rarr; NSR</div>
+        <div class="step-title">Vendor sends an invoice</div>
+        <div class="step-desc">A vendor (supplier, hauler, or service provider like Homewood Disposal) sends an invoice. It arrives via one of three channels: email to <code>APayable@nsrecycle.com</code>, an Account Manager forwarding from their own inbox, or it sits in a vendor portal (Waste Management, Waste Connections, GFL).</div>
+      </div>
+    </div>
+
+    <div class="flow-step ap">
+      <div class="step-circle">2</div>
+      <div class="step-body">
+        <div class="step-actor">AP staff</div>
+        <div class="step-title">AP triages the inbox</div>
+        <div class="step-desc">An AP coordinator opens the AP mailbox, identifies the invoice (versus general communication that also lands in this inbox), and downloads the attachment. For portal invoices, the coordinator logs into each portal manually and downloads PDFs one at a time.</div>
+        <div class="step-pain"><strong>Pain:</strong> ~9,000 invoices/month across three portals plus email plus AM forwards. Triage alone is full-time work for multiple people. Portals only retain ~2 years of history, so anything missed eventually disappears.</div>
+      </div>
+    </div>
+
+    <div class="flow-step docstar-step">
+      <div class="step-circle">3</div>
+      <div class="step-body">
+        <div class="step-actor">Docstar / Eclipse</div>
+        <div class="step-title">Upload to virtual document storage</div>
+        <div class="step-desc">The AP coordinator uploads the PDF to Docstar (the current document management system) and assigns it to an AP coordinator for processing. The document gets a basic tag (Invoice, Credit Memo, Statement) and is filed.</div>
+        <div class="step-pain"><strong>Pain:</strong> Docstar is a separate UI from CieTrade. Linking a Docstar document to a CieTrade transaction requires a human looking at both screens.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ap">
+      <div class="step-circle">4</div>
+      <div class="step-body">
+        <div class="step-actor">AP staff</div>
+        <div class="step-title">Read and code the invoice manually</div>
+        <div class="step-desc">The AP coordinator reads each field off the PDF and types it into a spreadsheet or directly into CieTrade. Vendor name, invoice number, dates, amounts, taxes, line items. Roughly 27 header fields and 5 fields per line item.</div>
+        <div class="step-pain"><strong>Pain:</strong> Hand transcription is the single biggest source of errors and the biggest time sink in the whole flow.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ap">
+      <div class="step-circle">5</div>
+      <div class="step-body">
+        <div class="step-actor">AP staff</div>
+        <div class="step-title">Look up the vendor in CieTrade (CPID)</div>
+        <div class="step-desc">The coordinator searches CieTrade's counterparty master for the vendor. Vendor names rarely match perfectly between the invoice and the master. "Waste Management Inc." on the invoice might be one of fifty Waste Management entries with different addresses. The remit-to address often disambiguates.</div>
+        <div class="step-pain"><strong>Pain:</strong> Some vendors have 50+ CPID variants. Picking the wrong one breaks payment routing later.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ap">
+      <div class="step-circle">6</div>
+      <div class="step-body">
+        <div class="step-actor">AP staff &amp; AM</div>
+        <div class="step-title">Find the right Buy/Sell record</div>
+        <div class="step-desc">Now the coordinator searches CieTrade for the matching Buy/Sell. If the invoice has a B/S number on it, easy. If not, they search by vendor + ship date + amount, or by site + product, often relying on tribal knowledge or asking the Account Manager for help.</div>
+        <div class="step-pain"><strong>Pain:</strong> No B/S number on invoice happens often. Recurring B/Ss don't get created until the first business day of the month, so invoices sometimes arrive before their B/S exists at all.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ap">
+      <div class="step-circle">7</div>
+      <div class="step-body">
+        <div class="step-actor">AP staff</div>
+        <div class="step-title">Match invoice lines to B/S lines (in a spreadsheet)</div>
+        <div class="step-desc">Three patterns of difficulty: (1) one B/S, one invoice, line-for-line — easy. (2) Multiple B/Ss, multiple invoice lines, each mapping cleanly — manageable. (3) <strong style="color:var(--red)">One invoice line covering several B/Ss summed at the product level over a date range</strong> — this is the hard one. The coordinator has to enumerate candidate B/Ss in the period and find the subset whose total matches.</div>
+        <div class="step-pain"><strong>Pain:</strong> The hard case (level 3) takes hours per invoice. HighRadius cannot handle it. Spreadsheets are how it gets done today.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ap">
+      <div class="step-circle">8</div>
+      <div class="step-body">
+        <div class="step-actor">AP staff</div>
+        <div class="step-title">Run validation checks (manually)</div>
+        <div class="step-desc">Eleven things to check before posting. Tax codes match. Ship dates within ±1 day. Bill-To address points to NSR's correct entity. Total balances. Tax type (GST/HST/QST) is correct for the vendor. Most of these are eyeball checks against a screen full of fields.</div>
+        <div class="step-pain"><strong>Pain:</strong> Anything missed shows up as a posting failure days later, and you can't tell which check it failed without rerunning the whole thing.</div>
+      </div>
+    </div>
+
+    <div class="flow-step am">
+      <div class="step-circle">9</div>
+      <div class="step-body">
+        <div class="step-actor">AM &amp; AP via email</div>
+        <div class="step-title">Resolve exceptions over email</div>
+        <div class="step-desc">If something doesn't match — price variance, weight mismatch, no B/S found, ship-date off — the coordinator emails the Account Manager. The AM looks into it, replies, sometimes pings the vendor. The thread stays in Outlook. The invoice waits in Docstar with no system-level state.</div>
+        <div class="step-pain"><strong>Pain:</strong> Invoices sit unresolved for days. There's no aging visibility, no SLA, no system of record. The "over 10 days outstanding" metric is generated by hand from spreadsheets.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ctrade">
+      <div class="step-circle">10</div>
+      <div class="step-body">
+        <div class="step-actor">CieTrade</div>
+        <div class="step-title">Post the invoice in CieTrade</div>
+        <div class="step-desc">Once everything reconciles, the coordinator selects the matched ledgers in CieTrade, batches them under the invoice number, and clicks Post. CieTrade assigns an AP_Batch_ID — the same value as the invoice number, by convention.</div>
+      </div>
+    </div>
+
+    <div class="flow-step sftp">
+      <div class="step-circle">11</div>
+      <div class="step-body">
+        <div class="step-actor">CieTrade &rarr; SFTP</div>
+        <div class="step-title">CieTrade writes a posting CSV</div>
+        <div class="step-desc">Twice a day, CieTrade serializes posted invoices into a pipe-delimited file: <code>Posting_NSR_MMDD.txt</code>. Four key fields per row: UUID, AP_Batch_ID, Invoice_Number, CPID. The file lands in the <code>CTR &rarr; IRDS</code> SFTP folder.</div>
+        <div class="step-pain"><strong>Pain:</strong> Only four fields in the file. Mismatches on three of those (everything except UUID) are a leading cause of HighRadius failing to auto-post.</div>
+      </div>
+    </div>
+
+    <div class="flow-step iradius">
+      <div class="step-circle">12</div>
+      <div class="step-body">
+        <div class="step-actor">HighRadius</div>
+        <div class="step-title">HighRadius reads the file and tries to match</div>
+        <div class="step-desc">HighRadius pulls the posting file off the SFTP, validates each row, and tries to match it against the bank payment data it already has. When it works, it stamps the invoice <code>POSTED</code>. When it fails, the invoice gets dropped into a manual queue inside HighRadius for an accountant to inspect.</div>
+        <div class="step-pain"><strong>Pain:</strong> HighRadius can't handle the level-3 grouped invoices. Those routinely fall to manual.</div>
+      </div>
+    </div>
+
+    <div class="flow-step iradius">
+      <div class="step-circle">13</div>
+      <div class="step-body">
+        <div class="step-actor">HighRadius &rarr; SFTP</div>
+        <div class="step-title">HighRadius writes payment status back</div>
+        <div class="step-desc">Daily around 09:00, HighRadius writes two file types into the <code>IRDS &rarr; CTR</code> folder. <code>PaymentResponse</code> reports POSTED or FAILED for each posted row. <code>PaymentUpdate</code> reports actual payment events with reference patterns: <code>-BA</code> for ACH, <code>-CK</code> for check, <code>-EF</code> for EFT.</div>
+      </div>
+    </div>
+
+    <div class="flow-step ctrade">
+      <div class="step-circle">14</div>
+      <div class="step-body">
+        <div class="step-actor">CieTrade &amp; Sage</div>
+        <div class="step-title">CieTrade updates state &middot; Sage gets the books</div>
+        <div class="step-desc">CieTrade reads the response files, updates each invoice's status (Posted &rarr; Paid as PaymentUpdate arrives), and surfaces the result in the AP screens. Posted invoices flow to Sage MAS 500 via a separate SFTP feed for the books. Sage may also have manual journal entries layered on top by accountants.</div>
+        <div class="step-pain"><strong>Pain:</strong> "Did we pay this?" remains a phone call between AP and Treasury. The answer lives across CieTrade, HighRadius, and Sage.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 5 · SAMPLE JOURNEY ============ -->
+<section id="journey">
+  <div class="section-head">
+    <span class="section-num">05 · Sample Journey</span>
+    <h2>One real invoice, traced through the whole flow.</h2>
+    <p>Below is the actual invoice used in the matching POC — Homewood Disposal Service billing Rice Baking Company for a 4.45 short-ton hauling load. On the right, the trace of where it goes today, system by system.</p>
+  </div>
+
+  <div class="journey">
+    <div class="journey-card">
+      <div class="ji-head">Homewood Disposal Service, Inc.</div>
+      <div class="ji-sub">billing@homewood.com &nbsp;&rarr;&nbsp; APayable@nsrecycle.com</div>
+      <div class="ji-row"><span>Invoice #</span><span class="v">12-32987-7</span></div>
+      <div class="ji-row"><span>Invoice Date</span><span class="v">2026-04-19</span></div>
+      <div class="ji-row"><span>Ship Date</span><span class="v">2026-04-17</span></div>
+      <div class="ji-row"><span>Bill To</span><span class="v">Rice Baking Co.</span></div>
+      <div class="ji-row"><span>Site</span><span class="v">Portland</span></div>
+      <div class="ji-lines">
+        <div class="ji-line"><span>Hauling &middot; 4.45 short tons</span><span>$260.00</span></div>
+        <div class="ji-line"><span>Dump charges per ton</span><span>$19.00</span></div>
+        <div class="ji-line"><span>42-yard compact + fuel adj</span><span>$75.00</span></div>
+      </div>
+      <div class="ji-total"><span>Total</span><span class="v">$354.00</span></div>
+    </div>
+
+    <div class="journey-trace">
+      <div class="trace">
+        <div class="trace-time">10:14:02</div>
+        <div class="trace-system ap">EMAIL</div>
+        <div class="trace-act">Email arrives at APayable@nsrecycle.com from billing@homewood.com.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~minutes</div>
+        <div class="trace-system ap">AP STAFF</div>
+        <div class="trace-act">AP coordinator opens email, downloads the PDF.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~10 min</div>
+        <div class="trace-system dc">DOCSTAR</div>
+        <div class="trace-act">PDF uploaded to Docstar, tagged as Invoice.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~20 min</div>
+        <div class="trace-system ap">AP STAFF</div>
+        <div class="trace-act">Reads each field off the PDF, transcribes into spreadsheet for matching.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~30 min</div>
+        <div class="trace-system ct">CieTrade</div>
+        <div class="trace-act">Vendor lookup: Homewood Disposal Service &rarr; CPID HOMEWOOD001 (matched by remit-to address).</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~45 min</div>
+        <div class="trace-system ct">CieTrade</div>
+        <div class="trace-act">B/S lookup: Vendor + Site (Rice Baking Portland) + Ship Date + Total $354 &rarr; B/S 10342.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~60 min</div>
+        <div class="trace-system ap">AP STAFF</div>
+        <div class="trace-act">Match three invoice lines: hauling $260 &rarr; B/S hauling line, 4.45 short tons &rarr; B/S quantity, dump+fuel $35 &rarr; B/S combined surcharge.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~70 min</div>
+        <div class="trace-system ap">AP STAFF</div>
+        <div class="trace-act">Eyeball validation checks — taxes match, ship date within tolerance, total balances.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~75 min</div>
+        <div class="trace-system ct">CieTrade</div>
+        <div class="trace-act">Post in CieTrade. AP_Batch_ID = invoice number 12-32987-7.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">14:00</div>
+        <div class="trace-system ct">CieTrade</div>
+        <div class="trace-act">Twice-daily run writes Posting_NSR_0419.txt to SFTP outbound.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">+next day</div>
+        <div class="trace-system ir">HighRadius</div>
+        <div class="trace-act">HighRadius reads the file. Matches by UUID + AP_Batch_ID + Invoice# + CPID. Stamps POSTED.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">~09:00</div>
+        <div class="trace-system ir">HighRadius</div>
+        <div class="trace-act">PaymentResponse written to SFTP inbound: POSTED.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">+1 day</div>
+        <div class="trace-system ct">CieTrade</div>
+        <div class="trace-act">CieTrade reads response. Invoice state advances to Posted.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">+9 days</div>
+        <div class="trace-system ir">HighRadius</div>
+        <div class="trace-act">PaymentUpdate written: reference -CK1048 (check). Total $354.00.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">+9 days</div>
+        <div class="trace-system ct">CieTrade</div>
+        <div class="trace-act">Invoice state &rarr; Paid. Check #1048 surfaces in &ldquo;have you paid this&rdquo; lookup.</div>
+      </div>
+      <div class="trace">
+        <div class="trace-time">end-of-month</div>
+        <div class="trace-system sg">Sage</div>
+        <div class="trace-act">Posted invoice + payment land in Sage MAS 500 books for monthly close.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats" style="margin-top: 32px;">
+    <div class="stat"><div class="stat-num">~75 min</div><div class="stat-lbl">Manual touch time per invoice (clean case)</div></div>
+    <div class="stat"><div class="stat-num">3+ hrs</div><div class="stat-lbl">For a level-3 grouped invoice</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Distinct UIs operator switches between</div></div>
+    <div class="stat"><div class="stat-num">~9 days</div><div class="stat-lbl">From invoice receipt to Paid (clean path)</div></div>
+  </div>
+</section>
+
+<!-- ============ 6 · PAIN POINTS ============ -->
+<section id="pain">
+  <div class="section-head">
+    <span class="section-num">06 · Where It Breaks</span>
+    <h2>The seven pain points the new platform exists to solve.</h2>
+    <p>These are the things that turn a 75-minute clean-case invoice into a multi-day exception, or worse, a missed payment.</p>
+  </div>
+
+  <div class="pain-grid">
+    <div class="pain">
+      <div class="pain-tag">Pain 01</div>
+      <div class="pain-name">Manual triage at scale</div>
+      <div class="pain-desc">9,000 invoices a month is too many for human triage. Multiple people do nothing but download, sort, and code. Portals make it worse — three different UIs, retention windows that drop history after about two years, plus all the AM-forwarded duplicates.</div>
+    </div>
+    <div class="pain">
+      <div class="pain-tag">Pain 02</div>
+      <div class="pain-name">Vendor identification is fuzzy</div>
+      <div class="pain-desc">Vendor names on invoices rarely match CPID master entries cleanly. "Waste Management" can resolve to fifty different CPIDs based on remit-to address. Pick the wrong one and the payment goes nowhere useful.</div>
+    </div>
+    <div class="pain">
+      <div class="pain-tag">Pain 03</div>
+      <div class="pain-name">Buy/Sell matching is tribal</div>
+      <div class="pain-desc">Without a B/S number on the invoice, the right match depends on knowing the vendor, the site, the date pattern, and the amount range. AP relies on Account Managers and institutional memory. New hires take months to be useful.</div>
+    </div>
+    <div class="pain">
+      <div class="pain-tag">Pain 04</div>
+      <div class="pain-name">Level-3 grouped invoices break the system</div>
+      <div class="pain-desc">When one invoice line aggregates many B/Ss across a date range, HighRadius cannot auto-match. These fall to manual every time, and they're the ones that take hours of spreadsheet work to reconcile.</div>
+    </div>
+    <div class="pain">
+      <div class="pain-tag">Pain 05</div>
+      <div class="pain-name">No system of record for exceptions</div>
+      <div class="pain-desc">Exception resolution lives in Outlook. AP emails AM, AM emails vendor, vendor emails back. The invoice has no system-level status during this. Aging is calculated by hand. Over-10-day reports are stitched together monthly from spreadsheets.</div>
+    </div>
+    <div class="pain">
+      <div class="pain-tag">Pain 06</div>
+      <div class="pain-name">No audit trail</div>
+      <div class="pain-desc">No reliable record of who touched an invoice, when, or what they changed. When something goes wrong months later, reconstructing the history is detective work across email threads, Docstar revisions, and CieTrade audit logs that don't link to invoice IDs.</div>
+    </div>
+    <div class="pain">
+      <div class="pain-tag">Pain 07</div>
+      <div class="pain-name">"Did we pay this?" requires three systems</div>
+      <div class="pain-desc">Posted state lives in CieTrade. Bank confirmation lives in HighRadius. Books reconciliation lives in Sage. Answering a vendor's payment-status email means logging into all three and stitching the answer together by hand.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <strong>NSR AP Automation</strong> &nbsp;·&nbsp; Current State Process Map &nbsp;·&nbsp; Companion to the SOW
+  </div>
+  <div>
+    Prepared by TechJays for NorthStar Recycling Company, LLC
+  </div>
+</footer>
+
+</body>
+</html>

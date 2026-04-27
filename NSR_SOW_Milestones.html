@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSR AP Automation — SOW Milestones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --surface: #ffffff;
+    --surface-2: #f1f5f9;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-2: #475569;
+    --text-3: #94a3b8;
+    --accent: #2563eb;
+    --accent-2: #7c3aed;
+    --accent-3: #0d9488;
+
+    --m1: #2563eb;
+    --m2: #0d9488;
+    --m3: #db2777;
+    --m4: #7c3aed;
+    --m5: #ea580c;
+    --m6: #0891b2;
+    --m7: #059669;
+
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+    --shadow-md: 0 4px 16px rgba(15,23,42,.06);
+    --shadow-lg: 0 12px 40px rgba(15,23,42,.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-feature-settings: "ss01", "cv11";
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(900px circle at 10% 0%, rgba(37,99,235,.06), transparent 50%),
+      radial-gradient(900px circle at 90% 30%, rgba(124,58,237,.05), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  main { position: relative; z-index: 1; }
+
+  /* ---- TOP BAR ---- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(246, 248, 251, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+  }
+  .topbar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: -.2px;
+  }
+  .brand-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-radius: 8px;
+    display: grid; place-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+  }
+  .brand-text { font-size: 13px; }
+  .brand-text small {
+    display: block;
+    font-weight: 500;
+    color: var(--text-3);
+    font-size: 11px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  .ms-jumper { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ms-jumper a {
+    display: grid;
+    place-items: center;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all .2s;
+  }
+  .ms-jumper a:hover {
+    background: var(--m-color, var(--accent));
+    color: white;
+    border-color: var(--m-color, var(--accent));
+    transform: translateY(-1px);
+  }
+  .ms-jumper a.m1 { --m-color: var(--m1); }
+  .ms-jumper a.m2 { --m-color: var(--m2); }
+  .ms-jumper a.m3 { --m-color: var(--m3); }
+  .ms-jumper a.m4 { --m-color: var(--m4); }
+  .ms-jumper a.m5 { --m-color: var(--m5); }
+  .ms-jumper a.m6 { --m-color: var(--m6); }
+  .ms-jumper a.m7 { --m-color: var(--m7); }
+
+  /* ---- HERO ---- */
+  .hero {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 80px 32px 40px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  h1.hero-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    max-width: 900px;
+  }
+  h1.hero-title .grad {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-lead {
+    font-size: 18px;
+    color: var(--text-2);
+    max-width: 760px;
+    margin-bottom: 36px;
+    line-height: 1.65;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .stat:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .stat-num {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-lbl {
+    font-size: 12px;
+    color: var(--text-2);
+    letter-spacing: .3px;
+  }
+
+  /* ---- TIMELINE ---- */
+  .timeline-wrap {
+    max-width: 1280px;
+    margin: 60px auto 0;
+    padding: 0 32px;
+  }
+  .timeline-head { margin-bottom: 28px; }
+  .timeline-head h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.4px;
+    margin-bottom: 6px;
+  }
+  .timeline-head p {
+    font-size: 14px;
+    color: var(--text-2);
+  }
+
+  .timeline {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 36px 32px;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+  }
+  .timeline-track {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(140px, 1fr));
+    gap: 0;
+    position: relative;
+    min-width: 1000px;
+  }
+  .timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 70px;
+    right: 70px;
+    height: 2px;
+    background: linear-gradient(90deg,
+      var(--m1) 0%, var(--m2) 16%, var(--m3) 33%,
+      var(--m4) 50%, var(--m5) 66%, var(--m6) 83%, var(--m7) 100%);
+    border-radius: 2px;
+    z-index: 0;
+  }
+  .tl-step {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .2s;
+  }
+  .tl-step:hover { transform: translateY(-3px); }
+  .tl-dot {
+    width: 44px; height: 44px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .tl-step:hover .tl-dot {
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(0,0,0,.18);
+  }
+  .tl-step.m1 .tl-dot { background: var(--m1); }
+  .tl-step.m2 .tl-dot { background: var(--m2); }
+  .tl-step.m3 .tl-dot { background: var(--m3); }
+  .tl-step.m4 .tl-dot { background: var(--m4); }
+  .tl-step.m5 .tl-dot { background: var(--m5); }
+  .tl-step.m6 .tl-dot { background: var(--m6); }
+  .tl-step.m7 .tl-dot { background: var(--m7); }
+  .tl-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    padding: 0 6px;
+    letter-spacing: -.1px;
+  }
+  .tl-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 4px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  /* ---- MILESTONE CARD ---- */
+  .ms-section {
+    max-width: 1280px;
+    margin: 80px auto 0;
+    padding: 0 32px;
+    scroll-margin-top: 90px;
+  }
+  .ms-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--m-color);
+  }
+  .ms-card.m1 { --m-color: var(--m1); }
+  .ms-card.m2 { --m-color: var(--m2); }
+  .ms-card.m3 { --m-color: var(--m3); }
+  .ms-card.m4 { --m-color: var(--m4); }
+  .ms-card.m5 { --m-color: var(--m5); }
+  .ms-card.m6 { --m-color: var(--m6); }
+  .ms-card.m7 { --m-color: var(--m7); }
+
+  .ms-head {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 700px) {
+    .ms-head { grid-template-columns: 1fr; }
+  }
+  .ms-num {
+    width: 80px; height: 80px;
+    border-radius: 20px;
+    background: var(--m-color);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    position: relative;
+  }
+  .ms-num::after {
+    content: 'M';
+    position: absolute;
+    top: 8px; left: 12px;
+    font-size: 11px;
+    opacity: .7;
+    font-weight: 600;
+  }
+  .ms-meta { padding-top: 4px; }
+  .ms-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--m-color);
+    background: color-mix(in srgb, var(--m-color) 10%, transparent);
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ms-name {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.8px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .ms-timeline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .ms-timeline::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--m-color);
+  }
+
+  .ms-objective {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--m-color) 6%, transparent),
+      color-mix(in srgb, var(--m-color) 2%, transparent));
+    border-left: 3px solid var(--m-color);
+    border-radius: 0 12px 12px 0;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .ms-objective .lbl {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--m-color);
+    margin-bottom: 6px;
+  }
+
+  .ms-deliv-head {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .deliv-group {
+    margin-bottom: 22px;
+  }
+  .deliv-group-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--m-color);
+    margin-bottom: 10px;
+    letter-spacing: -.1px;
+  }
+  .deliv-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 10px;
+  }
+  .deliv-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: transform .15s, border-color .15s;
+  }
+  .deliv-item:hover {
+    border-color: var(--m-color);
+    transform: translateX(2px);
+  }
+  .deliv-bullet {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--m-color);
+    margin-top: 8px;
+  }
+  .deliv-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .deliv-text strong {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .ms-benefit {
+    margin-top: 32px;
+    background: var(--m-color);
+    color: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .ms-benefit-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.18);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+  }
+  .ms-benefit-body { padding-top: 4px; }
+  .ms-benefit .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: .85;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .ms-benefit p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    max-width: 1280px;
+    margin: 80px auto 0;
+    padding: 36px 32px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  footer strong { color: var(--text-2); font-weight: 600; }
+
+  @media (max-width: 700px) {
+    .hero { padding: 48px 20px 24px; }
+    .timeline-wrap, .ms-section { padding: 0 20px; }
+    .ms-card { padding: 28px 22px; }
+    .topbar-inner { padding: 12px 20px; }
+    h1.hero-title { font-size: 1.85rem; }
+    .ms-name { font-size: 22px; }
+    .deliv-list { grid-template-columns: 1fr; }
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--surface-2); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-text">
+        NSR AP Automation
+        <small>SOW Milestones</small>
+      </div>
+    </div>
+    <nav class="ms-jumper" aria-label="Jump to milestone">
+      <a class="m1" href="#m1" title="Foundation">1</a>
+      <a class="m2" href="#m2" title="Ingestion">2</a>
+      <a class="m3" href="#m3" title="OCR">3</a>
+      <a class="m4" href="#m4" title="Matching">4</a>
+      <a class="m5" href="#m5" title="Validation">5</a>
+      <a class="m6" href="#m6" title="Posting">6</a>
+      <a class="m7" href="#m7" title="Hypercare">7</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">Statement of Work · Phase 1 Build Plan</div>
+    <h1 class="hero-title">From manual AP to <span class="grad">autonomous in seven milestones</span>.</h1>
+    <p class="hero-lead">
+      The Phase 1 build plan for the NSR AP Automation Platform.
+      Each milestone has a single objective, a defined set of deliverables, and a clearly stated outcome that earns the next one.
+      Calendar dates and effort sit in the commercial proposal.
+    </p>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">7</div><div class="stat-lbl">Milestones</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Channels (Email · Upload · Portals)</div></div>
+      <div class="stat"><div class="stat-num">27</div><div class="stat-lbl">Header fields extracted</div></div>
+      <div class="stat"><div class="stat-num">8 + 5</div><div class="stat-lbl">Header + line match cascade</div></div>
+      <div class="stat"><div class="stat-num">11</div><div class="stat-lbl">Validation checks</div></div>
+      <div class="stat"><div class="stat-num">20</div><div class="stat-lbl">Exception queues</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Special workflows</div></div>
+      <div class="stat"><div class="stat-num">3 mo</div><div class="stat-lbl">Hypercare</div></div>
+    </div>
+  </section>
+
+  <section class="timeline-wrap" aria-labelledby="tl-head">
+    <div class="timeline-head">
+      <h2 id="tl-head">Milestone overview</h2>
+      <p>Click any node to jump to its detail.</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-track">
+        <a class="tl-step m1" href="#m1">
+          <div class="tl-dot">1</div>
+          <div class="tl-name">Foundation, SSO &amp; Master Data</div>
+          <div class="tl-tag">M1</div>
+        </a>
+        <a class="tl-step m2" href="#m2">
+          <div class="tl-dot">2</div>
+          <div class="tl-name">Multi-Channel Ingestion</div>
+          <div class="tl-tag">M2</div>
+        </a>
+        <a class="tl-step m3" href="#m3">
+          <div class="tl-dot">3</div>
+          <div class="tl-name">OCR &amp; Field Extraction</div>
+          <div class="tl-tag">M3</div>
+        </a>
+        <a class="tl-step m4" href="#m4">
+          <div class="tl-dot">4</div>
+          <div class="tl-name">Buy/Sell Matching Engine</div>
+          <div class="tl-tag">M4</div>
+        </a>
+        <a class="tl-step m5" href="#m5">
+          <div class="tl-dot">5</div>
+          <div class="tl-name">Validation &amp; Exception Mgmt</div>
+          <div class="tl-tag">M5</div>
+        </a>
+        <a class="tl-step m6" href="#m6">
+          <div class="tl-dot">6</div>
+          <div class="tl-name">Special Workflows &amp; Posting</div>
+          <div class="tl-tag">M6</div>
+        </a>
+        <a class="tl-step m7" href="#m7">
+          <div class="tl-dot">7</div>
+          <div class="tl-name">Reporting, AR Foundation, Hypercare</div>
+          <div class="tl-tag">M7</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M1 ===================== -->
+  <section id="m1" class="ms-section">
+    <div class="ms-card m1">
+      <div class="ms-head">
+        <div class="ms-num">1</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 01</div>
+          <h3 class="ms-name">Foundation, SSO, and CieTrade Master Data Sync</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Stand up the application foundation, establish all CieTrade master data feeds, and enable secure user access. This milestone unblocks every downstream module.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Application foundation.</strong> Multi-tenant infrastructure, three environments (dev, UAT, production), CI/CD pipeline, monitoring and alerting baseline.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Single Sign-On.</strong> SAML 2.0 integration with Microsoft 365 / Azure AD. Just-in-time user provisioning. Role claim mapping from Azure AD groups.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Counterparty master sync.</strong> Daily, with active-only filter and address-aware indexing keyed on (CPID, Address, IsRemit).</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Buy/Sell header and lines sync.</strong> Daily, including status, ship date, site, AM, line types, posting flags, AR balance, and adjustments.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Tax code master sync.</strong> Daily, with vendor-CPID mappings (GST, H13, H15, QST).</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Payment terms master.</strong> One-time load with ad-hoc refresh.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Vendor resolution baseline.</strong> Fuzzy name matching (Levenshtein + token-set ratio), Remit-To exact address match, Ship-From address match, composite confidence with auto-assign threshold.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Audit trail foundation.</strong> Append-only, hash-chained event log. Seven-year retention. Queryable by document, user, and date range.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Per-feed health monitoring.</strong> Last-success, next-run, and error-count dashboard. Missing-file detection. One-click re-trigger.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>Establishes the data and identity backbone the rest of the platform depends on. After this milestone, vendor matching and Buy/Sell lookup work against live CieTrade data, users can authenticate, and every action is auditable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M2 ===================== -->
+  <section id="m2" class="ms-section">
+    <div class="ms-card m2">
+      <div class="ms-head">
+        <div class="ms-num">2</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 02</div>
+          <h3 class="ms-name">Multi-Channel Invoice Ingestion</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Ingest every incoming invoice from every source — email, manual upload, and the three vendor portals — into a unified invoice record, with deduplication and source attribution.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Email Ingestion Pipeline</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">MS Graph subscription to APayable@nsrecycle.com with a 60-second poll cadence and a 3-minute end-to-end target.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Unread-preservation invariant. AP humans share the inbox; reads must not flip status.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Per-attachment invoice record with UUID and source metadata.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Supported types: PDF, JPG, JPEG, BMP, TIF, TIFF, PNG, XLS, DOCX, EML.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Body-link detection for vendors who email a portal URL instead of attaching the invoice.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Supporting document association. CODs, BOLs, and weight tickets auto-linked to the parent invoice.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">SHA-256 file-hash deduplication on a 30-day window. Critical for AM-forwarded duplicates.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Forwarding-chain detection. Use the original sender, not the forwarder.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Manual Upload UI</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Drag-and-drop multi-file upload.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Batch upload for End-of-Month Create Pays.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Upload history view. Per-user, 90 days, with status and retry.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Vendor Portal Scraping</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Playwright headless browser framework with per-portal modules.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Waste Connections.</strong> Direct PDF download. Sub-brand routing for sub-brands sharing one login surface.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>GFL.</strong> Direct PDF download. Cross-account batch pull.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Waste Management.</strong> Open-in-new-tab fallback (no direct download). USA and Canada tenant split.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Azure Key Vault credential store with hot rotation; password changes do not require restart.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Account-number sweep per login (20 to 40 accounts each) with watermark tracking.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Retention-aware pagination. Typical portal history is around two years.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Email-first, portal-fallback policy. Deduplicated against the email pipeline via SHA-256.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Per-portal feature flags for Terms-of-Service and legal compliance gating.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Portal failure recovery with alerts, retries, and a per-portal health dashboard.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>Every invoice that arrives at NSR, regardless of channel, flows into one pipeline within minutes. AP staff stop manually downloading from portals and stop sorting email.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M3 ===================== -->
+  <section id="m3" class="ms-section">
+    <div class="ms-card m3">
+      <div class="ms-head">
+        <div class="ms-num">3</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 03</div>
+          <h3 class="ms-name">OCR and Field Extraction</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Convert every ingested invoice (PDF, image, Excel, Word, EML) into structured data, with 27 header fields and 5 line fields, per-field confidence scoring, and an editable extraction UI.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Pluggable OCR engine.</strong> Abstraction layer supporting Azure Document Intelligence, OpenAI Vision, and Tesseract. Per-page OCR with bounding-box retention.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>27-field header extractor.</strong> Vendor, CPID, invoice metadata, addresses, taxes, payment terms, ship dates, B/S references, and full line-item context.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Alias resolution dictionary.</strong> Ship Date, B/S Number, Site Location, and Release Number variants normalized to canonical names.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Invoice number normalization.</strong> Strip leading zeros and apostrophes. Maximum 20 characters.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Line-item grid extraction.</strong> Sign-preserving for net invoices.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Header-vs-line propagation.</strong> Ship Date and B/S Number propagate to all lines if captured at the header level.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Unit-of-measure normalization.</strong> lbs to short tons. kg to lbs. Both stored.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Document classification.</strong> Invoice vs. Credit Memo (literal string or negative gross). Statement (subject keyword or upload flag).</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Per-field confidence scoring.</strong> Default thresholds: vendor 0.95+, amounts 0.90+, invoice number 0.95+.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Low-confidence hold queue.</strong> Mandatory-field misses route to Missing Mandatory Info. Nothing silently dropped.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Three-pane extraction UI.</strong> PDF render, editable fields, B/S context. Click-to-highlight bounding box. Color-coded confidence per field.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>Every invoice becomes structured, searchable, and auditable data within seconds of arrival. Confidence is transparent to operators. AP staff stop transcribing invoice fields by hand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M4 ===================== -->
+  <section id="m4" class="ms-section">
+    <div class="ms-card m4">
+      <div class="ms-head">
+        <div class="ms-num">4</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 04</div>
+          <h3 class="ms-name">Buy/Sell Matching Engine</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Implement the central matching capability of the platform. Link every invoice line to the correct Buy/Sell line at all three observed complexity levels (1:1, N:N, and the harder N:1 grouped case), with full transparency of the match rationale to AP and AM.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Header match, 8-step cascade.</strong> Direct B/S number match first, then ordered fallback through Release/Vendor, Vendor+Site+Date+Total, and progressively looser combinations.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Per-step match rationale.</strong> Every match surfaces which step it hit, why, and at what confidence.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Confidence scoring per step.</strong> Step 1 references at 99 percent, step 8 at 45 percent. Thresholds tunable.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Line match, 5-step cascade.</strong> Total amount, unit price, qty + UoM, expense line, combined surcharge.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Ten line-matching rules.</strong> Tax handling, zero-line handling, posted-line exclusion, multi-B/S support, adjustment handling, configurable tolerances.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Invoice-total invariant.</strong> Sum of matched lines must equal invoice total within tolerance. Failures route to Invoice Not in Balance.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Contra and Flip-to-AR logic.</strong> Detection, balance check, per-line override with audit, negative chargeback exclusion (Reconserve rule), zero-tolerance enforcement.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>No-match routing.</strong> No-history routes to AP only. Recurring patterns parked 15 days then assigned to AM. Non-recurring assigned immediately.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Auto-retry on B/S state change.</strong> Transition to Invoiced triggers automatic re-match of all parked invoices for that B/S.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Manual match UI.</strong> Per-line candidate picker with rationale. Side-by-side invoice + B/S detail. Override with reason and audit.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>The single most error-prone step in NSR's current AP process — manually matching invoice lines to spreadsheet-tracked Buy/Sells — becomes deterministic, transparent, and auditable. AM and AP staff see why a match was proposed and can accept, override, or escalate with full context.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M5 ===================== -->
+  <section id="m5" class="ms-section">
+    <div class="ms-card m5">
+      <div class="ms-head">
+        <div class="ms-num">5</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 05</div>
+          <h3 class="ms-name">Validation, Workflow, and Exception Management</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Run every invoice through a deterministic validation gate, route to the right place when checks fail, and give AP, AM, and Manager users structured queues to resolve exceptions efficiently.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Eleven pre-posting checks (parallel).</strong> Vendor valid, no duplicate, mandatory fields, B/S valid, lines matched, no price/weight variance, B/S = Invoiced, ship-date tolerance, Bill-To match, tax-code match.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Hard-stop vs. warning classification.</strong> Per-check severity. Warnings continue with surfaced flag; hard stops route to exception queue.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Workflow state machine, eleven states.</strong> Received through Posted/Paid/Voided. Every transition is an audit event. Multiple exceptions surfaced at once.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Ready-for-Submission stabilization gate.</strong> auto_post_enabled = false for first three months. Gate-exit criteria: days, auto-post rate, vendor-match rate, regressions, Over-10-Day trend.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Twenty exception queue types.</strong> AP hard stops, AP warnings, AM routing, monitor queues with auto-retry, Client Services for Completed-status B/S.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Queue metadata and operations.</strong> Filter, sort, bulk actions. Assignment rules engine. Reassignment UI for AP-to-AM cross-role flows. SLA timers with overdue badging.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Auto re-validation on resolution.</strong> Upstream changes (B/S transition, vendor refresh, manual edit) trigger dependent validations to re-run automatically.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>Every invoice has a clear state at every moment. Every exception has an owner with an SLA. AP and AM Managers can see at a glance where work is piled up. The current Excel-and-email exception triage process is replaced by structured, measurable workflow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M6 ===================== -->
+  <section id="m6" class="ms-section">
+    <div class="ms-card m6">
+      <div class="ms-head">
+        <div class="ms-num">6</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 06</div>
+          <h3 class="ms-name">Special Workflows and Posting Integration</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Cover the four invoice flows that don't fit the standard Buy/Sell pipeline (Credit Memo, Confidential, Statement Reconciliation, End-of-Month Create Pays), and complete the bi-directional CieTrade SFTP posting integration including payment status reconciliation.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Special Workflows</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Credit Memo.</strong> Dedicated queue, bypasses B/S matching. Manual terminal states. Contra-offset linkage display.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Confidential Invoice.</strong> Separate mailbox. Sensitivity classification at ingestion. Group-based access enforced server-side. Direct-to-Sage posting path. Daily double-post reconciliation.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Statement Reconciliation.</strong> Six workflow states. Match key Vendor + Invoice # + Invoice Date. Discrepancy detection. Row-by-row UI. Used for reconciliation, not posting.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>End-of-Month Create Pays.</strong> CP-terms identification. Batch upload on business days 10 and 11. Net positive becomes AP, net negative flips to AR. Atomic batch post.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Outbound Posting (CieTrade SFTP)</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Posting file generator.</strong> Posting_NSR_MMDD.txt, pipe-delimited. Initial fields: UUID, AP_Batch_ID, Invoice_Number, CPID. Full schema locked during integration design.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Cadence scheduler.</strong> Twice daily, configurable.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>UUID and source-system tagging.</strong> CIETRADE_PATH for standard AP. CONFIDENTIAL_SAGE_DIRECT for confidential.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>SFTP write with verification.</strong> Post-write read-back. Retry on failure. Alert escalation.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Outbound audit log.</strong> Timestamp, row count, UUIDs, SFTP ACK captured per file.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Inbound Response (CieTrade SFTP)</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>PaymentResponse ingestion.</strong> Daily ~09:00. POSTED updates state. FAILED routes to reconciliation queue.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>PaymentUpdate ingestion.</strong> Daily. Reference patterns parsed: -BA ACH, -CK check, -EF EFT. State advances to Paid.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>"Have You Paid This?" lookup UI.</strong> Full timeline per invoice from Received through Paid.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Unmatched response handling.</strong> Unknown UUIDs route to reconciliation queue. Alert when unmatched volume exceeds 1 percent of daily file count.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Per-feed health dashboard.</strong> Last success, next run, error count. Failed-file one-click re-trigger. Alerting via email and Slack.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>The four hardest invoice flows (credit memos, confidential invoices, statements, create pays) are systematized rather than handled in side processes. The SFTP contract with CieTrade is closed in both directions, so AP staff stop logging into HighRadius to chase payment status.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M7 ===================== -->
+  <section id="m7" class="ms-section">
+    <div class="ms-card m7">
+      <div class="ms-head">
+        <div class="ms-num">7</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 07</div>
+          <h3 class="ms-name">Collaboration, Reporting, AR Foundation, and Hypercare</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal · Includes 3-month hypercare</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Complete the cross-cutting capabilities (collaboration, search, reporting, dashboards), establish the AR Phase 2 foundation, and provide enhanced post-go-live support during the stabilization window.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Collaboration Framework</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>@-tag mentions.</strong> Typeahead from Azure AD. Email notifications, real-time or daily digest.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Comment scopes.</strong> Header, line, statement. Deduction-level deferred to AR Phase 2.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>On-Hold lock.</strong> Rejects concurrent edit, match, post, void. Manager and Admin can release.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Reassign-with-comment.</strong> Mandatory comment. Full audit trail and notification.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Comment-content search.</strong> Entitlement-aware. Confidential isolated.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Roles and Permissions (6 roles)</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>AP Processor.</strong> Full view, edit, post, void, manual creation.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Account Manager.</strong> Limited edit. View invoice and B/S lines, update B/S #, manual line-match, comments, reassign. No header edit.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>AP / AM Manager.</strong> All AP capabilities plus cross-role reassign, all queues, full reporting, On-Hold release.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Confidential Group A.</strong> All confidential including High. No standard queue access.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Confidential Group B.</strong> Confidential excluding High. No standard queue access.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>All-Access Admin.</strong> Full visibility. Finance management and system administrators.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Server-side enforcement.</strong> Field-level, queue-level, query-layer. Role changes audited.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Search, Queues, Dashboards</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Global full-text search.</strong> Invoice #, vendor, B/S # on any line, site, ref #, comments, attachment OCR text.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Structured filters.</strong> Status, queue, vendor, AM, date, age, has-exceptions, currency.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Saved searches and custom queues.</strong> Per-user or role-shared.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Role-tailored dashboards.</strong> AP, AM, Manager. Queue counts and aging cards. SLA-breach indicators.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Multi-queue membership.</strong> A single invoice visible in all applicable queues simultaneously.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Reporting (5 P1 reports)</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Over-10-Day Report.</strong> Highest priority. All invoices not Posted after 10 calendar days. Exportable.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Invoice Status Summary.</strong> Count and dollar value by stage. Near real-time.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Exception / Error Report.</strong> All open exceptions, filterable.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Aging Report (AP).</strong> 0–30, 31–60, 61–90, 90+ buckets.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Missing Invoice Report.</strong> Recurring B/S patterns versus received. Surfaces stop-shipment risk.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Identity, Security, Compliance</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">TLS 1.2+ on all connections. At-rest encryption on database, blob storage, Key Vault.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Confidential segregation.</strong> Server-side check on every read. Direct-URL access by unauthorized user returns 403.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Penetration testing.</strong> Annual cadence. Pre-go-live report delivered to NSR security.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>SOC 2 Type II</strong> attestation, or equivalent, provided pre-cutover.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">AR Phase 2 Foundation (sketched)</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">JPMorgan Chase SFTP and myMFT ingestion. Lockbox image ZIPs. EDI 820 X12 v4010 (80-byte wrapped).</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Cash application match ladder. Invoice #, B/S #, Trace/Reference #, Customer + Amount, Exception.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Deductions management with 9-category classification.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Unapplied Cash Management. Apply, refund, write-off.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Remittance parsing. Email attachments, EDI 820 RMR segments, lockbox image OCR.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">CAA posting back to CieTrade. Northstar_{customerNo}_{EFT|CHECK}_*.csv per payment event.</div></li>
+        </ul>
+      </div>
+
+      <div class="deliv-group">
+        <div class="deliv-group-name">Three-Month Hypercare</div>
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Critical issues acknowledged within one business hour. Resolved or workaround within one business day.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Weekly steering meeting with NSR sponsor and TechJays technical lead.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Bi-weekly progress report. Touchless rate, exception aging, integration health, outstanding bugs.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">On-call rotation covering NSR business hours.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text">Post-hypercare retrospective with NSR identifying open scope to roll into Phase 1.5 or Phase 2.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>AP, AM, and Manager users have everything they need in one application: communication, search, reports, dashboards. The AR foundation is laid so Phase 2 can begin immediately after Phase 1 sign-off. Hypercare ensures the production rollout is supported through the highest-risk window.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <strong>NSR AP Automation Platform</strong> &nbsp;·&nbsp; Phase 1 Statement of Work
+    </div>
+    <div>Prepared by TechJays for NorthStar Recycling Company, LLC &nbsp;·&nbsp; April 2026</div>
+  </footer>
+
+</main>
+
+</body>
+</html>
