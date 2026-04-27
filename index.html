@@ -130,7 +130,6 @@
   .tab[data-tab="domain"]     { --tab-c: var(--domain); }
   .tab[data-tab="milestones"] { --tab-c: var(--milestones); }
   .tab[data-tab="corpus"]     { --tab-c: var(--corpus); }
-  .tab[data-tab="pipeline"]   { --tab-c: var(--pipeline); }
 
   /* ===== STAGE ===== */
   .stage {
@@ -201,19 +200,15 @@
     </button>
     <button class="tab" data-tab="domain" data-src="NSR_Current_Flow.html" role="tab">
       <span class="tab-icon">D</span>
-      <span>Domain &amp; Current Flow</span>
+      <span>AP Flow</span>
     </button>
     <button class="tab" data-tab="milestones" data-src="NSR_SOW_Milestones.html" role="tab">
       <span class="tab-icon">M</span>
-      <span>SOW Milestones</span>
+      <span>Proposed Solution and Milestones</span>
     </button>
     <button class="tab" data-tab="corpus" data-src="NSR_Test_Corpus_Map.html" role="tab">
       <span class="tab-icon">C</span>
-      <span>Test Corpus</span>
-    </button>
-    <button class="tab" data-tab="pipeline" data-src="sow-viz/index.html" role="tab">
-      <span class="tab-icon">P</span>
-      <span>Pipeline Visualizer</span>
+      <span>Files and Invoices Analysis Dashboard</span>
     </button>
   </div>
 </div>
@@ -229,7 +224,7 @@
   const stage = document.getElementById('stage');
   const empty = document.getElementById('empty');
   const tabs = document.querySelectorAll('.tab');
-  const order = ['workflow','domain','milestones','corpus','pipeline'];
+  const order = ['workflow','domain','milestones','corpus'];
 
   function showTab(name) {
     const tab = document.querySelector(`.tab[data-tab="${name}"]`);
