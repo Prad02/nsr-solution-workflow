@@ -195,11 +195,11 @@
     </div>
   </div>
   <div class="tabs" role="tablist">
-    <button class="tab active" data-tab="workflow" data-src="solution-workflow.html" role="tab" aria-selected="true">
+    <button class="tab" data-tab="workflow" data-src="solution-workflow.html" role="tab" style="display:none">
       <span class="tab-icon">S</span>
       <span>Solution Workflow</span>
     </button>
-    <button class="tab" data-tab="domain" data-src="NSR_Current_Flow.html" role="tab">
+    <button class="tab active" data-tab="domain" data-src="NSR_Current_Flow.html" role="tab" aria-selected="true">
       <span class="tab-icon">D</span>
       <span>AP Flow</span>
     </button>
@@ -229,7 +229,7 @@
   const stage = document.getElementById('stage');
   const empty = document.getElementById('empty');
   const tabs = document.querySelectorAll('.tab');
-  const order = ['workflow','domain','milestones','corpus','invoices'];
+  const order = ['domain','milestones','corpus','invoices'];
 
   function showTab(name) {
     const tab = document.querySelector(`.tab[data-tab="${name}"]`);
@@ -267,8 +267,8 @@
     t.addEventListener('click', () => showTab(t.dataset.tab));
   });
 
-  const initial = (window.location.hash || '').replace('#', '') || 'workflow';
-  showTab(order.includes(initial) ? initial : 'workflow');
+  const initial = (window.location.hash || '').replace('#', '') || 'domain';
+  showTab(order.includes(initial) || initial === 'workflow' ? initial : 'domain');
 
   document.addEventListener('keydown', e => {
     if (e.target.tagName === 'IFRAME') return;
