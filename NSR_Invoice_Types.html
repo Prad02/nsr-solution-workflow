@@ -179,6 +179,25 @@
     transition: all .2s;
   }
   .wt-close:hover { color: var(--text); border-color: var(--text3); }
+  .wt-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .wt-pdf-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 6px;
+    background: var(--accent); color: #fff !important; text-decoration: none;
+    font-size: 12px; font-weight: 600; font-family: inherit;
+    border: 1px solid var(--accent);
+    transition: all .2s;
+    box-shadow: 0 2px 6px rgba(37,99,235,.20);
+  }
+  .wt-pdf-btn:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 4px 10px rgba(37,99,235,.25); }
+  .walkthrough[data-flow="three-totals"] .wt-pdf-btn { background: var(--amber); border-color: var(--amber); box-shadow: 0 2px 6px rgba(217,119,6,.20); }
+  .walkthrough[data-flow="three-totals"] .wt-pdf-btn:hover { box-shadow: 0 4px 10px rgba(217,119,6,.25); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-pdf-btn { background: var(--pink); border-color: var(--pink); box-shadow: 0 2px 6px rgba(219,39,119,.20); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-pdf-btn:hover { box-shadow: 0 4px 10px rgba(219,39,119,.25); }
+  .walkthrough[data-flow="vendor-statement"] .wt-pdf-btn { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 2px 6px rgba(8,145,178,.20); }
+  .walkthrough[data-flow="vendor-statement"] .wt-pdf-btn:hover { box-shadow: 0 4px 10px rgba(8,145,178,.25); }
+  .walkthrough[data-flow="portal-wm"] .wt-pdf-btn { background: var(--accent2); border-color: var(--accent2); box-shadow: 0 2px 6px rgba(124,58,237,.20); }
+  .walkthrough[data-flow="portal-wm"] .wt-pdf-btn:hover { box-shadow: 0 4px 10px rgba(124,58,237,.25); }
 
   /* per-walkthrough accent overrides */
   .walkthrough[data-flow="three-totals"] .wt-head { border-color: var(--amber); }
@@ -632,7 +651,10 @@
           <div class="wt-title">Happy Path · Email → Posted</div>
           <div class="wt-sub">Homewood Disposal Service → Rise Baking Company (Manteno IL) · $299.60 · 3.05 tons</div>
         </div>
-        <button class="wt-close" type="button">Collapse ✕</button>
+        <div class="wt-actions">
+          <a class="wt-pdf-btn" href="https://drive.google.com/file/d/1WgCDAuEu4PSR6b_eRZzgJm4a5jlh6-te/view" target="_blank" rel="noopener">📄 View Invoice PDF →</a>
+          <button class="wt-close" type="button">Collapse ✕</button>
+        </div>
       </div>
       <div class="wt-intro">
         <div class="wt-intro-copy">
@@ -798,7 +820,10 @@
           <div class="wt-title">Tricky AP · Three totals on one invoice</div>
           <div class="wt-sub">Republic 2503-SHELBY · 3 service locations · $574.35 consolidated invoice total</div>
         </div>
-        <button class="wt-close" type="button">Collapse ✕</button>
+        <div class="wt-actions">
+          <a class="wt-pdf-btn" href="https://drive.google.com/file/d/14iRNmpovOAa4QcANNFI2E-3d8shTBS_8/view" target="_blank" rel="noopener">📄 View Invoice PDF →</a>
+          <button class="wt-close" type="button">Collapse ✕</button>
+        </div>
       </div>
       <div class="wt-intro">
         <div class="wt-intro-copy">
@@ -916,7 +941,10 @@
           <div class="wt-title">Special workflow · Flip-to-AR (vendor pays us)</div>
           <div class="wt-sub">Malvaes Solutions M22278 · $268.90 haul+disposal (AP) · the flip-to-AR fork explained on this same vendor's loads</div>
         </div>
-        <button class="wt-close" type="button">Collapse ✕</button>
+        <div class="wt-actions">
+          <a class="wt-pdf-btn" href="https://drive.google.com/file/d/1j5J0d6zUbgQstEcvzpy3haFyUmy5b7n-/view" target="_blank" rel="noopener">📄 View Invoice PDF →</a>
+          <button class="wt-close" type="button">Collapse ✕</button>
+        </div>
       </div>
       <div class="wt-intro">
         <div class="wt-intro-copy">
@@ -1029,7 +1057,10 @@
           <div class="wt-title">Different doc type · Vendor statement reconciliation</div>
           <div class="wt-sub">American Recycling · 2026-01-10 statement · 21 line entries · $13,395.64 total amount due</div>
         </div>
-        <button class="wt-close" type="button">Collapse ✕</button>
+        <div class="wt-actions">
+          <a class="wt-pdf-btn" href="https://drive.google.com/file/d/1mRbebMB2hyW4qpt9DLwOkDtm4TQIzIPa/view" target="_blank" rel="noopener">📄 View Statement PDF →</a>
+          <button class="wt-close" type="button">Collapse ✕</button>
+        </div>
       </div>
       <div class="wt-intro">
         <div class="wt-intro-copy">
@@ -1156,7 +1187,10 @@
           <div class="wt-title">Different channel · Portal scrape · Waste Management</div>
           <div class="wt-sub">Playwright · login → invoice history → new-tab fallback → injected as if mailed</div>
         </div>
-        <button class="wt-close" type="button">Collapse ✕</button>
+        <div class="wt-actions">
+          <a class="wt-pdf-btn" href="https://drive.google.com/file/d/1wW63hPEIuSkCNHRLlwDzhK1jMwK8tGAd/view" target="_blank" rel="noopener">📄 View Invoice PDF →</a>
+          <button class="wt-close" type="button">Collapse ✕</button>
+        </div>
       </div>
       <div class="wt-intro">
         <div class="wt-intro-copy">
