@@ -28,6 +28,7 @@
     --m5: #ea580c;
     --m6: #0891b2;
     --m7: #059669;
+    --m8: #d97706;
 
     --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
     --shadow-md: 0 4px 16px rgba(15,23,42,.06);
@@ -128,6 +129,7 @@
   .ms-jumper a.m5 { --m-color: var(--m5); }
   .ms-jumper a.m6 { --m-color: var(--m6); }
   .ms-jumper a.m7 { --m-color: var(--m7); }
+  .ms-jumper a.m8 { --m-color: var(--m8); }
 
   /* ---- HERO ---- */
   .hero {
@@ -278,6 +280,7 @@
   .tl-step.m5 .tl-dot { background: var(--m5); }
   .tl-step.m6 .tl-dot { background: var(--m6); }
   .tl-step.m7 .tl-dot { background: var(--m7); }
+  .tl-step.m8 .tl-dot { background: var(--m8); }
   .tl-name {
     font-size: 12px;
     font-weight: 600;
@@ -325,6 +328,7 @@
   .ms-card.m5 { --m-color: var(--m5); }
   .ms-card.m6 { --m-color: var(--m6); }
   .ms-card.m7 { --m-color: var(--m7); }
+  .ms-card.m8 { --m-color: var(--m8); }
 
   .ms-head {
     display: grid;
@@ -555,11 +559,12 @@
     <nav class="ms-jumper" aria-label="Jump to milestone">
       <a class="m1" href="#m1" title="Foundation">1</a>
       <a class="m2" href="#m2" title="Ingestion">2</a>
-      <a class="m3" href="#m3" title="OCR">3</a>
-      <a class="m4" href="#m4" title="Matching">4</a>
-      <a class="m5" href="#m5" title="Validation">5</a>
-      <a class="m6" href="#m6" title="Posting">6</a>
-      <a class="m7" href="#m7" title="Hypercare">7</a>
+      <a class="m3" href="#m3" title="Vendor Resolution">3</a>
+      <a class="m4" href="#m4" title="OCR">4</a>
+      <a class="m5" href="#m5" title="Matching">5</a>
+      <a class="m6" href="#m6" title="Validation">6</a>
+      <a class="m7" href="#m7" title="Posting">7</a>
+      <a class="m8" href="#m8" title="Hypercare">8</a>
     </nav>
   </div>
 </header>
@@ -568,14 +573,14 @@
 
   <section class="hero">
     <div class="eyebrow">Statement of Work · Phase 1 Build Plan</div>
-    <h1 class="hero-title">From manual AP to <span class="grad">autonomous in seven milestones</span>.</h1>
+    <h1 class="hero-title">From manual AP to <span class="grad">autonomous in eight milestones</span>.</h1>
     <p class="hero-lead">
       The Phase 1 build plan for the NSR AP Automation Platform.
       Each milestone has a single objective, a defined set of deliverables, and a clearly stated outcome that earns the next one.
       Calendar dates and effort sit in the commercial proposal.
     </p>
     <div class="stats">
-      <div class="stat"><div class="stat-num">7</div><div class="stat-lbl">Milestones</div></div>
+      <div class="stat"><div class="stat-num">8</div><div class="stat-lbl">Milestones</div></div>
       <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Channels (Email · Upload · Portals)</div></div>
       <div class="stat"><div class="stat-num">27</div><div class="stat-lbl">Header fields extracted</div></div>
       <div class="stat"><div class="stat-num">8 + 5</div><div class="stat-lbl">Header + line match cascade</div></div>
@@ -605,28 +610,33 @@
         </a>
         <a class="tl-step m3" href="#m3">
           <div class="tl-dot">3</div>
-          <div class="tl-name">OCR &amp; Field Extraction</div>
+          <div class="tl-name">Vendor Resolution Engine</div>
           <div class="tl-tag">M3</div>
         </a>
         <a class="tl-step m4" href="#m4">
           <div class="tl-dot">4</div>
-          <div class="tl-name">Buy/Sell Matching Engine</div>
+          <div class="tl-name">OCR &amp; Field Extraction</div>
           <div class="tl-tag">M4</div>
         </a>
         <a class="tl-step m5" href="#m5">
           <div class="tl-dot">5</div>
-          <div class="tl-name">Validation &amp; Exception Mgmt</div>
+          <div class="tl-name">Buy/Sell Matching Engine</div>
           <div class="tl-tag">M5</div>
         </a>
         <a class="tl-step m6" href="#m6">
           <div class="tl-dot">6</div>
-          <div class="tl-name">Special Workflows &amp; Posting</div>
+          <div class="tl-name">Validation &amp; Exception Mgmt</div>
           <div class="tl-tag">M6</div>
         </a>
         <a class="tl-step m7" href="#m7">
           <div class="tl-dot">7</div>
-          <div class="tl-name">Reporting, AR Foundation, Hypercare</div>
+          <div class="tl-name">Special Workflows &amp; Posting</div>
           <div class="tl-tag">M7</div>
+        </a>
+        <a class="tl-step m8" href="#m8">
+          <div class="tl-dot">8</div>
+          <div class="tl-name">Reporting, AR Foundation, Hypercare</div>
+          <div class="tl-tag">M8</div>
         </a>
       </div>
     </div>
@@ -750,6 +760,48 @@
         <div class="ms-num">3</div>
         <div class="ms-meta">
           <div class="ms-tag">Milestone 03</div>
+          <h3 class="ms-name">Vendor Resolution Engine</h3>
+          <span class="ms-timeline">Confirmed in commercial proposal</span>
+        </div>
+      </div>
+
+      <div class="ms-objective">
+        <span class="lbl">Objective</span>
+        <div>Resolve every ingested invoice to its correct counterparty (CPID) in CieTrade — including ambiguous, multi-CPID, and unknown-vendor cases — and auto-populate the master-data fields the rest of the pipeline depends on so AP and AM never re-key the same vendor information twice.</div>
+      </div>
+
+      <div class="ms-deliv-head">Deliverables</div>
+
+      <div class="deliv-group">
+        <ul class="deliv-list">
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Vendor Resolution Service.</strong> Composite-confidence cascade against the CPID master: fuzzy name match (Levenshtein + token-set ratio), Remit-To exact-address match (<code>IsRemit=1</code>), Ship-From address match (<code>IsRemit=0</code>), and stream-history tiebreak. Auto-assign at composite confidence ≥ 0.95.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Address-aware indexing.</strong> Solves the "50 Waste Managements" problem. CPIDs indexed on (CPID, Address, IsRemit) tuples so the same vendor name across many counterparties disambiguates by remit-to and ship-from address.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Manual Vendor Selection UI.</strong> Triggered when composite &lt; 0.95 or when multiple candidates exceed threshold. Ranked candidate list with full match rationale (which signal hit, at what confidence, which addresses matched). One-click assign or escalate.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Vendor Not Found queue.</strong> Hard-stop fork when no candidate clears threshold. Three resolution paths: assign existing CPID, create new CPID (vendor-master write), or void as not-an-invoice. State machine never silently posts to a wrong account.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Master Data Auto-Population.</strong> On successful CPID assignment, payment method, payment terms, remit-to address, Sage vendor number, and tax code are pulled from the CieTrade master and written to the invoice record. These flow downstream to validation and posting without re-keying.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Learning loop.</strong> Manual selections, create-CPID actions, and void decisions are atomically written back to stream history, the address index, and the matcher training set. Subsequent invoices from the same sender or address auto-resolve in one pass.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Per-CPID dedupe key.</strong> SHA-derived from (CPID + invoice number) and exposed downstream so validation can detect vendor-side duplicate invoices independent of email-level SHA-256 dedupe.</div></li>
+          <li class="deliv-item"><div class="deliv-bullet"></div><div class="deliv-text"><strong>Confidence-banded resolution UI.</strong> Color-coded badges per resolution signal (name, remit-to, ship-from, stream history). Reviewers see the same rationale the engine used; overrides require a reason captured in the audit log.</div></li>
+        </ul>
+      </div>
+
+      <div class="ms-benefit">
+        <div class="ms-benefit-icon">★</div>
+        <div class="ms-benefit-body">
+          <div class="lbl">Key Benefit</div>
+          <p>Every invoice arrives at the matching engine already keyed to the correct counterparty, with payment terms, remit address, Sage number, and tax code already populated. The "50 Waste Managements" problem stops blocking AP. Unknown vendors hard-stop into a typed queue with a learning loop, instead of silently being misposted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== M4 ===================== -->
+  <section id="m4" class="ms-section">
+    <div class="ms-card m4">
+      <div class="ms-head">
+        <div class="ms-num">4</div>
+        <div class="ms-meta">
+          <div class="ms-tag">Milestone 04</div>
           <h3 class="ms-name">OCR and Field Extraction</h3>
           <span class="ms-timeline">Confirmed in commercial proposal</span>
         </div>
@@ -788,13 +840,13 @@
     </div>
   </section>
 
-  <!-- ===================== M4 ===================== -->
-  <section id="m4" class="ms-section">
-    <div class="ms-card m4">
+  <!-- ===================== M5 ===================== -->
+  <section id="m5" class="ms-section">
+    <div class="ms-card m5">
       <div class="ms-head">
-        <div class="ms-num">4</div>
+        <div class="ms-num">5</div>
         <div class="ms-meta">
-          <div class="ms-tag">Milestone 04</div>
+          <div class="ms-tag">Milestone 05</div>
           <h3 class="ms-name">Buy/Sell Matching Engine</h3>
           <span class="ms-timeline">Confirmed in commercial proposal</span>
         </div>
@@ -832,13 +884,13 @@
     </div>
   </section>
 
-  <!-- ===================== M5 ===================== -->
-  <section id="m5" class="ms-section">
-    <div class="ms-card m5">
+  <!-- ===================== M6 ===================== -->
+  <section id="m6" class="ms-section">
+    <div class="ms-card m6">
       <div class="ms-head">
-        <div class="ms-num">5</div>
+        <div class="ms-num">6</div>
         <div class="ms-meta">
-          <div class="ms-tag">Milestone 05</div>
+          <div class="ms-tag">Milestone 06</div>
           <h3 class="ms-name">Validation, Workflow, and Exception Management</h3>
           <span class="ms-timeline">Confirmed in commercial proposal</span>
         </div>
@@ -873,13 +925,13 @@
     </div>
   </section>
 
-  <!-- ===================== M6 ===================== -->
-  <section id="m6" class="ms-section">
-    <div class="ms-card m6">
+  <!-- ===================== M7 ===================== -->
+  <section id="m7" class="ms-section">
+    <div class="ms-card m7">
       <div class="ms-head">
-        <div class="ms-num">6</div>
+        <div class="ms-num">7</div>
         <div class="ms-meta">
-          <div class="ms-tag">Milestone 06</div>
+          <div class="ms-tag">Milestone 07</div>
           <h3 class="ms-name">Special Workflows and Posting Integration</h3>
           <span class="ms-timeline">Confirmed in commercial proposal</span>
         </div>
@@ -934,13 +986,13 @@
     </div>
   </section>
 
-  <!-- ===================== M7 ===================== -->
-  <section id="m7" class="ms-section">
-    <div class="ms-card m7">
+  <!-- ===================== M8 ===================== -->
+  <section id="m8" class="ms-section">
+    <div class="ms-card m8">
       <div class="ms-head">
-        <div class="ms-num">7</div>
+        <div class="ms-num">8</div>
         <div class="ms-meta">
-          <div class="ms-tag">Milestone 07</div>
+          <div class="ms-tag">Milestone 08</div>
           <h3 class="ms-name">Collaboration, Reporting, AR Foundation, and Hypercare</h3>
           <span class="ms-timeline">Confirmed in commercial proposal · Includes 3-month hypercare</span>
         </div>
