@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSR AP Automation — Invoice Types & Flows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: #e2e8f0;
+    --accent: #2563eb;
+    --accent2: #7c3aed;
+    --green: #059669;
+    --amber: #d97706;
+    --red: #dc2626;
+    --orange: #ea580c;
+    --cyan: #0891b2;
+    --pink: #db2777;
+    --text: #1e293b;
+    --text2: #475569;
+    --text3: #94a3b8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 40px 100px; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, rgba(37,99,235,.08), rgba(124,58,237,.08));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 36px 40px; margin-bottom: 28px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; right: -15%; width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(37,99,235,.08), transparent 70%); pointer-events: none;
+  }
+  .hero h1 { font-size: 28px; font-weight: 800; margin-bottom: 10px; position: relative; letter-spacing: -0.02em; }
+  .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 15px; color: var(--text2); max-width: 760px; position: relative; }
+  .hero-stats { display: flex; gap: 28px; margin-top: 22px; flex-wrap: wrap; position: relative; }
+  .hero-stat { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+  .hero-stat strong { font-size: 26px; font-weight: 800; color: var(--accent); display: block; line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; }
+
+  /* ===== GROUP TABS ===== */
+  .gtabs {
+    display: flex; gap: 4px; margin-bottom: 22px;
+    background: var(--surface); border-radius: 10px; padding: 5px;
+    border: 1px solid var(--border); overflow-x: auto;
+  }
+  .gtab {
+    padding: 10px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 600;
+    color: var(--text3); cursor: pointer; border: none; background: transparent;
+    transition: all .2s; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px; font-family: inherit;
+  }
+  .gtab:hover { color: var(--text); background: var(--surface2); }
+  .gtab.active { color: #fff; }
+  .gtab[data-grp="g1"].active { background: var(--accent); }
+  .gtab[data-grp="g2"].active { background: var(--amber); }
+  .gtab[data-grp="g3"].active { background: var(--pink); }
+  .gtab[data-grp="g4"].active { background: var(--cyan); }
+  .gtab[data-grp="g5"].active { background: var(--accent2); }
+  .gtab[data-grp="g6"].active { background: var(--red); }
+  .gtab .gnum {
+    font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+    background: rgba(0,0,0,.06); color: inherit; font-family: 'JetBrains Mono', monospace;
+  }
+  .gtab.active .gnum { background: rgba(255,255,255,.22); }
+
+  /* ===== GROUP PANELS ===== */
+  .gpanel { display: none; animation: fadeIn .3s; }
+  .gpanel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .gpanel-intro {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 8px;
+    padding: 14px 18px; margin-bottom: 20px;
+    font-size: 13.5px; line-height: 1.6; color: var(--text2);
+  }
+  .gpanel-intro b { color: var(--text); font-weight: 700; }
+  .gpanel-intro code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-size: 11.5px; font-family: 'JetBrains Mono', monospace; }
+  .gpanel[data-grp="g2"] .gpanel-intro { border-left-color: var(--amber); }
+  .gpanel[data-grp="g3"] .gpanel-intro { border-left-color: var(--pink); }
+  .gpanel[data-grp="g4"] .gpanel-intro { border-left-color: var(--cyan); }
+  .gpanel[data-grp="g5"] .gpanel-intro { border-left-color: var(--accent2); }
+  .gpanel[data-grp="g6"] .gpanel-intro { border-left-color: var(--red); }
+
+  /* ===== CARDS ===== */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px 14px 22px; transition: all .25s; cursor: default; position: relative;
+    display: flex; flex-direction: column; min-height: 200px;
+  }
+  .card.live { cursor: pointer; }
+  .card.live:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.06); }
+  .card.live::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+    width: 3px; background: var(--accent); border-radius: 10px 0 0 10px;
+  }
+  .gpanel[data-grp="g2"] .card.live::before { background: var(--amber); }
+  .gpanel[data-grp="g3"] .card.live::before { background: var(--pink); }
+  .gpanel[data-grp="g4"] .card.live::before { background: var(--cyan); }
+  .gpanel[data-grp="g5"] .card.live::before { background: var(--accent2); }
+  .gpanel[data-grp="g6"] .card.live::before { background: var(--red); }
+  .card.disabled { opacity: 0.72; }
+  .card.active { border-color: var(--accent); background: rgba(37,99,235,.04); box-shadow: 0 0 0 2px rgba(37,99,235,.10); }
+  .gpanel[data-grp="g2"] .card.active { border-color: var(--amber); background: rgba(217,119,6,.05); box-shadow: 0 0 0 2px rgba(217,119,6,.10); }
+  .gpanel[data-grp="g3"] .card.active { border-color: var(--pink); background: rgba(219,39,119,.05); box-shadow: 0 0 0 2px rgba(219,39,119,.10); }
+  .gpanel[data-grp="g4"] .card.active { border-color: var(--cyan); background: rgba(8,145,178,.05); box-shadow: 0 0 0 2px rgba(8,145,178,.10); }
+  .gpanel[data-grp="g5"] .card.active { border-color: var(--accent2); background: rgba(124,58,237,.05); box-shadow: 0 0 0 2px rgba(124,58,237,.10); }
+  .gpanel[data-grp="g6"] .card.active { border-color: var(--red); background: rgba(220,38,38,.05); box-shadow: 0 0 0 2px rgba(220,38,38,.10); }
+
+  .card-tag {
+    display: inline-flex; align-items: center;
+    font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+    padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; align-self: flex-start;
+    background: rgba(37,99,235,.1); color: var(--accent);
+  }
+  .gpanel[data-grp="g2"] .card-tag { background: rgba(217,119,6,.1); color: var(--amber); }
+  .gpanel[data-grp="g3"] .card-tag { background: rgba(219,39,119,.1); color: var(--pink); }
+  .gpanel[data-grp="g4"] .card-tag { background: rgba(8,145,178,.1); color: var(--cyan); }
+  .gpanel[data-grp="g5"] .card-tag { background: rgba(124,58,237,.1); color: var(--accent2); }
+  .gpanel[data-grp="g6"] .card-tag { background: rgba(220,38,38,.1); color: var(--red); }
+
+  .card-title { font-size: 14.5px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; letter-spacing: -0.005em; }
+  .card-desc { font-size: 12.5px; color: var(--text2); line-height: 1.55; flex: 1; }
+  .card-desc em { color: var(--text); font-style: normal; font-weight: 500; font-size: 11.5px; display: block; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
+  .card-desc code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-size: 11.5px; font-family: 'JetBrains Mono', monospace; }
+  .card-meta {
+    margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    font-size: 10.5px; color: var(--text3); font-family: 'JetBrains Mono', monospace;
+  }
+  .card-cta { color: var(--accent); font-weight: 700; }
+  .gpanel[data-grp="g2"] .card-cta { color: var(--amber); }
+  .gpanel[data-grp="g3"] .card-cta { color: var(--pink); }
+  .gpanel[data-grp="g4"] .card-cta { color: var(--cyan); }
+  .gpanel[data-grp="g5"] .card-cta { color: var(--accent2); }
+  .gpanel[data-grp="g6"] .card-cta { color: var(--red); }
+  .card.active .card-cta::before { content: '● '; }
+  .soon-pill {
+    font-size: 9px; padding: 3px 7px; border-radius: 3px; font-weight: 700; letter-spacing: .8px;
+    background: var(--surface2); color: var(--text3); border: 1px solid var(--border);
+  }
+
+  /* ===== WALKTHROUGH ===== */
+  .walkthrough { display: none; margin-top: 28px; }
+  .walkthrough.active { display: block; animation: fadeIn .35s; }
+  .wt-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: linear-gradient(135deg, var(--surface), var(--surface2));
+    border: 1px solid var(--accent); border-radius: 12px;
+    padding: 16px 22px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .wt-head .wt-title-wrap { flex: 1; min-width: 240px; }
+  .wt-head .wt-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: -0.005em; }
+  .wt-head .wt-title::before {
+    content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(37,99,235,.18);
+  }
+  .wt-head .wt-sub { font-size: 12px; color: var(--text2); margin-top: 5px; padding-left: 19px; font-family: 'JetBrains Mono', monospace; }
+  .wt-close {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: inherit; font-weight: 500;
+    transition: all .2s;
+  }
+  .wt-close:hover { color: var(--text); border-color: var(--text3); }
+
+  /* per-walkthrough accent overrides */
+  .walkthrough[data-flow="three-totals"] .wt-head { border-color: var(--amber); }
+  .walkthrough[data-flow="three-totals"] .wt-title::before { background: var(--amber); box-shadow: 0 0 0 4px rgba(217,119,6,.18); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-head { border-color: var(--pink); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-title::before { background: var(--pink); box-shadow: 0 0 0 4px rgba(219,39,119,.18); }
+  .walkthrough[data-flow="vendor-statement"] .wt-head { border-color: var(--cyan); }
+  .walkthrough[data-flow="vendor-statement"] .wt-title::before { background: var(--cyan); box-shadow: 0 0 0 4px rgba(8,145,178,.18); }
+  .walkthrough[data-flow="portal-wm"] .wt-head { border-color: var(--accent2); }
+  .walkthrough[data-flow="portal-wm"] .wt-title::before { background: var(--accent2); box-shadow: 0 0 0 4px rgba(124,58,237,.18); }
+  .walkthrough[data-flow="vendor-not-found"] .wt-head { border-color: var(--red); }
+  .walkthrough[data-flow="vendor-not-found"] .wt-title::before { background: var(--red); box-shadow: 0 0 0 4px rgba(220,38,38,.18); }
+
+  .wt-intro {
+    display: grid; grid-template-columns: 1fr 380px; gap: 22px;
+    margin-bottom: 22px; align-items: start;
+  }
+  @media (max-width: 920px) { .wt-intro { grid-template-columns: 1fr; } }
+  .wt-intro-copy h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--accent); margin-bottom: 10px; }
+  .walkthrough[data-flow="three-totals"] .wt-intro-copy h3 { color: var(--amber); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-intro-copy h3 { color: var(--pink); }
+  .walkthrough[data-flow="vendor-statement"] .wt-intro-copy h3 { color: var(--cyan); }
+  .walkthrough[data-flow="portal-wm"] .wt-intro-copy h3 { color: var(--accent2); }
+  .walkthrough[data-flow="vendor-not-found"] .wt-intro-copy h3 { color: var(--red); }
+  .wt-intro-copy p { font-size: 13.5px; color: var(--text2); line-height: 1.65; margin-bottom: 10px; }
+  .wt-intro-copy code { background: var(--surface2); padding: 1px 6px; border-radius: 3px; font-size: 11.5px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+  .wt-intro-copy strong { color: var(--text); font-weight: 600; }
+  .kbd {
+    display: inline-block; padding: 1px 7px; font-size: 11.5px; font-family: 'JetBrains Mono', monospace;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-weight: 500;
+  }
+
+  /* ===== INVOICE PREVIEW ===== */
+  .ip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px; font-size: 12.5px;
+  }
+  .ip-head { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .ip-sub { font-size: 10.5px; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-bottom: 14px; word-break: break-all; }
+  .ip-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+  .ip-row span:first-child { color: var(--text2); }
+  .ip-row .v { font-weight: 600; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+  .ip-lines { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .ip-line { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; }
+  .ip-line span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  .ip-total { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 2px solid var(--text); font-size: 13.5px; font-weight: 700; }
+  .ip-total .v { font-family: 'JetBrains Mono', monospace; }
+
+  /* ===== TIMELINE ===== */
+  .wt-timeline { display: flex; flex-direction: column; gap: 14px; }
+  .wt-step {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 22px; position: relative; overflow: hidden;
+  }
+  .wt-step::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent);
+  }
+  .walkthrough[data-flow="three-totals"] .wt-step::before { background: var(--amber); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-step::before { background: var(--pink); }
+  .walkthrough[data-flow="vendor-statement"] .wt-step::before { background: var(--cyan); }
+  .walkthrough[data-flow="portal-wm"] .wt-step::before { background: var(--accent2); }
+  .walkthrough[data-flow="vendor-not-found"] .wt-step::before { background: var(--red); }
+  .wt-step-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .wt-step-title { font-size: 14.5px; font-weight: 700; letter-spacing: -0.005em; }
+  .wt-step-meta { display: flex; gap: 8px; font-size: 10px; color: var(--text3); font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; }
+  .wt-step-meta .mod { color: var(--accent); font-weight: 700; padding: 2px 7px; background: rgba(37,99,235,.1); border-radius: 4px; letter-spacing: .3px; }
+  .walkthrough[data-flow="three-totals"] .wt-step-meta .mod { color: var(--amber); background: rgba(217,119,6,.1); }
+  .walkthrough[data-flow="flip-to-ar"] .wt-step-meta .mod { color: var(--pink); background: rgba(219,39,119,.1); }
+  .walkthrough[data-flow="vendor-statement"] .wt-step-meta .mod { color: var(--cyan); background: rgba(8,145,178,.1); }
+  .walkthrough[data-flow="portal-wm"] .wt-step-meta .mod { color: var(--accent2); background: rgba(124,58,237,.1); }
+  .walkthrough[data-flow="vendor-not-found"] .wt-step-meta .mod { color: var(--red); background: rgba(220,38,38,.1); }
+  .wt-step-body { font-size: 13px; color: var(--text2); line-height: 1.65; }
+  .wt-step-body p { margin: 6px 0; }
+  .wt-step-body ul { margin: 8px 0 8px 22px; }
+  .wt-step-body li { margin: 4px 0; }
+  .wt-step-body strong { color: var(--text); font-weight: 600; }
+  .wt-step-body em { color: var(--text); font-style: italic; }
+  .wt-step-body code { background: var(--surface2); padding: 1px 6px; border-radius: 3px; font-size: 11.5px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+
+  /* ===== MINI TABLE ===== */
+  .wt-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
+  .wt-table th { text-align: left; padding: 8px 12px; background: var(--surface2); font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text3); border-bottom: 1px solid var(--border); }
+  .wt-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  .wt-table tr:last-child td { border-bottom: 0; }
+  .conf-high { color: var(--green); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .conf-mid { color: var(--amber); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .conf-low { color: var(--red); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+  /* ===== CASCADE ===== */
+  .cascade { margin-top: 10px; }
+  .cascade-row {
+    display: flex; align-items: center; gap: 12px; padding: 9px 14px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
+    margin-bottom: 5px; font-size: 12.5px;
+  }
+  .cascade-row.hit { background: rgba(5,150,105,.06); border-color: rgba(5,150,105,.3); }
+  .cascade-row.skip { opacity: 0.45; }
+  .cascade-row .cstep {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--surface);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 10.5px; font-weight: 700; flex-shrink: 0; font-family: 'JetBrains Mono', monospace;
+  }
+  .cascade-row.hit .cstep { background: var(--green); color: #fff; border-color: var(--green); }
+  .cascade-row .cdesc { flex: 1; }
+  .cascade-row .cresult { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  .cascade-row.hit .cresult { color: var(--green); font-weight: 600; }
+
+  /* ===== STATE WALK ===== */
+  .state-walk { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; }
+  .state-walk .s {
+    padding: 5px 11px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 5px; font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--text2);
+  }
+  .state-walk .s.terminal { background: rgba(5,150,105,.1); border-color: rgba(5,150,105,.4); color: var(--green); font-weight: 600; }
+  .state-walk .s.exception { background: rgba(220,38,38,.1); border-color: rgba(220,38,38,.4); color: var(--red); font-weight: 600; }
+  .state-walk .arrow { color: var(--text3); font-size: 13px; }
+
+  /* ===== TOUCH CALLOUT ===== */
+  .touch-callout {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;
+    margin-top: 16px; padding: 18px; background: var(--surface2); border-radius: 10px;
+  }
+  .touch-metric { text-align: center; }
+  .touch-metric .m-val { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .touch-metric .m-val.green { color: var(--green); }
+  .touch-metric .m-val.amber { color: var(--amber); }
+  .touch-metric .m-val.red { color: var(--red); }
+  .touch-metric .m-val.pink { color: var(--pink); }
+  .touch-metric .m-val.purple { color: var(--accent2); }
+  .touch-metric .m-val.cyan { color: var(--cyan); }
+  .touch-metric .m-val.blue { color: var(--accent); }
+  .touch-metric .m-lbl { font-size: 10.5px; color: var(--text3); margin-top: 6px; line-height: 1.4; }
+
+  /* ===== FOOTER NOTE ===== */
+  .footnote {
+    margin-top: 20px; padding: 14px 18px;
+    background: var(--surface); border: 1px dashed var(--border); border-radius: 8px;
+    font-size: 12px; color: var(--text3); line-height: 1.5;
+  }
+  .footnote strong { color: var(--text2); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 720px) {
+    .wrap { padding: 20px; }
+    .hero { padding: 24px 22px; }
+    .hero h1 { font-size: 22px; }
+    .gtab { padding: 9px 11px; font-size: 11.5px; }
+    .gtab span:not(.gnum) { display: none; }
+    .gtab .gnum { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===== HERO ===== -->
+  <div class="hero">
+    <h1>Invoice Types &amp; <span>End-to-End Flows</span></h1>
+    <p>Every shape an invoice can take through NSR's AP pipeline — six groups, 35 distinct categories. Each tab below shows the categories in that group; one representative per group is fully built out as a step-by-step walkthrough. The remaining cards are catalogued for the next round.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>35</strong>distinct invoice categories</div>
+      <div class="hero-stat"><strong>6</strong>groups by routing logic</div>
+      <div class="hero-stat"><strong>6</strong>full walkthroughs live</div>
+      <div class="hero-stat"><strong>20</strong>exception queues</div>
+    </div>
+  </div>
+
+  <!-- ===== GROUP TABS ===== -->
+  <div class="gtabs" role="tablist">
+    <button class="gtab active" data-grp="g1"><span class="gnum">G1·4</span><span>Standard AP · clean</span></button>
+    <button class="gtab" data-grp="g2"><span class="gnum">G2·7</span><span>Tricky AP · OCR</span></button>
+    <button class="gtab" data-grp="g3"><span class="gnum">G3·4</span><span>Leaves AP · contra/flip</span></button>
+    <button class="gtab" data-grp="g4"><span class="gnum">G4·4</span><span>Different doc type</span></button>
+    <button class="gtab" data-grp="g5"><span class="gnum">G5·6</span><span>Different channel</span></button>
+    <button class="gtab" data-grp="g6"><span class="gnum">G6·10</span><span>Hard-stop exceptions</span></button>
+  </div>
+
+  <!-- ===== G1 · STANDARD AP CLEAN ===== -->
+  <div class="gpanel active" data-grp="g1">
+    <div class="gpanel-intro">
+      <b>Group 1 · Standard AP · clean variations.</b> Same pipeline as the Happy Path; each one stresses a different muscle — multi-load roll-ups, multi-tax, scale. All four resolve to <code>Posted → Paid</code> via the standard flow.
+    </div>
+    <div class="cards">
+      <div class="card live" data-flow="happy-path">
+        <div class="card-tag">Happy Path · Live</div>
+        <div class="card-title">Email → Posted in one clean pass</div>
+        <div class="card-desc">A vendor emails a PDF that matches cleanly — single B/S found on Step 3, all 11 validation checks green, human Submits once, SFTP posts to CieTrade, payment reconciles. The 80% path. <em>Homewood Disposal · Rice Baking · $354.00</em></div>
+        <div class="card-meta"><span>9 stages · Modules 1 → 10</span><span class="card-cta">Open ↓</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Multi-B/S</div>
+        <div class="card-title">One invoice rolls up many loads</div>
+        <div class="card-desc">Up to ~20 B/S worksheets consolidated under a single invoice number. The 8-step cascade resolves a header-level B/S list, then per-load lines match individually. <em>Georgetown Paper Stock 957096 · $3,569.90 · 12 worksheets</em></div>
+        <div class="card-meta"><span>Module 4 · multi-B/S</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Canadian · GST/HST/QST</div>
+        <div class="card-title">Multi-tax pass-through, CAD currency</div>
+        <div class="card-desc">Canadian invoice with stacked GST + HST + QST. Each tax flows as a header pass-through line at posting; tax-code validation must match the B/S jurisdiction. <em>U-Pak 4406226 · CAD $4,915.80</em></div>
+        <div class="card-meta"><span>Module 5 · §5.1 tax</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Large · Multi-page</div>
+        <div class="card-title">Many pages, many lines</div>
+        <div class="card-desc">High-volume invoice — pagination handling, OCR scale, per-page line extraction without dropping rows. <em>Waste Management of Delaware 3392303-2428-9 · $53,767.59</em></div>
+        <div class="card-meta"><span>Module 2 · OCR scale</span><span class="soon-pill">SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== G2 · TRICKY AP ===== -->
+  <div class="gpanel" data-grp="g2">
+    <div class="gpanel-intro">
+      <b>Group 2 · Tricky AP · OCR &amp; field-picking.</b> All seven still post through the standard AP path — what's tricky is "<em>which number do you pay</em>" or "<em>which address resolves the vendor</em>". OCR makes the right pick when the literal extractor would mis-read.
+    </div>
+    <div class="cards">
+      <div class="card live" data-flow="three-totals">
+        <div class="card-tag">Three Totals · Live</div>
+        <div class="card-title">Three totals on one page — pick the right one</div>
+        <div class="card-desc">Republic prints prior balance, current charges, and grand total all on the same page. The right number to pay is the smallest of the three. OCR field-prioritization picks <code>Invoice Amount</code>, not <code>Total Due</code>. <em>Republic · $574.35 (not $1,829.40, not $1,255.05)</em></div>
+        <div class="card-meta"><span>OCR · validation</span><span class="card-cta">Open ↓</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Aging Buckets</div>
+        <div class="card-title">30 / 60 / 90-day buckets shown — pay current only</div>
+        <div class="card-desc">Statement-style invoice with aging columns. Current period is what gets posted; aged buckets are informational. <em>GFL P70005201266 · $4,078.76</em></div>
+        <div class="card-meta"><span>Module 2 · §2.2.7</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Current vs Prior</div>
+        <div class="card-title">Current charges + carryover balance</div>
+        <div class="card-desc">Don't double-pay the carryover. Extractor must isolate "current charges" from running balance. <em>EDCO 77087APR25 · $69.62 · Burrtec N2114817630 · $6,197.37</em></div>
+        <div class="card-meta"><span>Module 2 · §2.2.7</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Per-Line Fuel</div>
+        <div class="card-title">Fuel surcharge split across lines</div>
+        <div class="card-desc">Surcharge is per-line (not header). Combined-surcharge B/S match at line Step 5 still has to balance to a single B/S expense bucket. <em>Denali INV1070465 · $3,440.08</em></div>
+        <div class="card-meta"><span>Module 4 · line Step 5</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Bill-To ≠ Northstar</div>
+        <div class="card-title">Addressed to a sub-brand or third party</div>
+        <div class="card-desc">Bill-To name fuzzy-fails the legal-entity check. Either resolves to a known NSR sub-brand (warning, continues) or hard-stops to AP. <em>Tennessee Trash 64703 · $81 · Standard Industries 1435549A · $1,188</em></div>
+        <div class="card-meta"><span>Module 5 · §5.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Site in Line Text</div>
+        <div class="card-title">Site address only in line description</div>
+        <div class="card-desc">Header has no service address; site name is buried in the line description. CPID matcher reads line text to anchor the site. <em>Tennessee Trash 64703 · "Site: Lebanon SB"</em></div>
+        <div class="card-meta"><span>Module 3 · CPID</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Supplier Address</div>
+        <div class="card-title">Supplier address in body / ship-from / facility ID</div>
+        <div class="card-desc">No header remit-to. CPID resolves via address-aware index hitting <code>IsRemit=0</code> ship-from rows or facility IDs. <em>Houston Waste 572699 · Terra Renewal INV1079911 · Dunkirk 20241101</em></div>
+        <div class="card-meta"><span>Module 3 · IsRemit/0</span><span class="soon-pill">SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== G3 · LEAVES AP ===== -->
+  <div class="gpanel" data-grp="g3">
+    <div class="gpanel-intro">
+      <b>Group 3 · Leaves AP entirely.</b> The doc enters as if it were AP, but the financial direction reverses or splits. <code>Flip-to-AR</code> and <code>contra</code> are the two mechanics; one invoice can do both.
+    </div>
+    <div class="cards">
+      <div class="card disabled">
+        <div class="card-tag">Credit Memo</div>
+        <div class="card-title">Vendor credit · contra offset</div>
+        <div class="card-desc">Doc classified as Credit Memo (literal "Credit Memo" string or negative gross). Bypasses B/S match; lands in dedicated queue; offsets outstanding invoices on next check run. <em>Federal Recycling 1330123 · "everything already on AR"</em></div>
+        <div class="card-meta"><span>Module 6.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card live" data-flow="flip-to-ar">
+        <div class="card-tag">Flip-to-AR · Live</div>
+        <div class="card-title">Negative net — vendor pays us</div>
+        <div class="card-desc">Sales line exceeds the haul cost. <code>WksDetail-SALES</code> non-zero; AR balance available; the invoice is auto-flipped onto AR instead of posting as AP. <em>Malvaes M22278 · "$250 haul, they pay us the commodity"</em></div>
+        <div class="card-meta"><span>Module 4.3 · §6.1</span><span class="card-cta">Open ↓</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Flip Then Contra</div>
+        <div class="card-title">Partial flip + partial contra on one doc</div>
+        <div class="card-desc">Some lines flip to AR, others contra against existing AR balance. Atomic post or fail. <em>Georgetown 957096 · $3,569.90 · "LARGE FLIP THEN CONTRA"</em></div>
+        <div class="card-meta"><span>Module 4.3 · §6.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Split Post</div>
+        <div class="card-title">Freight on AP · material on AR</div>
+        <div class="card-desc">Same invoice, two postings: freight charges as AP, commodity revenue as AR. Reconserve special rule applies. <em>ReConserve INV77-032146 · $1,128.49</em></div>
+        <div class="card-meta"><span>Module 4.3 · Reconserve rule</span><span class="soon-pill">SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== G4 · DIFFERENT DOC TYPE ===== -->
+  <div class="gpanel" data-grp="g4">
+    <div class="gpanel-intro">
+      <b>Group 4 · Different document type.</b> Doesn't enter the standard postable-invoice flow at all. Statements get reconciled, supporting docs get linked to a parent, body-link emails trigger a fetch, forwards re-anchor to the original sender.
+    </div>
+    <div class="cards">
+      <div class="card live" data-flow="vendor-statement">
+        <div class="card-tag">Vendor Statement · Live</div>
+        <div class="card-title">Periodic statement · reconciliation flow</div>
+        <div class="card-desc">Classifier detects "Statement" — bypasses postable invoice flow entirely. Each row matched against the local AP ledger; mismatches surface as reconciliation tasks. <em>American Recycling 1.10.26 · ~24 sample statements</em></div>
+        <div class="card-meta"><span>Module 6.3</span><span class="card-cta">Open ↓</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Supporting Doc</div>
+        <div class="card-title">BOL / COD / weight ticket</div>
+        <div class="card-desc">Child of a parent invoice. Auto-linked by sender + subject + time-window heuristic. If parent absent, holding queue until it arrives. <em>e.g. Georgetown worksheet PDFs alongside parent invoice</em></div>
+        <div class="card-meta"><span>Module 1.1.6</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Body-Link</div>
+        <div class="card-title">No attachment — URL in email body</div>
+        <div class="card-desc">Vendor emails a "click to view" link. Recognized portal URL → auto-fetch via Playwright. Unknown URL → AP manual-fetch queue. <em>VLS Environmental Invoice #299396 · viewing link</em></div>
+        <div class="card-meta"><span>Module 1.1.5</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Forwarded</div>
+        <div class="card-title">FW from an AM / ops inbox</div>
+        <div class="card-desc">Forwarding chain detected; original sender used for vendor identity, not the forwarder. Forwarder preserved in audit trail. <em>FW_ Invoice # 11183 · FW_ Homewood Bill 12-32987</em></div>
+        <div class="card-meta"><span>Module 1.1.8</span><span class="soon-pill">SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== G5 · DIFFERENT CHANNEL ===== -->
+  <div class="gpanel" data-grp="g5">
+    <div class="gpanel-intro">
+      <b>Group 5 · Different channel / special access.</b> Invoice doesn't arrive by the standard email path. Portal scrape pulls it, a confidential mailbox isolates it, or a month-end batch ingests many at once. Once the PDF is in the system, most converge into the standard pipeline.
+    </div>
+    <div class="cards">
+      <div class="card disabled">
+        <div class="card-tag">Portal · WC</div>
+        <div class="card-title">WC / GFL · direct-PDF download</div>
+        <div class="card-desc">Cleanest portal path. Playwright clicks the download button, gets a PDF, hashes it, dedupes, then injects into the email pipeline. <em>WasteConnections, GFL</em></div>
+        <div class="card-meta"><span>Module 1.3.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card live" data-flow="portal-wm">
+        <div class="card-tag">Portal · WM · Live</div>
+        <div class="card-title">Waste Management · new-tab fallback</div>
+        <div class="card-desc">WM has no direct-download control. Playwright logs in, navigates invoice history, opens each PDF in a new tab, saves it, then injects as if mailed. <em>WM CA 3143676-0051-2 · $1,510.26</em></div>
+        <div class="card-meta"><span>Module 1.3.1</span><span class="card-cta">Open ↓</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Portal · Sub-brand</div>
+        <div class="card-title">WC · single login, multiple sub-brands</div>
+        <div class="card-desc">One credential pulls invoices for Aeros, Harold Lame Pacific, etc. Filter per-run; CPID resolved per sub-brand at ingestion. <em>WasteConnections sub-brand routing</em></div>
+        <div class="card-meta"><span>Module 1.3.8</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Confidential · High</div>
+        <div class="card-title">High sensitivity · Group A only · direct-to-Sage</div>
+        <div class="card-desc">Subject contains "High". Access enforced at DB + API + URL. Skip B/S match. Post directly to Sage with <code>source_system = CONFIDENTIAL_SAGE_DIRECT</code>. Indefinite retention.</div>
+        <div class="card-meta"><span>Module 6.2</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Confidential · Low</div>
+        <div class="card-title">Low sensitivity · Group A + B</div>
+        <div class="card-desc">Default tier inside the confidential mailbox. Same direct-to-Sage path; access broadened to Group B in addition to Group A.</div>
+        <div class="card-meta"><span>Module 6.2</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Create Pays</div>
+        <div class="card-title">End-of-month CP-terms batch</div>
+        <div class="card-desc">Biz day 10–11. CSV manifest + many PDFs. Net positive rows post as AP, net negative rows flip to AR. One-click atomic batch.</div>
+        <div class="card-meta"><span>Module 6.4</span><span class="soon-pill">SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== G6 · HARD-STOP EXCEPTIONS ===== -->
+  <div class="gpanel" data-grp="g6">
+    <div class="gpanel-intro">
+      <b>Group 6 · Hard-stop exceptions.</b> Validation or matching fails, the invoice forks into one of 20 exception queues, never reaches Posting until a human resolves it. Each row below is one queue.
+    </div>
+    <div class="cards">
+      <div class="card live" data-flow="vendor-not-found">
+        <div class="card-tag">Vendor Not Found · Live</div>
+        <div class="card-title">CPID miss — vendor isn't in the master</div>
+        <div class="card-desc">Composite confidence below 0.95. Remit-to address has no <code>IsRemit=1</code> hit. Ship-from address fails too. Hard-stop into Vendor Not Found queue; human assigns or creates a CPID; choice feeds the learning loop.</div>
+        <div class="card-meta"><span>Module 3 · learning loop</span><span class="card-cta">Open ↓</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Ship Date &gt; 1d</div>
+        <div class="card-title">Ship date outside ±1 day tolerance</div>
+        <div class="card-desc">Validation hard-stops. Most often a typo or a stale invoice from a prior period. Forks into Ship Date Mismatch queue.</div>
+        <div class="card-meta"><span>Module 5 · §5.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Tax Code Mismatch</div>
+        <div class="card-title">GST/HST/QST wrong for jurisdiction</div>
+        <div class="card-desc">Tax code on invoice doesn't match B/S tax code. Common with Canadian invoices that pick the wrong provincial code.</div>
+        <div class="card-meta"><span>Module 5 · §5.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Not in Balance</div>
+        <div class="card-title">Lines vs total off by &gt; $0.10</div>
+        <div class="card-desc">Sum of lines + surcharges + tax ≠ printed total. Hard-stop; usually OCR mis-read or invoice formatting quirk.</div>
+        <div class="card-meta"><span>Module 4 · invariant</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Duplicate</div>
+        <div class="card-title">Vendor + invoice # already on file</div>
+        <div class="card-desc">Caught at validation. Differentiate from accidental re-forward (caught earlier by SHA-256). Possible vendor double-bill.</div>
+        <div class="card-meta"><span>Module 5 · §5.1</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">No B/S · Recurring</div>
+        <div class="card-title">No match · pattern is recurring</div>
+        <div class="card-desc">15-day parking lot · daily retry. If a B/S appears in window, auto-rejoin pipeline. If 15 days pass, escalate to AM.</div>
+        <div class="card-meta"><span>Module 4.1 · parking</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">No B/S · Non-Recurring</div>
+        <div class="card-title">No match · no recurring pattern</div>
+        <div class="card-desc">Skip the parking lot — straight to AM for resolution. AM either creates a B/S or rejects.</div>
+        <div class="card-meta"><span>Module 4.1 · AM route</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">B/S Status Wrong</div>
+        <div class="card-title">B/S found · status = Work / Completed / Approved</div>
+        <div class="card-desc">Three sub-queues. Work auto-retries. Completed routes to Client Services. Approved self-resolves in 24h.</div>
+        <div class="card-meta"><span>Module 4 · status</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Variance · Price/Qty</div>
+        <div class="card-title">Line-level variance beyond tolerance</div>
+        <div class="card-desc">Price variance on commodity line, or weight/qty off the B/S quantity. Routes to AM. Common cause: rate change not propagated.</div>
+        <div class="card-meta"><span>Module 4.2 · line</span><span class="soon-pill">SOON</span></div>
+      </div>
+      <div class="card disabled">
+        <div class="card-tag">Unreadable</div>
+        <div class="card-title">Encrypted · OCR fail · non-invoice</div>
+        <div class="card-desc">Password-protected PDFs, image-only OCR failures, unsupported file types, or spam classified as non-invoice. AP manual handling.</div>
+        <div class="card-meta"><span>Module 1 · §1.1.4</span><span class="soon-pill">SOON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WALKTHROUGHS ===== -->
+  <div id="walkthroughs">
+
+    <!-- =========== HAPPY PATH =========== -->
+    <div class="walkthrough" data-flow="happy-path">
+      <div class="wt-head">
+        <div class="wt-title-wrap">
+          <div class="wt-title">Happy Path · Email → Posted</div>
+          <div class="wt-sub">Homewood Disposal Service → Rice Baking Co. · $354.00 · 4.45 short tons</div>
+        </div>
+        <button class="wt-close" type="button">Collapse ✕</button>
+      </div>
+      <div class="wt-intro">
+        <div class="wt-intro-copy">
+          <h3>Why this example</h3>
+          <p>Three channels feed invoices into the system: <span class="kbd">Email</span>, <span class="kbd">Manual Upload</span>, and <span class="kbd">Portal Scrape</span>. This walkthrough follows the most common path — email — but the key insight is that <strong>every channel converges into the same downstream pipeline</strong>. From OCR onward, the code path is identical.</p>
+          <p>The invoice on the right has three line items, 4.45 short tons of material hauled, a fuel surcharge, and ships on <span class="kbd">2026-04-17</span>. All 11 validation checks pass, the human submits once, SFTP posts to CieTrade, and payment reconciles ~9 days later when the check clears.</p>
+        </div>
+        <div class="ip">
+          <div class="ip-head">Homewood Disposal Service, Inc.</div>
+          <div class="ip-sub">billing@homewood.com → APayable@nsrecycle.com</div>
+          <div class="ip-row"><span>Invoice #</span><span class="v">12-32987-7</span></div>
+          <div class="ip-row"><span>Invoice Date</span><span class="v">2026-04-19</span></div>
+          <div class="ip-row"><span>Ship Date</span><span class="v">2026-04-17</span></div>
+          <div class="ip-row"><span>Bill To</span><span class="v">Rice Baking Co.</span></div>
+          <div class="ip-row"><span>Site</span><span class="v">Portland</span></div>
+          <div class="ip-lines">
+            <div class="ip-line"><span>Hauling · 4.45 short tons</span><span>$260.00</span></div>
+            <div class="ip-line"><span>Dump charges per ton</span><span>$19.00</span></div>
+            <div class="ip-line"><span>42-yard compact + fuel adj</span><span>$75.00</span></div>
+          </div>
+          <div class="ip-total"><span>Total</span><span class="v">$354.00</span></div>
+        </div>
+      </div>
+      <div class="wt-timeline">
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">1. Email arrives at AP inbox</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 01 · INGESTION</span><span>T+0 to T+60s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Homewood's billing system emails the invoice PDF to <code>APayable@nsrecycle.com</code>. The MS Graph email monitor polls within a minute and runs three invariants:
+            <ul>
+              <li><strong>Unread-preservation</strong> — read without marking read.</li>
+              <li><strong>Forwarding-chain check</strong> — use the original sender for vendor identity.</li>
+              <li><strong>SHA-256 dedupe</strong> — hash against the 30-day dedupe table.</li>
+            </ul>
+            Invoice record created: <code>UUID abc123…</code>, <code>source = email</code>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">2. OCR and 27-field extraction</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 02 · OCR</span><span>~30s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Azure Document Intelligence runs per-page with bounding boxes retained. The header extractor returns the canonical 27 fields; every field carries a confidence score.
+            <table class="wt-table">
+              <thead><tr><th>Field</th><th>Extracted Value</th><th>Confidence</th></tr></thead>
+              <tbody>
+                <tr><td>Vendor</td><td>Homewood Disposal Service</td><td><span class="conf-high">0.98</span></td></tr>
+                <tr><td>Bill-To</td><td>Rice Baking Company</td><td><span class="conf-high">0.97</span></td></tr>
+                <tr><td>Invoice #</td><td>12-32987-7</td><td><span class="conf-high">0.99</span></td></tr>
+                <tr><td>Ship Date</td><td>2026-04-17</td><td><span class="conf-mid">0.94</span></td></tr>
+                <tr><td>Invoice Total</td><td>$354.00</td><td><span class="conf-high">0.99</span></td></tr>
+              </tbody>
+            </table>
+            Line extractor finds 3 lines. UoM normalizer stores both <code>short_tons</code> and <code>lbs</code>. Classifier labels this <code>Invoice</code>. All mandatory fields populated.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">3. Vendor resolution → CPID assignment</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 03 · VENDOR</span><span>~2s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Homewood is looked up in the CPID master (28k+ rows, synced daily at 19:00 from CieTrade's <code>VM_Extract</code>). Weighted cascade:
+            <ul>
+              <li><strong>Fuzzy name match</strong> — single strong candidate.</li>
+              <li><strong>Remit-To address match</strong> — hits <code>IsRemit=1</code> for <code>CPID HOMEWOOD001</code>.</li>
+              <li><strong>Stream-history tiebreak</strong> — confirms prior Rice Baking ↔ Homewood B/S history.</li>
+            </ul>
+            Composite confidence <strong>0.97</strong> ≥ 0.95 → auto-assigns CPID.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">4. Buy/Sell matching — the critical step</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 04 · B/S MATCH</span><span>~3s</span></div>
+          </div>
+          <div class="wt-step-body">
+            The 8-step fallback cascade runs and stops at the first qualifying match:
+            <div class="cascade">
+              <div class="cascade-row skip"><div class="cstep">1</div><div class="cdesc">Release / Ref Number + Vendor</div><div class="cresult">no release #</div></div>
+              <div class="cascade-row skip"><div class="cstep">2</div><div class="cdesc">Invoice # vs B/S Release # + Vendor</div><div class="cresult">no hit</div></div>
+              <div class="cascade-row hit"><div class="cstep">3</div><div class="cdesc">Vendor + Site + Ship Date + Total</div><div class="cresult">match · 99%</div></div>
+              <div class="cascade-row skip"><div class="cstep">4</div><div class="cdesc">Remaining fallbacks</div><div class="cresult">—</div></div>
+            </div>
+            Result: B/S header <code>BS-10342</code>. Per-line 5-step match runs:
+            <ul>
+              <li>Hauling $260 ↔ B/S hauling $260 — Step 1 ✓</li>
+              <li>4.45 short tons ↔ B/S 4.45 short tons — Step 3 ✓</li>
+              <li>Dump + fuel adj → B/S expense $35 — Step 5 ✓</li>
+            </ul>
+            Invoice-total invariant: $354.00 within ±$0.10 ✓. Not a contra.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">5. Parallel validation + state machine walk</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 05 · VALIDATION</span><span>~1s parallel</span></div>
+          </div>
+          <div class="wt-step-body">
+            All <strong>11 pre-posting checks</strong> run in parallel and pass: vendor valid · no duplicate · mandatory fields · B/S# valid · all lines matched · no price variance · no weight/qty variance · B/S status = Invoiced · ship date within ±1 day · Bill-To matches NSR legal entity · tax code matches B/S.
+            <div class="state-walk">
+              <span class="s">Received</span><span class="arrow">→</span>
+              <span class="s">OCR_In_Progress</span><span class="arrow">→</span>
+              <span class="s">Vendor_Matching</span><span class="arrow">→</span>
+              <span class="s">B/S_Matching</span><span class="arrow">→</span>
+              <span class="s">Validation</span><span class="arrow">→</span>
+              <span class="s terminal">Ready_For_Submission</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">6. Human Submit — the intentional pause</div>
+            <div class="wt-step-meta"><span class="mod">§ 5.3 · STAGE 1</span><span>~20s human time</span></div>
+          </div>
+          <div class="wt-step-body">
+            Phase 1: <code>auto_post_enabled = false</code>. The 3-pane UI shows: PDF render with click-to-highlight bounding boxes (left), 27 editable fields with confidence badges (middle), matched B/S side-by-side with rationale (right). AP Processor clicks <strong>Submit</strong>. In Stage 2/3, AI submits automatically for whitelisted low-risk vendors.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">7. Posting to CieTrade (SFTP)</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 07 · POSTING</span><span>next 14:00 run</span></div>
+          </div>
+          <div class="wt-step-body">
+            At the next scheduled cadence: row tagged <code>UUID abc123…</code> + <code>source_system = CIETRADE_PATH</code> is written to <code>Posting_NSR_0424.txt</code> (pipe-delimited). SFTP write → post-write read-back → ACK captured. State → <code>Posted</code>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">8. Payment confirmation and reconciliation</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 07.2 · INBOUND</span><span>+1 day → +9 days</span></div>
+          </div>
+          <div class="wt-step-body">
+            <ul>
+              <li><strong>Next day ~09:00</strong> — CieTrade's <code>PaymentResponse</code> arrives. UUID match → <code>POSTED</code> confirmed.</li>
+              <li><strong>A few days later</strong> — <code>PaymentUpdate</code> arrives, reference <code>-CK1048</code> (check). State → <code>Paid</code>.</li>
+            </ul>
+            <div class="touch-callout">
+              <div class="touch-metric"><div class="m-val green">~20s</div><div class="m-lbl">Total human touch time</div></div>
+              <div class="touch-metric"><div class="m-val blue">~9 days</div><div class="m-lbl">Email to check cleared</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========== THREE TOTALS =========== -->
+    <div class="walkthrough" data-flow="three-totals">
+      <div class="wt-head">
+        <div class="wt-title-wrap">
+          <div class="wt-title">Tricky AP · Three totals on one invoice</div>
+          <div class="wt-sub">Republic Services National Accounts · $574.35 · "pick the right number"</div>
+        </div>
+        <button class="wt-close" type="button">Collapse ✕</button>
+      </div>
+      <div class="wt-intro">
+        <div class="wt-intro-copy">
+          <h3>Why this example</h3>
+          <p>Republic prints three different totals on the same first page: <span class="kbd">Previous Balance $1,255.05</span>, <span class="kbd">Current Charges $574.35</span>, and <span class="kbd">Total Due $1,829.40</span>. A naïve OCR extractor takes the largest number near the word "<em>total</em>" and overpays by $1,255.05. The right number is the smallest of the three.</p>
+          <p>This walkthrough uses the same 9-stage pipeline as the Happy Path, but Stage 2 (OCR field-prioritization) does the real work. Posting and payment are unchanged.</p>
+        </div>
+        <div class="ip">
+          <div class="ip-head">Republic Services National Accounts, LLC</div>
+          <div class="ip-sub">billing@republicservices.com → APayable@nsrecycle.com</div>
+          <div class="ip-row"><span>Invoice #</span><span class="v">2502-LEBANONSB</span></div>
+          <div class="ip-row"><span>Invoice Date</span><span class="v">2026-04-02</span></div>
+          <div class="ip-row"><span>Ship Date</span><span class="v">2026-03-30</span></div>
+          <div class="ip-row"><span>Site</span><span class="v">Lebanon SB</span></div>
+          <div class="ip-lines">
+            <div class="ip-line"><span>Previous Balance</span><span>$1,255.05</span></div>
+            <div class="ip-line"><span>Current Charges (this period)</span><span>$574.35</span></div>
+            <div class="ip-line" style="opacity:0.5"><span>Total Due (do NOT pay)</span><span>$1,829.40</span></div>
+          </div>
+          <div class="ip-total" style="color: var(--amber)"><span>Pay this period</span><span class="v">$574.35</span></div>
+        </div>
+      </div>
+      <div class="wt-timeline">
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">1. Email arrives · classifier runs</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 01 · INGESTION</span><span>T+0 to T+60s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Identical to Happy Path · Stage 1: MS Graph poll, unread-preserved, SHA-256 dedupe. Document classifier returns <code>Invoice</code> (not Statement, not Credit Memo).
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">2. OCR — field prioritization picks the right total</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 02 · OCR</span><span>~30s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Azure Document Intelligence finds <strong>three</strong> dollar-amount candidates. The 27-field schema has a deterministic priority order keyed on <strong>label semantics</strong>, not visual prominence:
+            <table class="wt-table">
+              <thead><tr><th>Candidate label</th><th>Value</th><th>Maps to field</th><th>Confidence</th></tr></thead>
+              <tbody>
+                <tr><td>Previous Balance</td><td>$1,255.05</td><td><em>(ignored)</em> aging info</td><td><span class="conf-high">0.97</span></td></tr>
+                <tr><td>Current Charges</td><td>$574.35</td><td><strong>Invoice Amount</strong></td><td><span class="conf-high">0.98</span></td></tr>
+                <tr><td>Total Due</td><td>$1,829.40</td><td><em>(ignored)</em> running total</td><td><span class="conf-high">0.99</span></td></tr>
+              </tbody>
+            </table>
+            <code>Invoice Amount</code> is bound to <strong>Current Charges</strong> by label-pattern. <code>Total Due</code> is recognized as a running balance and discarded. <code>Previous Balance</code> is captured for audit only.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">3. Vendor + B/S match — proceeds normally</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 03 + 04</span><span>~5s</span></div>
+          </div>
+          <div class="wt-step-body">
+            CPID resolves to <code>REPUBLIC_NATL_001</code> via remit-address. 8-step B/S cascade hits Step 3 (Vendor + Site + Date + Total) using the <strong>$574.35</strong> amount, not the printed Total Due. Single B/S match. Lines balance against $574.35 exactly.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">4. Validation — invoice-total invariant uses $574.35</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 05 · VALIDATION</span><span>~1s</span></div>
+          </div>
+          <div class="wt-step-body">
+            All 11 checks run. The critical one:
+            <ul>
+              <li><strong>Lines + surcharges + tax = Invoice Amount</strong> within ±$0.10. Sum = $574.35 ✓</li>
+              <li>If we'd picked $1,829.40 instead, this would have failed by $1,255.05 and forked into <strong>Invoice Not in Balance</strong>. The label-binding in Stage 2 is what keeps us out of that queue.</li>
+            </ul>
+            State → <code>Ready_For_Submission</code>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">5. Human review — UI surfaces all three numbers</div>
+            <div class="wt-step-meta"><span class="mod">§ 5.3 · STAGE 1</span><span>~30s human time</span></div>
+          </div>
+          <div class="wt-step-body">
+            On the right pane, the AP Processor sees the chosen <code>Invoice Amount</code> = $574.35 with the rationale "<em>Bound to label 'Current Charges' (priority 1 over 'Total Due')</em>". The other two values are shown collapsed under "<em>Aging context</em>" so the reviewer can sanity-check without being distracted. Clicks <strong>Submit</strong>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">6. Posted · Paid</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 07</span><span>+1 day · +9 days</span></div>
+          </div>
+          <div class="wt-step-body">
+            SFTP write of $574.35. PaymentResponse next day. Check #1052 cleared 9 days later.
+            <div class="touch-callout">
+              <div class="touch-metric"><div class="m-val green">~30s</div><div class="m-lbl">Human touch (extra 10s vs Happy Path)</div></div>
+              <div class="touch-metric"><div class="m-val amber">$1,255.05</div><div class="m-lbl">Overpayment avoided by label-bound extraction</div></div>
+            </div>
+            <div class="footnote">Same applies to <strong>Aging Buckets</strong> and <strong>Current vs Prior</strong> in this group — different visual layout, same defense: label-bound field extraction beats positional extraction.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========== FLIP-TO-AR =========== -->
+    <div class="walkthrough" data-flow="flip-to-ar">
+      <div class="wt-head">
+        <div class="wt-title-wrap">
+          <div class="wt-title">Special workflow · Flip-to-AR (vendor pays us)</div>
+          <div class="wt-sub">Malvaes Solutions · "$250 haul, $907.59 commodity" · net negative → AR</div>
+        </div>
+        <button class="wt-close" type="button">Collapse ✕</button>
+      </div>
+      <div class="wt-intro">
+        <div class="wt-intro-copy">
+          <h3>Why this example</h3>
+          <p>Malvaes hauls a load for us at $250. The same load contains $907.59 of saleable commodity that <em>we</em> own — Malvaes is therefore charged for it. Net of haul and commodity, Malvaes owes <strong>NSR</strong>, not the other way around. This invoice is shaped like AP but resolves as <span class="kbd">Flip-to-AR</span>.</p>
+          <p>The decision happens at <strong>Module 4.3</strong>: when the B/S worksheet detail (<code>WksDetail-SALES</code>) is non-zero and exceeds the cost lines, the system auto-flips. The same record posts to AR instead of AP, and the audit trail captures both legs.</p>
+        </div>
+        <div class="ip">
+          <div class="ip-head">Malvaes Solutions Inc.</div>
+          <div class="ip-sub">ar@malvaes.com → APayable@nsrecycle.com</div>
+          <div class="ip-row"><span>Invoice #</span><span class="v">M22278</span></div>
+          <div class="ip-row"><span>Invoice Date</span><span class="v">2026-04-22</span></div>
+          <div class="ip-row"><span>Ship Date</span><span class="v">2026-04-21</span></div>
+          <div class="ip-row"><span>B/S #</span><span class="v">BS-22817</span></div>
+          <div class="ip-lines">
+            <div class="ip-line"><span>Haul charge (cost to NSR)</span><span>+$250.00</span></div>
+            <div class="ip-line"><span>Commodity sold to Malvaes</span><span>−$907.59</span></div>
+          </div>
+          <div class="ip-total" style="color: var(--pink)"><span>Net (NSR receives)</span><span class="v">−$657.59</span></div>
+        </div>
+      </div>
+      <div class="wt-timeline">
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">1. Ingestion + OCR · classified as Invoice</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 01 + 02</span><span>~30s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Standard email path. Classifier returns <code>Invoice</code> (negative gross alone doesn't trigger Credit Memo classification — only the literal label or a vendor-flagged credit pattern does). Header amount captured as the negative net; line extractor finds two lines with opposite signs.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">2. Vendor + B/S match · normal path</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 03 + 04</span><span>~3s</span></div>
+          </div>
+          <div class="wt-step-body">
+            CPID resolves to <code>MALVAES_001</code>. B/S cascade hits Step 1 (direct B/S# on invoice → <code>BS-22817</code>). Per-line match runs <strong>sign-preserving</strong>: cost line +$250 maps to a B/S Cost bucket; sales line −$907.59 maps to a B/S Sales bucket. Both balance.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">3. Contra detection · the fork</div>
+            <div class="wt-step-meta"><span class="mod">§ 4.3 · CONTRA / FLIP</span><span>~1s</span></div>
+          </div>
+          <div class="wt-step-body">
+            The contra detector runs:
+            <ul>
+              <li><code>WksDetail-SALES</code> on the matched B/S = $907.59 → <strong>non-zero</strong>.</li>
+              <li>Net invoice amount = −$657.59 → <strong>negative</strong>.</li>
+              <li>AR balance check: counterparty Malvaes has open AR capacity. ✓</li>
+            </ul>
+            <strong>Decision:</strong> auto-flip to AR.
+            <div class="cascade">
+              <div class="cascade-row skip"><div class="cstep">A</div><div class="cdesc">Standard AP post</div><div class="cresult">skipped</div></div>
+              <div class="cascade-row hit"><div class="cstep">B</div><div class="cdesc">Flip-to-AR (auto)</div><div class="cresult">selected · 99%</div></div>
+              <div class="cascade-row skip"><div class="cstep">C</div><div class="cdesc">Flip-to-AR balance failure</div><div class="cresult">—</div></div>
+              <div class="cascade-row skip"><div class="cstep">D</div><div class="cdesc">Reconserve skip-flip rule</div><div class="cresult">N/A</div></div>
+            </div>
+            If AR capacity had been insufficient, this would route to <strong>Flip-to-AR Balance Failure</strong> queue instead.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">4. Validation · AR-side checks</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 05 · VALIDATION</span><span>~1s</span></div>
+          </div>
+          <div class="wt-step-body">
+            The 11-check validation runs against the AR-shaped record (Bill-To becomes the customer; Ship-To stays NSR). All pass. State machine path skips B/S re-match and goes <code>Validation → Ready_For_Submission</code> with <code>posting_target = AR</code>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">5. Human Submit · UI shows the flip rationale</div>
+            <div class="wt-step-meta"><span class="mod">§ 5.3 · STAGE 1</span><span>~25s human time</span></div>
+          </div>
+          <div class="wt-step-body">
+            The 3-pane UI looks similar to Happy Path, but with a <strong>flip banner</strong> across the top: "<em>Flipping to AR · WksDetail-SALES $907.59 · net −$657.59</em>". The right pane shows both legs: the AP-equivalent post that didn't happen, and the AR record that will. AP Processor confirms and clicks <strong>Submit to AR</strong>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">6. Posted to AR · payment expected from Malvaes</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 07</span><span>next 14:00 · awaits inbound payment</span></div>
+          </div>
+          <div class="wt-step-body">
+            SFTP write to AR posting file (separate channel from AP). Status <code>posting_target = AR · CIETRADE_AR_PATH</code>. Once Malvaes pays, the AR cash-application flow (Phase 2) reconciles and closes.
+            <div class="touch-callout">
+              <div class="touch-metric"><div class="m-val pink">−$657.59</div><div class="m-lbl">Net amount NSR receives, not pays</div></div>
+              <div class="touch-metric"><div class="m-val green">~25s</div><div class="m-lbl">Human touch — same UI, one extra confirmation</div></div>
+            </div>
+            <div class="footnote">The companion categories — <strong>Credit Memo / Contra-only</strong>, <strong>Flip then Contra</strong>, and <strong>Freight AP / Material AR</strong> — all use this same 4.3 fork with different shapes.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========== VENDOR STATEMENT =========== -->
+    <div class="walkthrough" data-flow="vendor-statement">
+      <div class="wt-head">
+        <div class="wt-title-wrap">
+          <div class="wt-title">Different doc type · Vendor statement reconciliation</div>
+          <div class="wt-sub">American Recycling · 2026-01-10 statement · 14 open invoices · reconcile, don't post</div>
+        </div>
+        <button class="wt-close" type="button">Collapse ✕</button>
+      </div>
+      <div class="wt-intro">
+        <div class="wt-intro-copy">
+          <h3>Why this example</h3>
+          <p>A statement is a <em>list</em> of invoices, not an invoice. Posting it like AP would double-count every line. The classifier catches this at Module 2 and re-routes — <strong>no B/S match, no validation, no posting</strong>. Each row is matched against the local AP ledger; discrepancies surface as reconciliation tasks.</p>
+          <p>This is the reconciliation flow Module 6.3 specifies. Outcomes are tracked as state, not finance: <code>Closed</code>, <code>In_Progress</code>, <code>On_Hold</code>, <code>System_Processing</code>, <code>Voided</code>.</p>
+        </div>
+        <div class="ip">
+          <div class="ip-head">American Recycling — Statement</div>
+          <div class="ip-sub">statements@americanrecycling.com → APayable@nsrecycle.com</div>
+          <div class="ip-row"><span>Statement Date</span><span class="v">2026-01-10</span></div>
+          <div class="ip-row"><span>Period</span><span class="v">2025-12-01 to 2026-01-10</span></div>
+          <div class="ip-row"><span>Open Invoices</span><span class="v">14</span></div>
+          <div class="ip-row"><span>Statement Total</span><span class="v">$28,407.92</span></div>
+          <div class="ip-lines">
+            <div class="ip-line"><span>INV-9912 · 2025-12-04 · $1,820.00</span><span style="color:var(--green)">match</span></div>
+            <div class="ip-line"><span>INV-9941 · 2025-12-12 · $3,265.18</span><span style="color:var(--green)">match</span></div>
+            <div class="ip-line"><span>INV-9988 · 2025-12-29 · $940.50</span><span style="color:var(--amber)">amount diff $50</span></div>
+            <div class="ip-line"><span>INV-10004 · 2026-01-04 · $4,112.00</span><span style="color:var(--red)">missing in NSR</span></div>
+            <div class="ip-line" style="opacity:0.6"><span>… 10 more rows</span><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="wt-timeline">
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">1. Ingestion · classifier flags as Statement</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 01 + 02</span><span>~25s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Email arrives, hash, dedupe, OCR. Classifier looks at three signals:
+            <ul>
+              <li>Document title contains "<em>Statement</em>" or "<em>Account Summary</em>".</li>
+              <li>Many invoice-shaped rows in the body (≥ 3).</li>
+              <li>No single Invoice # in the header position.</li>
+            </ul>
+            All three present → <code>doc_type = VendorStatement</code>. Standard Invoice pipeline is <strong>skipped entirely</strong> — no B/S match, no 11-check, no posting target.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">2. Row extraction · build the reconcile table</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 06.3</span><span>~8s for 14 rows</span></div>
+          </div>
+          <div class="wt-step-body">
+            Statement parser extracts each row as <code>{vendor, invoice_no, invoice_date, amount, status}</code>. Vendor identity locked at the header. For each row, the system queries the local AP ledger.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">3. Row-by-row reconcile</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 06.3</span><span>~6s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Four outcomes per row:
+            <table class="wt-table">
+              <thead><tr><th>Outcome</th><th>Local match?</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><strong style="color:var(--green)">match</strong></td><td>same invoice #, same amount</td><td>mark reconciled · no action</td></tr>
+                <tr><td><strong style="color:var(--amber)">amount diff</strong></td><td>same invoice #, amount mismatch</td><td>queue investigation · State = In_Progress</td></tr>
+                <tr><td><strong style="color:var(--red)">missing in NSR</strong></td><td>vendor says open, we have no record</td><td>create investigation · raise with vendor</td></tr>
+                <tr><td><span style="color:var(--text3)">missing on statement</span></td><td>we have it, vendor doesn't list it</td><td>note for audit · no investigation</td></tr>
+              </tbody>
+            </table>
+            Statement total is also reconciled against sum of "match + amount diff" rows.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">4. State machine — statement-specific</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 06.3</span><span>tracked over days</span></div>
+          </div>
+          <div class="wt-step-body">
+            Statements use a different terminal-state set than invoices:
+            <div class="state-walk">
+              <span class="s">System_Processing</span><span class="arrow">→</span>
+              <span class="s">In_Progress</span><span class="arrow">→</span>
+              <span class="s">On_Hold</span><span class="arrow">→</span>
+              <span class="s terminal">Closed</span>
+            </div>
+            <code>On_Hold</code> = awaiting vendor response. <code>Closed</code> = all rows reconciled or written off. Voided is the manual escape hatch.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">5. Reviewer console · the 14-row diff</div>
+            <div class="wt-step-meta"><span class="mod">§ 6.3 · UI</span><span>~3 min human time</span></div>
+          </div>
+          <div class="wt-step-body">
+            Single-page console: each row colored by outcome. The 1 amount-diff row links to the local invoice for inspection; the 1 "missing in NSR" row spawns an investigation task tagged to AP. No row from a statement <em>ever</em> auto-creates an invoice — only humans do that.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">6. Audit trail · permanent record</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 10 · AUDIT</span><span>7-year retention</span></div>
+          </div>
+          <div class="wt-step-body">
+            Statement record retained with row-level reconcile decisions. Searchable like any invoice. Useful for vendor disputes ("we sent you that statement on 2026-01-10 — here's what we agreed").
+            <div class="touch-callout">
+              <div class="touch-metric"><div class="m-val cyan">14 → 12</div><div class="m-lbl">Rows reconciled clean · 2 surfaced for action</div></div>
+              <div class="touch-metric"><div class="m-val green">~3 min</div><div class="m-lbl">Human time on the diff console</div></div>
+            </div>
+            <div class="footnote">~24 statement samples sit in <code>Invoice Examples/Statements/</code> — Butler, Denali, EBI, FLEXPAK, IWP, Smurfit, Sun Services, etc. All run this same flow.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========== PORTAL · WM =========== -->
+    <div class="walkthrough" data-flow="portal-wm">
+      <div class="wt-head">
+        <div class="wt-title-wrap">
+          <div class="wt-title">Different channel · Portal scrape · Waste Management</div>
+          <div class="wt-sub">Playwright · login → invoice history → new-tab fallback → injected as if mailed</div>
+        </div>
+        <button class="wt-close" type="button">Collapse ✕</button>
+      </div>
+      <div class="wt-intro">
+        <div class="wt-intro-copy">
+          <h3>Why this example</h3>
+          <p>WM doesn't email invoices. They have to be scraped. Their portal also doesn't expose a "<em>download PDF</em>" control — invoices open in a <strong>new tab as a rendered PDF</strong>, which a script can save. WC and GFL have direct download; WM is the awkward case.</p>
+          <p>The point of this walkthrough: <strong>once the PDF is saved, it's injected back into the standard email pipeline as if it had arrived by mail</strong>. Downstream stages don't know or care that it came from a portal. From OCR onward, identical to Happy Path.</p>
+        </div>
+        <div class="ip">
+          <div class="ip-head">Waste Management of California, Inc.</div>
+          <div class="ip-sub">portal.wm.com → saved-pdf://wm/3143676-0051-2.pdf</div>
+          <div class="ip-row"><span>Source channel</span><span class="v">Portal · Playwright</span></div>
+          <div class="ip-row"><span>Tenant</span><span class="v">WM USA</span></div>
+          <div class="ip-row"><span>Invoice #</span><span class="v">3143676-0051-2</span></div>
+          <div class="ip-row"><span>Invoice Date</span><span class="v">2026-04-15</span></div>
+          <div class="ip-row"><span>Total</span><span class="v">$1,510.26</span></div>
+          <div class="ip-row"><span>Hash matches emailed copy?</span><span class="v" style="color:var(--green)">no — proceeds</span></div>
+        </div>
+      </div>
+      <div class="wt-timeline">
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">1. Daily portal run kicks off</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 01.3 · PORTAL</span><span>02:00 daily</span></div>
+          </div>
+          <div class="wt-step-body">
+            A scheduled job loads credentials from Key Vault for each enabled portal (WC, GFL, WM). For WM, the scraper handles two tenants — WM USA and WM Canada — choosing per CPID which tenant a given invoice belongs to.
+            <ul>
+              <li>Login session check · valid for ~12h. If expired → hot-rotate credentials and retry.</li>
+              <li>If portal returns 5xx repeatedly → alert oncall and skip this run; do not block other portals.</li>
+              <li>If ToS-flag is off for this portal → scraper disabled, no run.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">2. Navigate to invoice history</div>
+            <div class="wt-step-meta"><span class="mod">§ 1.3.1</span><span>~4s per page</span></div>
+          </div>
+          <div class="wt-step-body">
+            Playwright navigates to <code>portal.wm.com/billing/history</code>. It iterates the table looking for invoices not yet in the local hash table. Anything older than ~2 years is skipped (WM's portal doesn't keep them anyway).
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">3. New-tab fallback · the WM-specific bit</div>
+            <div class="wt-step-meta"><span class="mod">§ 1.3.1</span><span>~6s per invoice</span></div>
+          </div>
+          <div class="wt-step-body">
+            WC and GFL would let us click a download button. WM doesn't:
+            <div class="cascade">
+              <div class="cascade-row skip"><div class="cstep">A</div><div class="cdesc">Direct PDF download</div><div class="cresult">not supported on WM</div></div>
+              <div class="cascade-row hit"><div class="cstep">B</div><div class="cdesc">Click "View invoice" → opens new tab with rendered PDF</div><div class="cresult">selected</div></div>
+              <div class="cascade-row hit"><div class="cstep">C</div><div class="cdesc">Save the new tab's PDF stream to disk</div><div class="cresult">stored to staging</div></div>
+            </div>
+            One PDF per invoice, saved with deterministic filename <code>wm/{invoice_no}.pdf</code>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">4. Hash + dedupe against emailed-already</div>
+            <div class="wt-step-meta"><span class="mod">§ 1.3.10 + § 1.1.7</span><span>~100ms</span></div>
+          </div>
+          <div class="wt-step-body">
+            SHA-256 of the saved PDF bytes is compared to the rolling 30-day hash table. If WM also <em>emailed</em> us this invoice (some vendors do both), the email path won and we skip this scrape. If not, we proceed — record <code>source = portal · WM USA</code>, <code>UUID xyz789…</code>.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">5. Inject into the standard pipeline</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 02 → 10</span><span>identical to Happy Path</span></div>
+          </div>
+          <div class="wt-step-body">
+            From this point, the WM scrape and an email-arrived invoice are <em>indistinguishable</em>. OCR runs, CPID resolves, B/S cascade matches, validation runs, human submits, SFTP posts. The only field that differs is the audit trail's <code>source</code> column.
+            <div class="state-walk">
+              <span class="s">Received</span><span class="arrow">→</span>
+              <span class="s">OCR_Complete</span><span class="arrow">→</span>
+              <span class="s">B/S_Matched</span><span class="arrow">→</span>
+              <span class="s">Validated</span><span class="arrow">→</span>
+              <span class="s terminal">Posted</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">6. Operational characteristics</div>
+            <div class="wt-step-meta"><span class="mod">§ 1.3</span><span>tracked per run</span></div>
+          </div>
+          <div class="wt-step-body">
+            <div class="touch-callout">
+              <div class="touch-metric"><div class="m-val purple">~0s</div><div class="m-lbl">Human touch — runs unattended</div></div>
+              <div class="touch-metric"><div class="m-val green">~6s/invoice</div><div class="m-lbl">New-tab save overhead vs direct download</div></div>
+            </div>
+            <div class="footnote">Sub-brand routing (WC: Aeros, Harold Lame Pacific) and tenant routing (WM USA vs Canada) sit on top of this; once the PDF is saved and hashed, downstream is unchanged.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========== VENDOR NOT FOUND =========== -->
+    <div class="walkthrough" data-flow="vendor-not-found">
+      <div class="wt-head">
+        <div class="wt-title-wrap">
+          <div class="wt-title">Hard-stop exception · Vendor not found</div>
+          <div class="wt-sub">CPID lookup miss · queue · human assigns · feedback loop</div>
+        </div>
+        <button class="wt-close" type="button">Collapse ✕</button>
+      </div>
+      <div class="wt-intro">
+        <div class="wt-intro-copy">
+          <h3>Why this example</h3>
+          <p>Module 3 is where most exceptions are born. The CPID master holds 28k+ vendor rows, but new vendors arrive every week, and existing vendors mutate (new remit address, name change, acquisition). When the matching cascade can't reach 0.95 confidence on any candidate, the invoice <strong>hard-stops</strong> into the Vendor Not Found queue — never B/S match, never validation, never posting.</p>
+          <p>The interesting part isn't the stop, it's the <strong>learning loop</strong>: whatever the human picks (assign existing CPID, create a new one, void as not-an-invoice) feeds back into the matcher. Next time this vendor sends an invoice, it auto-resolves.</p>
+        </div>
+        <div class="ip">
+          <div class="ip-head">"Greenline Hauling LLC" <span style="color:var(--red);font-size:11px;font-weight:600">· not in CPID master</span></div>
+          <div class="ip-sub">accounting@greenline-hauling.com → APayable@nsrecycle.com</div>
+          <div class="ip-row"><span>Invoice #</span><span class="v">GH-44217</span></div>
+          <div class="ip-row"><span>Remit-To</span><span class="v">PO Box 4421, Akron OH</span></div>
+          <div class="ip-row"><span>Ship-From</span><span class="v">8800 Industrial Pkwy, Akron OH</span></div>
+          <div class="ip-row"><span>Total</span><span class="v">$1,840.00</span></div>
+          <div class="ip-row" style="color:var(--red)"><span>CPID match</span><span class="v">none ≥ 0.95</span></div>
+        </div>
+      </div>
+      <div class="wt-timeline">
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">1. Ingestion + OCR · normal</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 01 + 02</span><span>T+0 to T+60s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Email arrives. Dedupe passes (this vendor never emailed before). OCR returns clean 27 fields with high confidence. Document classified as <code>Invoice</code>. Everything looks fine until Module 3.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">2. CPID matching cascade · everything misses</div>
+            <div class="wt-step-meta"><span class="mod">MODULE 03 · VENDOR</span><span>~2s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Weighted cascade runs:
+            <div class="cascade">
+              <div class="cascade-row skip"><div class="cstep">1</div><div class="cdesc">Fuzzy name "Greenline Hauling LLC"</div><div class="cresult">best 0.71 (Greenleaf Trucking)</div></div>
+              <div class="cascade-row skip"><div class="cstep">2</div><div class="cdesc">Remit-To address (IsRemit=1)</div><div class="cresult">no hit</div></div>
+              <div class="cascade-row skip"><div class="cstep">3</div><div class="cdesc">Ship-From address (IsRemit=0)</div><div class="cresult">no hit</div></div>
+              <div class="cascade-row skip"><div class="cstep">4</div><div class="cdesc">Stream-history tiebreak</div><div class="cresult">N/A — no prior</div></div>
+            </div>
+            Composite confidence <strong>0.71</strong> &lt; 0.95 threshold. Single candidate, but well below the auto-assign cutoff. <strong>Hard-stop.</strong>
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">3. Fork into Vendor Not Found queue</div>
+            <div class="wt-step-meta"><span class="mod">EXCEPTION QUEUE</span><span>instant</span></div>
+          </div>
+          <div class="wt-step-body">
+            State machine forks:
+            <div class="state-walk">
+              <span class="s">OCR_Complete</span><span class="arrow">→</span>
+              <span class="s">Vendor_Matching</span><span class="arrow">→</span>
+              <span class="s exception">Vendor_Not_Found</span>
+            </div>
+            B/S match, validation, posting — all skipped. The invoice is unposted and untouched in the data layer; only its state changed.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">4. Human resolution · the queue UI</div>
+            <div class="wt-step-meta"><span class="mod">§ 3 · QUEUE</span><span>~90s human time</span></div>
+          </div>
+          <div class="wt-step-body">
+            AP Processor opens the Vendor Not Found queue. The invoice card shows the OCR-extracted vendor block, the failed candidates list, and three resolution paths:
+            <ul>
+              <li><strong>Assign existing CPID</strong> — search master, pick the right one (e.g. operator recognizes "Greenline" is a doing-business-as for an existing vendor).</li>
+              <li><strong>Create new CPID</strong> — fill the create-vendor form, populated from OCR fields. Triggers a Module 9 vendor-master write.</li>
+              <li><strong>Void · not an invoice</strong> — terminal void with reason code.</li>
+            </ul>
+            For Greenline, AP picks <strong>Create new CPID</strong>. Form pre-fills with OCR data; AP confirms and submits.
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">5. Learning-loop write-back · the magic</div>
+            <div class="wt-step-meta"><span class="mod">§ 3 · LEARNING</span><span>~1s</span></div>
+          </div>
+          <div class="wt-step-body">
+            Three write-backs happen atomically:
+            <ul>
+              <li><strong>CPID master</strong> — new row <code>GREENLINE_HAUL_001</code> with name, remit, ship-from addresses indexed for future matching.</li>
+              <li><strong>Stream-history</strong> — record the assignment so subsequent invoices from this sender or this address auto-tiebreak.</li>
+              <li><strong>Matcher feedback</strong> — the OCR vendor block and the chosen CPID are added to the training set. Next invoice from this sender or with this remit address goes through the cascade and hits Step 2 with confidence ≥ 0.97.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="wt-step">
+          <div class="wt-step-head">
+            <div class="wt-step-title">6. Re-enter the pipeline · post normally</div>
+            <div class="wt-step-meta"><span class="mod">MODULES 04 → 10</span><span>resumes from B/S match</span></div>
+          </div>
+          <div class="wt-step-body">
+            With CPID assigned, the invoice resumes from Module 4. B/S cascade runs, validation runs, human submits, SFTP posts. Audit log shows the queue detour with reason "<em>Created new CPID GREENLINE_HAUL_001</em>".
+            <div class="touch-callout">
+              <div class="touch-metric"><div class="m-val red">~90s</div><div class="m-lbl">First-time human touch (vs ~20s clean path)</div></div>
+              <div class="touch-metric"><div class="m-val green">~0s</div><div class="m-lbl">Next invoice from this vendor — auto-resolves</div></div>
+            </div>
+            <div class="footnote">The other 9 hard-stop categories in this group all use this same pattern: <strong>fork to a typed queue · human resolves · learning loop captures the resolution · re-enter the pipeline at the right module</strong>.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /walkthroughs -->
+
+</div><!-- /wrap -->
+
+<script>
+  // ===== Group tab switching =====
+  const gtabs = document.querySelectorAll('.gtab');
+  const gpanels = document.querySelectorAll('.gpanel');
+
+  function showGroup(grp) {
+    gtabs.forEach(t => t.classList.toggle('active', t.dataset.grp === grp));
+    gpanels.forEach(p => p.classList.toggle('active', p.dataset.grp === grp));
+    closeAllWalkthroughs();
+  }
+
+  gtabs.forEach(tab => {
+    tab.addEventListener('click', () => showGroup(tab.dataset.grp));
+  });
+
+  // ===== Card click → reveal walkthrough =====
+  function closeAllWalkthroughs() {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.walkthrough').forEach(w => w.classList.remove('active'));
+  }
+
+  document.querySelectorAll('.card.live').forEach(card => {
+    card.addEventListener('click', () => {
+      const flow = card.dataset.flow;
+      const wt = document.querySelector(`.walkthrough[data-flow="${flow}"]`);
+      const wasActive = card.classList.contains('active');
+      closeAllWalkthroughs();
+      if (!wasActive && wt) {
+        card.classList.add('active');
+        wt.classList.add('active');
+        setTimeout(() => {
+          wt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      }
+    });
+  });
+
+  // ===== Close button on each walkthrough =====
+  document.querySelectorAll('.wt-close').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      closeAllWalkthroughs();
+      document.querySelector('.gtabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ===== Open Happy Path by default if hash matches =====
+  const initialHash = (window.location.hash || '').replace('#flow=', '');
+  if (initialHash) {
+    const target = document.querySelector(`.card.live[data-flow="${initialHash}"]`);
+    if (target) {
+      const grp = target.closest('.gpanel').dataset.grp;
+      showGroup(grp);
+      target.click();
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -130,6 +130,7 @@
   .tab[data-tab="domain"]     { --tab-c: var(--domain); }
   .tab[data-tab="milestones"] { --tab-c: var(--milestones); }
   .tab[data-tab="corpus"]     { --tab-c: var(--corpus); }
+  .tab[data-tab="invoices"]   { --tab-c: var(--pipeline); }
 
   /* ===== STAGE ===== */
   .stage {
@@ -210,6 +211,10 @@
       <span class="tab-icon">C</span>
       <span>Files and Invoices Analysis Dashboard</span>
     </button>
+    <button class="tab" data-tab="invoices" data-src="NSR_Invoice_Types.html" role="tab">
+      <span class="tab-icon">I</span>
+      <span>Invoice Types &amp; Flows</span>
+    </button>
   </div>
 </div>
 
@@ -224,7 +229,7 @@
   const stage = document.getElementById('stage');
   const empty = document.getElementById('empty');
   const tabs = document.querySelectorAll('.tab');
-  const order = ['workflow','domain','milestones','corpus'];
+  const order = ['workflow','domain','milestones','corpus','invoices'];
 
   function showTab(name) {
     const tab = document.querySelector(`.tab[data-tab="${name}"]`);
